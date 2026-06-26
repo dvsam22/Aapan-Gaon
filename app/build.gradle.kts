@@ -4,15 +4,15 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
-    // alias(libs.plugins.google.services)
+     alias(libs.plugins.google.services)
 }
 
 android {
-    namespace = "com.example.aapangav"
+    namespace = "com.dv.apna"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.example.aapangav"
+        applicationId = "com.dv.apna"
         minSdk = 26
         targetSdk = 37
         versionCode = 1
