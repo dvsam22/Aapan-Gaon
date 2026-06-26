@@ -1,0 +1,226 @@
+package com.example.aapangav.feature.language.presentation.screen
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import com.example.aapangav.R
+import com.example.aapangav.core.components.AapanGavButton
+import com.example.aapangav.core.theme.AapanGavTheme
+import com.example.aapangav.core.utils.sdp
+import com.example.aapangav.core.utils.ssp
+import com.example.aapangav.feature.language.domain.model.LanguageModel
+import com.example.aapangav.feature.language.presentation.effect.LanguageEffect
+import com.example.aapangav.feature.language.presentation.event.LanguageEvent
+import com.example.aapangav.feature.language.presentation.state.LanguageState
+import kotlinx.coroutines.flow.collectLatest
+
+@Composable
+fun LanguageScreen(
+    state: LanguageState,
+    onEvent: (LanguageEvent) -> Unit,
+    effect: kotlinx.coroutines.flow.Flow<LanguageEffect>,
+    onNavigateToHome: () -> Unit
+) {
+    LaunchedEffect(Unit) {
+        effect.collectLatest { effect ->
+            when (effect) {
+                LanguageEffect.NavigateToHome -> onNavigateToHome()
+            }
+        }
+    }
+
+    val contentTopMargin = 30.sdp()
+    val contentHorizontalMargin = 18.sdp()
+    val btnBottomMargin = 80.sdp()
+    val btnHorizontalMargin = 16.sdp()
+
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        val (bottomImage, content, btnContinue) = createRefs()
+
+        // Bottom Decoration Image - Stays at the very bottom, even under nav bar
+        Image(
+            painter = painterResource(id = R.drawable.iv_bottomview),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(bottomImage) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+            contentScale = ContentScale.FillWidth
+        )
+
+        // Main Content - Uses statusBarsPadding for the top
+        Column(
+            modifier = Modifier
+                .statusBarsPadding()
+                .constrainAs(content) {
+                    top.linkTo(parent.top, margin = contentTopMargin)
+                    start.linkTo(parent.start, margin = contentHorizontalMargin)
+                    end.linkTo(parent.end, margin = contentHorizontalMargin)
+                    width = Dimension.fillToConstraints
+                }
+        ) {
+            Text(
+                text = "Select Language/ भाषा चुने",
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.ssp(),
+                    lineHeight = 36.ssp()
+                ),
+                color = Color.Black
+            )
+
+            Spacer(modifier = Modifier.height(20.sdp()))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.sdp())
+            ) {
+                state.languages.forEach { language ->
+                    LanguageCard(
+                        language = language,
+                        isSelected = state.selectedLanguageId == language.id,
+                        onClick = { onEvent(LanguageEvent.SelectLanguage(language.id)) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
+
+        // Bottom Button - Uses navigationBarsPadding to stay above nav bar
+        AapanGavButton(
+            text = "Continue",
+            onClick = { onEvent(LanguageEvent.Continue) },
+            enabled = state.selectedLanguageId != null,
+            modifier = Modifier
+                .navigationBarsPadding()
+                .constrainAs(btnContinue) {
+                    bottom.linkTo(parent.bottom, margin = btnBottomMargin)
+                    start.linkTo(parent.start, margin = btnHorizontalMargin)
+                    end.linkTo(parent.end, margin = btnHorizontalMargin)
+                    width = Dimension.fillToConstraints
+                }
+        )
+    }
+}
+
+@Composable
+fun LanguageCard(
+    language: LanguageModel,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val backgroundColor = Color(0xFFEFFAF6)
+    val borderColor = if (isSelected) Color(0xFF38C792) else Color.Transparent
+
+    Box(
+        modifier = modifier
+            .aspectRatio(175.5f / 173f)
+            .clip(RoundedCornerShape(15.sdp()))
+            .background(backgroundColor)
+            .border(
+                border = BorderStroke(1.sdp(), borderColor),
+                shape = RoundedCornerShape(15.sdp())
+            )
+            .clickable { onClick() }
+    ) {
+        // Selection Indicator (Radio circle)
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(12.sdp())
+                .size(16.sdp())
+                .border(1.sdp(), Color(0xFF38C792), CircleShape)
+                .padding(3.sdp())
+        ) {
+            if (isSelected) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFF38C792), CircleShape)
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(
+                    id = if (language.code == "en") R.drawable.iv_english else R.drawable.iv_hindi
+                ),
+                contentDescription = language.name,
+                modifier = Modifier.size(58.sdp()),
+                contentScale = ContentScale.Fit
+            )
+
+            Spacer(modifier = Modifier.height(5.sdp()))
+
+            Text(
+                text = if (language.code == "en") language.name else language.nativeName,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 13.ssp()
+                ),
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LanguageScreenPreview() {
+    AapanGavTheme {
+        LanguageScreen(
+            state = LanguageState(),
+            onEvent = {},
+            effect = kotlinx.coroutines.flow.emptyFlow(),
+            onNavigateToHome = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LanguageScreenSelectedPreview() {
+    AapanGavTheme {
+        LanguageScreen(
+            state = LanguageState(selectedLanguageId = "1"),
+            onEvent = {},
+            effect = kotlinx.coroutines.flow.emptyFlow(),
+            onNavigateToHome = {}
+        )
+    }
+}

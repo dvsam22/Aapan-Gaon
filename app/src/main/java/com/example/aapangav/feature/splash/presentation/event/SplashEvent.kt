@@ -1,0 +1,3 @@
+package com.example.aapangav.feature.splash.presentation.event
+
+sealed interface SplashEvent
