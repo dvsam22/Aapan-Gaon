@@ -28,7 +28,22 @@ sealed interface Route {
     data object Construction : Route
 
     @Serializable
+    data object BricksSuppliers : Route
+
+    @Serializable
+    data object MaterialShops : Route
+
+    @Serializable
+    data object LabourBoard : Route
+
+    @Serializable
+    data class LabourDetails(val category: String) : Route
+
+    @Serializable
     data object Transport : Route
+
+    @Serializable
+    data class TransportDetails(val category: String) : Route
 
     @Serializable
     data object News : Route

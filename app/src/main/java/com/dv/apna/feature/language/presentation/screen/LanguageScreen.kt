@@ -89,7 +89,7 @@ fun LanguageScreen(
                 text = "Select Language/ भाषा चुने",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.ssp(),
+                    fontSize = 16.ssp(),
                     lineHeight = 36.ssp()
                 ),
                 color = Color.Black

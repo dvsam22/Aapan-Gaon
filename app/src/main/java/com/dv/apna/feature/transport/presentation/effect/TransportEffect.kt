@@ -1,5 +1,6 @@
 package com.dv.apna.feature.transport.presentation.effect
 
 sealed interface TransportEffect {
-    data class ShowSnackbar(val message: String) : TransportEffect
+    data object NavigateBack : TransportEffect
+    data class NavigateToCategory(val category: String) : TransportEffect
 }

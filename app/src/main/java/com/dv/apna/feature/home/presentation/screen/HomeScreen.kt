@@ -156,7 +156,7 @@ fun HomeContent(
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(bottom = 80.sdp())
+        contentPadding = PaddingValues(bottom = 80.sdp(), top = 10.sdp())
     ) {
         item {
             BannerCarousel(banners = banners)
@@ -167,9 +167,9 @@ fun HomeContent(
                 text = "Services",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 18.ssp()
+                    fontSize = 16.ssp()
                 ),
-                modifier = Modifier.padding(start = 16.sdp(), top = 25.sdp(), bottom = 8.sdp())
+                modifier = Modifier.padding(start = 16.sdp(), top = 15.sdp(), bottom = 8.sdp())
             )
         }
 
