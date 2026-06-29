@@ -10,7 +10,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,6 +32,7 @@ import com.dv.apna.feature.home.presentation.state.HomeState
 import com.dv.apna.feature.home.presentation.event.HomeEvent
 import com.dv.apna.feature.home.domain.model.BannerModel
 import com.dv.apna.R
+import androidx.annotation.DrawableRes
 
 @Composable
 fun HomeScreen(
@@ -302,7 +304,7 @@ fun ServicesGrid(
         // Construction Hub
         ServiceCard(
             title = "Construction Hub",
-            icon = Icons.Default.Engineering,
+            icon = R.drawable.construction,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.sdp()),
@@ -316,7 +318,7 @@ fun ServicesGrid(
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.sdp())) {
                 ServiceCard(
                     title = "Labour Board",
-                    icon = Icons.Default.Groups,
+                    icon = R.drawable.labour,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.sdp()),
@@ -324,7 +326,7 @@ fun ServicesGrid(
                 )
                 ServiceCard(
                     title = "Transport & Rentals",
-                    icon = Icons.Default.Agriculture,
+                    icon = R.drawable.transport,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(180.sdp()),
@@ -334,7 +336,7 @@ fun ServicesGrid(
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.sdp())) {
                 ServiceCard(
                     title = "Mandi Hub",
-                    icon = Icons.Default.Storefront,
+                    icon = R.drawable.mandi,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(180.sdp()),
@@ -342,7 +344,7 @@ fun ServicesGrid(
                 )
                 ServiceCard(
                     title = "Local News",
-                    icon = Icons.Default.Newspaper,
+                    icon = R.drawable.local_news,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(150.sdp()),
@@ -354,7 +356,7 @@ fun ServicesGrid(
         // Health & Emergency
         ServiceCard(
             title = "Health & Emergency",
-            icon = Icons.Default.MedicalServices,
+            icon = R.drawable.health,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.sdp()),
@@ -366,7 +368,7 @@ fun ServicesGrid(
 @Composable
 fun ServiceCard(
     title: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    @DrawableRes icon: Int,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
@@ -390,7 +392,7 @@ fun ServiceCard(
                 modifier = Modifier.padding(horizontal = 4.sdp())
             ) {
                 Icon(
-                    imageVector = icon,
+                    painter = painterResource(id = icon),
                     contentDescription = title,
                     modifier = Modifier.size(44.sdp()),
                     tint = Color(0xFF2CA074)
