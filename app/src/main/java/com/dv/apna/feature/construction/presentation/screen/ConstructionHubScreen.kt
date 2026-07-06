@@ -57,7 +57,8 @@ fun ConstructionHubScreen(
     effect: Flow<ConstructionEffect>,
     onNavigateBack: () -> Unit,
     onNavigateToBricks: () -> Unit,
-    onNavigateToMaterialShops: () -> Unit
+    onNavigateToMaterialShops: () -> Unit,
+    onNavigateToHardwareShops: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         effect.collectLatest { effect ->
@@ -65,6 +66,7 @@ fun ConstructionHubScreen(
                 ConstructionEffect.NavigateBack -> onNavigateBack()
                 ConstructionEffect.NavigateToBricks -> onNavigateToBricks()
                 ConstructionEffect.NavigateToMaterialShops -> onNavigateToMaterialShops()
+                ConstructionEffect.NavigateToHardwareShops -> onNavigateToHardwareShops()
             }
         }
     }
@@ -120,6 +122,13 @@ fun ConstructionHubScreen(
                         title = "Material Shops",
                         icon = painterResource(id = R.drawable.iv_material_shpos),
                         onClick = { onEvent(ConstructionEvent.MaterialShopsClick) }
+                    )
+                }
+                item {
+                    ConstructionOptionCard(
+                        title = "Hardware Shops",
+                        icon = painterResource(id = R.drawable.hardware_shops),
+                        onClick = { onEvent(ConstructionEvent.HardwareShopsClick) }
                     )
                 }
             }
@@ -249,7 +258,8 @@ fun ConstructionHubScreenPreview() {
             effect = kotlinx.coroutines.flow.emptyFlow(),
             onNavigateBack = {},
             onNavigateToBricks = {},
-            onNavigateToMaterialShops = {}
+            onNavigateToMaterialShops = {},
+            onNavigateToHardwareShops = {}
         )
     }
 }

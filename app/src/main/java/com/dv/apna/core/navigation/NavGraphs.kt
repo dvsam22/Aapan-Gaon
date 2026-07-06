@@ -4,28 +4,55 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.dv.apna.core.utils.dial
 import com.dv.apna.feature.home.presentation.screen.HomeScreen
 import com.dv.apna.feature.home.presentation.viewmodel.HomeViewModel
+import com.dv.apna.feature.mandi.presentation.screen.MandiHubScreen
+import com.dv.apna.feature.mandi.presentation.screen.CropPricesScreen
+import com.dv.apna.feature.mandi.presentation.screen.TodayMarketScreen
+import com.dv.apna.feature.mandi.presentation.screen.LocalBuyersScreen
+import com.dv.apna.feature.mandi.presentation.viewmodel.MandiViewModel
+import com.dv.apna.feature.health.presentation.screen.HealthHubScreen
+import com.dv.apna.feature.health.presentation.screen.DoctorScreen
+import com.dv.apna.feature.health.presentation.screen.HospitalScreen
+import com.dv.apna.feature.health.presentation.screen.PharmacyScreen
+import com.dv.apna.feature.health.presentation.viewmodel.HealthViewModel
 import com.dv.apna.feature.construction.presentation.screen.ConstructionHubScreen
 import com.dv.apna.feature.construction.presentation.screen.BricksSuppliersScreen
 import com.dv.apna.feature.construction.presentation.screen.MaterialShopsScreen
+import com.dv.apna.feature.construction.presentation.screen.HardwareShopsScreen
 import com.dv.apna.feature.construction.presentation.viewmodel.ConstructionViewModel
 import com.dv.apna.feature.construction.presentation.viewmodel.BricksViewModel
 import com.dv.apna.feature.construction.presentation.viewmodel.MaterialShopsViewModel
+import com.dv.apna.feature.construction.presentation.viewmodel.HardwareShopsViewModel
 import com.dv.apna.feature.labour.presentation.screen.LabourBoardScreen
 import com.dv.apna.feature.labour.presentation.screen.LabourDetailsScreen
 import com.dv.apna.feature.labour.presentation.viewmodel.LabourViewModel
 import com.dv.apna.feature.transport.presentation.screen.TransportBoardScreen
 import com.dv.apna.feature.transport.presentation.screen.TransportDetailsScreen
 import com.dv.apna.feature.transport.presentation.viewmodel.TransportViewModel
+import com.dv.apna.feature.news.presentation.screen.LocalNewsScreen
+import com.dv.apna.feature.news.presentation.screen.NewsDetailsScreen
+import com.dv.apna.feature.news.presentation.screen.NoticeDetailsScreen
+import com.dv.apna.feature.news.presentation.viewmodel.NewsViewModel
 import com.dv.apna.feature.splash.presentation.screen.SplashScreen
 import com.dv.apna.feature.splash.presentation.viewmodel.SplashViewModel
 import com.dv.apna.feature.language.presentation.screen.LanguageScreen
+import com.dv.apna.feature.language.presentation.screen.ChangeLanguageScreen
+import com.dv.apna.feature.language.presentation.screen.ChangeVillageScreen
 import com.dv.apna.feature.language.presentation.viewmodel.LanguageViewModel
+import com.dv.apna.feature.settings.presentation.screen.AboutUsScreen
+import com.dv.apna.feature.settings.presentation.screen.PrivacyPolicyScreen
+import com.dv.apna.feature.settings.presentation.screen.TermsAndConditionsScreen
+import com.dv.apna.feature.notification.presentation.screen.NotificationScreen
+import com.dv.apna.feature.notification.presentation.screen.NotificationDetailsScreen
+import com.dv.apna.feature.notification.presentation.viewmodel.NotificationViewModel
 
 @Composable
 fun RootNavGraph(
@@ -63,6 +90,32 @@ fun RootNavGraph(
             )
         }
 
+        composable<Route.ChangeLanguage> {
+            val viewModel: LanguageViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            ChangeLanguageScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable<Route.ChangeVillage> {
+            val viewModel: LanguageViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            ChangeVillageScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
         composable<Route.Home> {
             val viewModel: HomeViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
@@ -75,13 +128,119 @@ fun RootNavGraph(
                 onNavigateToTransport = { navController.navigate(Route.Transport) },
                 onNavigateToMandi = { navController.navigate(Route.Mandi) },
                 onNavigateToNews = { navController.navigate(Route.News) },
-                onNavigateToHealth = { navController.navigate(Route.Health) }
+                onNavigateToHealth = { navController.navigate(Route.Health) },
+                onNavigateToLanguage = { navController.navigate(Route.ChangeLanguage) },
+                onNavigateToChangeVillage = { navController.navigate(Route.ChangeVillage) },
+                onNavigateToAboutUs = { navController.navigate(Route.AboutUs) },
+                onNavigateToPrivacyPolicy = { navController.navigate(Route.PrivacyPolicy) },
+                onNavigateToTerms = { navController.navigate(Route.TermsAndConditions) }
             )
         }
 
         composable<Route.Services> { }
-        composable<Route.Health> { }
-        composable<Route.Mandi> { }
+        composable<Route.Health> {
+            val viewModel: HealthViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+            HealthHubScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToDoctors = { navController.navigate(Route.Doctors) },
+                onNavigateToHospitals = { navController.navigate(Route.Hospitals) },
+                onNavigateToPharmacy = { navController.navigate(Route.Pharmacy) },
+                onDialPhone = { phone -> context.dial(phone) }
+            )
+        }
+        composable<Route.Doctors> {
+            val viewModel: HealthViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+            DoctorScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() },
+                onDialPhone = { phone -> context.dial(phone) }
+            )
+        }
+        composable<Route.Hospitals> {
+            val viewModel: HealthViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+            HospitalScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() },
+                onDialPhone = { phone -> context.dial(phone) }
+            )
+        }
+        composable<Route.Pharmacy> {
+            val viewModel: HealthViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+            PharmacyScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() },
+                onDialPhone = { phone -> context.dial(phone) }
+            )
+        }
+        composable<Route.Mandi> {
+            val viewModel: MandiViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            MandiHubScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToCropPrices = { navController.navigate(Route.CropPrices) },
+                onNavigateToTodayMarket = { navController.navigate(Route.TodayMarket) },
+                onNavigateToLocalBuyers = { navController.navigate(Route.LocalBuyers) }
+            )
+        }
+        composable<Route.CropPrices> {
+            val viewModel: MandiViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            CropPricesScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable<Route.TodayMarket> {
+            val viewModel: MandiViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            TodayMarketScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable<Route.LocalBuyers> {
+            val viewModel: MandiViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            LocalBuyersScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable<Route.AboutUs> {
+            AboutUsScreen(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.PrivacyPolicy> {
+            PrivacyPolicyScreen(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.TermsAndConditions> {
+            TermsAndConditionsScreen(onNavigateBack = { navController.popBackStack() })
+        }
         composable<Route.Construction> {
             val viewModel: ConstructionViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
@@ -91,7 +250,19 @@ fun RootNavGraph(
                 effect = viewModel.effect,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToBricks = { navController.navigate(Route.BricksSuppliers) },
-                onNavigateToMaterialShops = { navController.navigate(Route.MaterialShops) }
+                onNavigateToMaterialShops = { navController.navigate(Route.MaterialShops) },
+                onNavigateToHardwareShops = { navController.navigate(Route.HardwareShops) }
+            )
+        }
+
+        composable<Route.HardwareShops> {
+            val viewModel: HardwareShopsViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            HardwareShopsScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 
@@ -165,8 +336,65 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
-        composable<Route.News> { }
-        composable<Route.Notifications> { }
+        composable<Route.News> {
+            val viewModel: NewsViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            LocalNewsScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToNewsDetails = { id -> navController.navigate(Route.NewsDetails(id)) },
+                onNavigateToNoticeDetails = { id -> navController.navigate(Route.NoticeDetails(id)) }
+            )
+        }
+
+        composable<Route.NewsDetails> { backStackEntry ->
+            val route: Route.NewsDetails = backStackEntry.toRoute()
+            val viewModel: NewsViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            NewsDetailsScreen(
+                newsId = route.id,
+                state = state,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Route.NoticeDetails> { backStackEntry ->
+            val route: Route.NoticeDetails = backStackEntry.toRoute()
+            val viewModel: NewsViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            NoticeDetailsScreen(
+                noticeId = route.id,
+                state = state,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Route.Notifications> {
+            val viewModel: NotificationViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            NotificationScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateToDetails = { id ->
+                    navController.navigate(Route.NotificationDetails(id))
+                },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Route.NotificationDetails> { backStackEntry ->
+            val route: Route.NotificationDetails = backStackEntry.toRoute()
+            val viewModel: NotificationViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            NotificationDetailsScreen(
+                notificationId = route.id,
+                state = state,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
         composable<Route.Settings> { }
     }
 }

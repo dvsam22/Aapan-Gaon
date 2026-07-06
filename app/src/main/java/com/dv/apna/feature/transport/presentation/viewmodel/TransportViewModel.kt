@@ -50,7 +50,10 @@ class TransportViewModel @Inject constructor(
         val services = listOf(
             TransportService("Tractor", R.drawable.transport),
             TransportService("Car", R.drawable.iv_car),
-            TransportService("Pickup", R.drawable.pickup)
+            TransportService("Pickup", R.drawable.pickup),
+            TransportService("Loader", R.drawable.iv_car),
+            TransportService("JCB", R.drawable.iv_car)
+
         )
         _state.update { it.copy(services = services) }
     }
@@ -78,8 +81,7 @@ class TransportViewModel @Inject constructor(
                 vehicleType = "$category - Mahindra 575",
                 charges = "₹800 / Hour",
                 phoneNumber = "1234567890"
-            ),
-            TransportDetails(
+            ), TransportDetails(
                 name = "Madan Lal",
                 address = "Rampur Village (Near Middle School)",
                 vehicleType = "$category - Swaraj 744",

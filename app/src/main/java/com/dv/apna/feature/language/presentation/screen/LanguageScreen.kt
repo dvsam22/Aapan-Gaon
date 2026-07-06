@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -110,13 +110,33 @@ fun LanguageScreen(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(35.sdp()))
+
+            Text(
+                text = "Select Village/ गाँव चुनें",
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.ssp(),
+                    lineHeight = 36.ssp()
+                ),
+                color = Color.Black
+            )
+
+            Spacer(modifier = Modifier.height(20.sdp()))
+
+            VillageSelector(
+                villages = state.villages,
+                selectedVillage = state.selectedVillage,
+                onVillageSelected = { onEvent(LanguageEvent.SelectVillage(it)) }
+            )
         }
 
         // Bottom Button - Uses navigationBarsPadding to stay above nav bar
         AapanGavButton(
             text = "Continue",
             onClick = { onEvent(LanguageEvent.Continue) },
-            enabled = state.selectedLanguageId != null,
+            enabled = state.selectedLanguageId != null && state.selectedVillage != null,
             modifier = Modifier
                 .navigationBarsPadding()
                 .constrainAs(btnContinue) {
@@ -126,6 +146,118 @@ fun LanguageScreen(
                     width = Dimension.fillToConstraints
                 }
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VillageSelector(
+    villages: List<String>,
+    selectedVillage: String?,
+    onVillageSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(42.sdp())
+                .menuAnchor(MenuAnchorType.PrimaryEditable, true)
+                .background(Color(0xFFEFFAF6), RoundedCornerShape(12.sdp()))
+               /* .border(1.sdp(), Color(0xFF38C792), RoundedCornerShape(12.sdp()))*/
+                .padding(horizontal = 16.sdp()),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = selectedVillage ?: "Select Here/ यहाँ चुनें",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = 12.ssp(),
+                        color = if (selectedVillage == null) Color(0xFF8391A1) else Color.Black
+                    )
+                )
+                Icon(
+                    painter = painterResource(R.drawable.arrow_left),
+                    contentDescription = null,
+                    tint = Color.Black,
+                    modifier = Modifier.size(18.sdp()).rotate(-90f)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(5.sdp()))
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .border(1.sdp(), Color(0xFF38C792), RoundedCornerShape(12.sdp())),
+            containerColor = Color.White,
+            shape = RoundedCornerShape(12.sdp())
+        ) {
+            if (villages.isEmpty()) {
+                DropdownMenuItem(
+                    text = { Text("No villages found", color = Color.Gray) },
+                    onClick = { expanded = false }
+                )
+            } else {
+                villages.forEachIndexed { index, village ->
+                    val isSelected = village == selectedVillage
+                    DropdownMenuItem(
+                        text = {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = village,
+                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                        fontSize = 12.ssp(),
+                                        color = Color.Black
+                                    )
+                                )
+
+                                // Radio Selection Indicator
+                                Box(
+                                    modifier = Modifier
+                                        .size(16.sdp())
+                                        .border(1.sdp(), Color(0xFF38C792), CircleShape)
+                                        .padding(3.sdp())
+                                ) {
+                                    if (isSelected) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(Color(0xFF38C792), CircleShape)
+                                        )
+                                    }
+                                }
+                            }
+                        },
+                        onClick = {
+                            onVillageSelected(village)
+                            expanded = false
+                        }
+                    )
+                    if (index < villages.size - 1) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 12.sdp()),
+                            thickness = 1.sdp(),
+                            color = Color(0xFF38C792).copy(alpha = 0.3f)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -216,6 +348,22 @@ fun LanguageScreenSelectedPreview() {
     AapanGavTheme {
         LanguageScreen(
             state = LanguageState(selectedLanguageId = "1"),
+            onEvent = {},
+            effect = kotlinx.coroutines.flow.emptyFlow(),
+            onNavigateToHome = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LanguageScreenAllSelectedPreview() {
+    AapanGavTheme {
+        LanguageScreen(
+            state = LanguageState(
+                selectedLanguageId = "1",
+                selectedVillage = "Maharajganj"
+            ),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
             onNavigateToHome = {}

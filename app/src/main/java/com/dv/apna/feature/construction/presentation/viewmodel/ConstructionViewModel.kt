@@ -39,6 +39,11 @@ class ConstructionViewModel @Inject constructor() : ViewModel() {
                     _effect.emit(ConstructionEffect.NavigateToMaterialShops)
                 }
             }
+            is ConstructionEvent.HardwareShopsClick -> {
+                viewModelScope.launch {
+                    _effect.emit(ConstructionEffect.NavigateToHardwareShops)
+                }
+            }
         }
     }
 }

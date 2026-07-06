@@ -3,6 +3,8 @@ package com.dv.apna.feature.home.presentation.screen
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.draw.rotate
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
@@ -34,6 +36,9 @@ import com.dv.apna.feature.home.domain.model.BannerModel
 import com.dv.apna.R
 import androidx.annotation.DrawableRes
 
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+
 @Composable
 fun HomeScreen(
     state: HomeState,
@@ -45,77 +50,119 @@ fun HomeScreen(
     onNavigateToMandi: () -> Unit,
     onNavigateToNews: () -> Unit,
     onNavigateToHealth: () -> Unit,
+    onNavigateToLanguage: () -> Unit,
+    onNavigateToChangeVillage: () -> Unit,
+    onNavigateToAboutUs: () -> Unit,
+    onNavigateToPrivacyPolicy: () -> Unit,
+    onNavigateToTerms: () -> Unit,
 ) {
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet(
+                modifier = Modifier.fillMaxWidth(0.70f),
+                drawerContainerColor = Color.White,
+                drawerShape = RoundedCornerShape(topEnd = 0.sdp(), bottomEnd = 0.sdp())
+            ) {
+                HomeDrawer(
+                    onItemClick = { item ->
+                        scope.launch { drawerState.close() }
+                        when (item) {
+                            DrawerItem.Language -> onNavigateToLanguage()
+                            DrawerItem.Village -> onNavigateToChangeVillage()
+                            DrawerItem.AboutUs -> onNavigateToAboutUs()
+                            DrawerItem.PrivacyPolicy -> onNavigateToPrivacyPolicy()
+                            DrawerItem.Terms -> onNavigateToTerms()
+                        }
+                    }
+                )
+            }
+        },
+        gesturesEnabled = true
     ) {
-        val (bottomImage, mainContent) = createRefs()
-
-        // Bottom Decoration Image
-        Image(
-            painter = painterResource(id = R.drawable.iv_bottomview),
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(bottomImage) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                },
-            contentScale = ContentScale.FillWidth
-        )
-
-        Column(
+        ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
-                .constrainAs(mainContent) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
+                .background(Color.White)
         ) {
-            HomeTopBar(onNotificationsClick = onNavigateToNotifications)
+            val (bottomImage, mainContent) = createRefs()
 
-            if (state.isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    AapanGavLoading()
+            // Bottom Decoration Image
+            Image(
+                painter = painterResource(id = R.drawable.iv_bottomview),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(bottomImage) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
+                contentScale = ContentScale.FillWidth
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding()
+                    .constrainAs(mainContent) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            ) {
+                HomeTopBar(
+                    villageName = state.selectedVillage,
+                    onNotificationsClick = onNavigateToNotifications,
+                    onMenuClick = {
+                        scope.launch { drawerState.open() }
+                    }
+                )
+
+                if (state.isLoading) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        AapanGavLoading()
+                    }
+                } else if (state.error != null) {
+                    AapanGavErrorScreen(
+                        message = state.error,
+                        onRetry = { onEvent(HomeEvent.Refresh) }
+                    )
+                } else {
+                    HomeContent(
+                        banners = state.banners,
+                        onConstructionClick = onNavigateToConstruction,
+                        onLabourClick = onNavigateToLabour,
+                        onTransportClick = onNavigateToTransport,
+                        onMandiClick = onNavigateToMandi,
+                        onNewsClick = onNavigateToNews,
+                        onHealthClick = onNavigateToHealth
+                    )
                 }
-            } else if (state.error != null) {
-                AapanGavErrorScreen(
-                    message = state.error,
-                    onRetry = { onEvent(HomeEvent.Refresh) }
-                )
-            } else {
-                HomeContent(
-                    banners = state.banners,
-                    onConstructionClick = onNavigateToConstruction,
-                    onLabourClick = onNavigateToLabour,
-                    onTransportClick = onNavigateToTransport,
-                    onMandiClick = onNavigateToMandi,
-                    onNewsClick = onNavigateToNews,
-                    onHealthClick = onNavigateToHealth
-                )
             }
         }
     }
 }
 
 @Composable
-fun HomeTopBar(onNotificationsClick: () -> Unit) {
-    Row(
+fun HomeDrawer(
+    onItemClick: (DrawerItem) -> Unit
+) {
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.sdp(), end = 16.sdp(), top = 16.sdp(), bottom = 8.sdp()),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(horizontal = 24.sdp(), vertical = 20.sdp())
     ) {
         IconButton(
-            onClick = { /* TODO: Open Drawer or Menu */ },
-            modifier = Modifier.size(28.sdp())
+            onClick = { /* Handled by gesture or system back */ },
+            modifier = Modifier
+                .size(28.sdp())
+                .padding(bottom = 20.sdp())
         ) {
             Icon(
                 imageVector = Icons.Default.Menu,
@@ -123,6 +170,135 @@ fun HomeTopBar(onNotificationsClick: () -> Unit) {
                 modifier = Modifier.size(28.sdp()),
                 tint = Color.Black
             )
+        }
+
+        Spacer(modifier = Modifier.height(20.sdp()))
+
+        DrawerMenuItem(
+            title = "Change Language",
+            onClick = { onItemClick(DrawerItem.Language) }
+        )
+        DrawerMenuItem(
+            title = "Change Village",
+            onClick = { onItemClick(DrawerItem.Village) }
+        )
+        DrawerMenuItem(
+            title = "About Us",
+            onClick = { onItemClick(DrawerItem.AboutUs) }
+        )
+        DrawerMenuItem(
+            title = "Privacy Policy",
+            onClick = { onItemClick(DrawerItem.PrivacyPolicy) }
+        )
+        DrawerMenuItem(
+            title = "Terms & Conditions",
+            onClick = { onItemClick(DrawerItem.Terms) }
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Text(
+            text = "Version 1.1",
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontSize = 12.ssp(),
+                color = Color(0xFF8391A1)
+            ),
+            modifier = Modifier.padding(bottom = 20.sdp())
+        )
+    }
+}
+
+@Composable
+fun DrawerMenuItem(
+    title: String,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.sdp()),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.ssp()
+                ),
+                color = Color.Black
+            )
+            Icon(
+                painter = painterResource(id = R.drawable.arrow_left),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(20.sdp())
+                    .rotate(180f),
+                tint = Color(0xFF38C792)
+            )
+        }
+        HorizontalDivider(
+            thickness = 1.sdp(),
+            color = Color(0xFFF1F4F7)
+        )
+    }
+}
+
+enum class DrawerItem {
+    Language, Village, AboutUs, PrivacyPolicy, Terms
+}
+
+@Composable
+fun HomeTopBar(
+    villageName: String?,
+    onNotificationsClick: () -> Unit,
+    onMenuClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.sdp(), end = 16.sdp(), top = 16.sdp(), bottom = 8.sdp()),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.sdp())
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.left),
+                contentDescription = "Menu",
+                modifier = Modifier
+                    .size(24.sdp())
+                    .clickable { onMenuClick() },
+                tint = Color.Black
+            )
+
+            if (villageName != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.sdp())
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.location_pin),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.sdp())
+                    )
+                    Text(
+                        text = villageName,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 14.ssp()
+                        ),
+                        color = Color.Black
+                    )
+                }
+            }
         }
 
         Surface(
@@ -419,7 +595,7 @@ fun ServiceCard(
 fun HomeScreenPreview() {
     AapanGavTheme {
         HomeScreen(
-            state = HomeState(),
+            state = HomeState(selectedVillage = "Maharajganj"),
             onEvent = {},
             onNavigateToNotifications = {},
             onNavigateToConstruction = {},
@@ -427,7 +603,12 @@ fun HomeScreenPreview() {
             onNavigateToTransport = {},
             onNavigateToMandi = {},
             onNavigateToNews = {},
-            onNavigateToHealth = {}
+            onNavigateToHealth = {},
+            onNavigateToLanguage = {},
+            onNavigateToChangeVillage = {},
+            onNavigateToAboutUs = {},
+            onNavigateToPrivacyPolicy = {},
+            onNavigateToTerms = {}
         )
     }
 }

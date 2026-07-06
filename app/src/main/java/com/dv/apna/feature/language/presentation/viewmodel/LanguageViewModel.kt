@@ -28,6 +28,9 @@ class LanguageViewModel @Inject constructor() : ViewModel() {
             is LanguageEvent.SelectLanguage -> {
                 _state.update { it.copy(selectedLanguageId = event.languageId) }
             }
+            is LanguageEvent.SelectVillage -> {
+                _state.update { it.copy(selectedVillage = event.village) }
+            }
             LanguageEvent.Continue -> {
                 viewModelScope.launch {
                     _effect.emit(LanguageEffect.NavigateToHome)

@@ -10,6 +10,12 @@ sealed interface Route {
     data object Language : Route
 
     @Serializable
+    data object ChangeLanguage : Route
+
+    @Serializable
+    data object ChangeVillage : Route
+
+    @Serializable
     data object MainGraph : Route
 
     @Serializable
@@ -22,7 +28,25 @@ sealed interface Route {
     data object Health : Route
 
     @Serializable
+    data object Doctors : Route
+
+    @Serializable
+    data object Hospitals : Route
+
+    @Serializable
+    data object Pharmacy : Route
+
+    @Serializable
     data object Mandi : Route
+
+    @Serializable
+    data object CropPrices : Route
+
+    @Serializable
+    data object TodayMarket : Route
+
+    @Serializable
+    data object LocalBuyers : Route
 
     @Serializable
     data object Construction : Route
@@ -32,6 +56,9 @@ sealed interface Route {
 
     @Serializable
     data object MaterialShops : Route
+
+    @Serializable
+    data object HardwareShops : Route
 
     @Serializable
     data object LabourBoard : Route
@@ -49,8 +76,26 @@ sealed interface Route {
     data object News : Route
 
     @Serializable
+    data class NewsDetails(val id: String) : Route
+
+    @Serializable
+    data class NoticeDetails(val id: String) : Route
+
+    @Serializable
     data object Notifications : Route
 
     @Serializable
+    data class NotificationDetails(val id: String) : Route
+
+    @Serializable
     data object Settings : Route
+
+    @Serializable
+    data object AboutUs : Route
+
+    @Serializable
+    data object PrivacyPolicy : Route
+
+    @Serializable
+    data object TermsAndConditions : Route
 }

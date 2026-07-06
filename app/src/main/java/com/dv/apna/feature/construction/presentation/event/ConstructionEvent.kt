@@ -4,4 +4,5 @@ sealed interface ConstructionEvent {
     data object BackClick : ConstructionEvent
     data object BricksClick : ConstructionEvent
     data object MaterialShopsClick : ConstructionEvent
+    data object HardwareShopsClick : ConstructionEvent
 }
