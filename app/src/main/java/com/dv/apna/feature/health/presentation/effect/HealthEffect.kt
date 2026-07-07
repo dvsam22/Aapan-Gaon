@@ -6,4 +6,6 @@ sealed interface HealthEffect {
     data object NavigateToDoctors : HealthEffect
     data object NavigateToHospitals : HealthEffect
     data object NavigateToPharmacy : HealthEffect
+    data object NavigateToAmbulance : HealthEffect
+    data object NavigateToPolice : HealthEffect
 }

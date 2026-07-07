@@ -11,6 +11,8 @@ sealed interface HealthEvent {
     data object DoctorsClick : HealthEvent
     data object HospitalsClick : HealthEvent
     data object PharmacyClick : HealthEvent
+    data object AmbulanceClick : HealthEvent
+    data object PoliceClick : HealthEvent
     data class DoctorClick(val doctor: DoctorModel) : HealthEvent
     data class HospitalClick(val hospital: HospitalModel) : HealthEvent
     data class PharmacyClickDetail(val pharmacy: PharmacyModel) : HealthEvent

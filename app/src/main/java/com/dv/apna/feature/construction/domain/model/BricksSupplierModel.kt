@@ -4,10 +4,12 @@ data class BricksSupplierModel(
     val id: String = "",
     val name: String = "",
     val address: String = "",
+    val phone: String = "",
     val brickTypes: List<BrickTypePrice> = emptyList()
 )
 
 data class BrickTypePrice(
     val name: String = "",
-    val price: String = ""
+    val price: String = "",
+    val unit: String = ""
 )

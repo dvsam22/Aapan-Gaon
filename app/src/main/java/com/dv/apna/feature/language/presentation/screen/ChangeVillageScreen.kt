@@ -175,7 +175,7 @@ fun ChangeVillageTopBar(onBackClick: () -> Unit) {
 fun ChangeVillageScreenPreview() {
     AapanGavTheme {
         ChangeVillageScreen(
-            state = LanguageState(selectedVillage = "Maharajganj"),
+            state = LanguageState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
             onNavigateBack = {}

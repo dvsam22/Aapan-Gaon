@@ -9,5 +9,7 @@ data class HealthState(
     val doctors: List<DoctorModel> = emptyList(),
     val hospitals: List<HospitalModel> = emptyList(),
     val pharmacies: List<PharmacyModel> = emptyList(),
+    val ambulances: List<DoctorModel> = emptyList(),
+    val police: List<DoctorModel> = emptyList(),
     val error: String? = null
 )

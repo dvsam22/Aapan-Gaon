@@ -20,10 +20,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
+import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.HealthSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -86,19 +87,35 @@ fun PharmacyScreen(
         ) {
             PharmacyTopBar(onBackClick = { onEvent(HealthEvent.BackClick) })
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 16.sdp(),
-                    end = 16.sdp(),
-                    top = 1.sdp(),
-                    bottom = 80.sdp()
-                ),
-                verticalArrangement = Arrangement.spacedBy(12.sdp())
-            ) {
-                items(state.pharmacies) { pharmacy ->
-                    PharmacyItemCard(pharmacy = pharmacy, onCallClick = { onEvent(HealthEvent.CallClick(pharmacy.phone)) })
+            if (state.isLoading) {
+                HealthSkeleton()
+            } else {
+                if (state.pharmacies.isEmpty() && state.error == null) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(text = "No pharmacies found", color = Color.Gray)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            start = 16.sdp(),
+                            end = 16.sdp(),
+                            top = 1.sdp(),
+                            bottom = 80.sdp()
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(12.sdp())
+                    ) {
+                        items(state.pharmacies) { pharmacy ->
+                            PharmacyItemCard(pharmacy = pharmacy, onCallClick = { onEvent(HealthEvent.CallClick(pharmacy.phone)) })
+                        }
+                    }
                 }
+            }
+        }
+
+        if (state.error != null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                AapanGavErrorScreen(message = state.error, onRetry = { /* TODO: Refresh */ })
             }
         }
     }

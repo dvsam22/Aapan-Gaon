@@ -38,13 +38,14 @@ fun TransportBoardScreen(
     onEvent: (TransportEvent) -> Unit,
     effect: Flow<TransportEffect>,
     onNavigateBack: () -> Unit,
-    onNavigateToCategory: (String) -> Unit
+    onNavigateToCategory: (String, String) -> Unit
 ) {
     LaunchedEffect(Unit) {
         effect.collectLatest { effect ->
             when (effect) {
                 TransportEffect.NavigateBack -> onNavigateBack()
-                is TransportEffect.NavigateToCategory -> onNavigateToCategory(effect.category)
+                is TransportEffect.NavigateToCategory -> onNavigateToCategory(effect.categoryId, effect.categoryName)
+                else -> {}
             }
         }
     }
@@ -96,7 +97,7 @@ fun TransportBoardScreen(
                     TransportOptionCard(
                         title = service.title,
                         icon = painterResource(id = service.icon),
-                        onClick = { onEvent(TransportEvent.CategoryClick(service.title)) }
+                        onClick = { onEvent(TransportEvent.CategoryClick(service.categoryId, service.title)) }
                     )
                 }
             }
@@ -223,15 +224,15 @@ fun TransportBoardScreenPreview() {
         TransportBoardScreen(
             state = TransportState(
                 services = listOf(
-                    TransportService("Tractor", R.drawable.transport),
-                    TransportService("Car", R.drawable.iv_car),
-                    TransportService("Pickup", R.drawable.pickup),
+                    TransportService("Tractor", R.drawable.transport, "tractor"),
+                    TransportService("Car", R.drawable.iv_car, "car"),
+                    TransportService("Pickup", R.drawable.pickup, "pickup"),
                 )
             ),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
             onNavigateBack = {},
-            onNavigateToCategory = {}
+            onNavigateToCategory = { _, _ -> }
         )
     }
 }

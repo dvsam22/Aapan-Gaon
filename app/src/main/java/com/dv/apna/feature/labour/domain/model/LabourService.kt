@@ -4,5 +4,6 @@ import androidx.annotation.DrawableRes
 
 data class LabourService(
     val title: String,
-    @DrawableRes val icon: Int
+    @DrawableRes val icon: Int,
+    val categoryId: String
 )

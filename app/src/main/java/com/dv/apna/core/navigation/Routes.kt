@@ -37,6 +37,12 @@ sealed interface Route {
     data object Pharmacy : Route
 
     @Serializable
+    data object Ambulance : Route
+
+    @Serializable
+    data object Police : Route
+
+    @Serializable
     data object Mandi : Route
 
     @Serializable
@@ -70,7 +76,7 @@ sealed interface Route {
     data object Transport : Route
 
     @Serializable
-    data class TransportDetails(val category: String) : Route
+    data class TransportDetails(val categoryId: String, val categoryName: String) : Route
 
     @Serializable
     data object News : Route

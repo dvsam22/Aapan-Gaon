@@ -27,6 +27,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
+import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.TransportSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -48,6 +50,9 @@ fun TransportDetailsScreen(
         effect.collectLatest { effect ->
             when (effect) {
                 TransportEffect.NavigateBack -> onNavigateBack()
+                is TransportEffect.DialPhone -> {
+                    // Handled in NavGraph
+                }
                 else -> {}
             }
         }
@@ -90,22 +95,38 @@ fun TransportDetailsScreen(
                 onBackClick = { onEvent(TransportEvent.BackClick) }
             )
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 16.sdp(),
-                    end = 16.sdp(),
-                    top = 1.sdp(),
-                    bottom = 80.sdp()
-                ),
-                verticalArrangement = Arrangement.spacedBy(12.sdp())
-            ) {
-                items(state.transportDetails) { transport ->
-                    TransportVehicleCard(
-                        transport = transport,
-                        onCallClick = { /* Handle call event */ }
-                    )
+            if (state.isLoading) {
+                TransportSkeleton()
+            } else {
+                if (state.transportDetails.isEmpty() && state.error == null) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(text = "No vehicles found", color = Color.Gray)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            start = 16.sdp(),
+                            end = 16.sdp(),
+                            top = 1.sdp(),
+                            bottom = 80.sdp()
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(16.sdp())
+                    ) {
+                        items(state.transportDetails) { transport ->
+                            TransportVehicleCard(
+                                transport = transport,
+                                onCallClick = { onEvent(TransportEvent.CallClick(transport.contact)) }
+                            )
+                        }
+                    }
                 }
+            }
+        }
+
+        if (state.error != null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                AapanGavErrorScreen(message = state.error, onRetry = { /* TODO: Refresh */ })
             }
         }
     }
@@ -229,7 +250,7 @@ fun TransportVehicleCard(
                         )
                         Spacer(modifier = Modifier.width(4.sdp()))
                         Text(
-                            text = transport.address,
+                            text = transport.location,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontSize = 11.ssp(),
                                 color = Color.Black.copy(alpha = 0.7f)
@@ -260,34 +281,6 @@ fun TransportVehicleCard(
                 Spacer(modifier = Modifier.width(4.sdp()))
                 Text(
                     text = transport.vehicleType,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontSize = 11.ssp(),
-                        color = Color.Black.copy(alpha = 0.7f)
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.sdp()))
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = painterResource(id = R.drawable.wallet),
-                    contentDescription = null,
-                    modifier = Modifier.size(14.sdp()),
-                    tint = Color(0xFF2CA074)
-                )
-                Spacer(modifier = Modifier.width(8.sdp()))
-                Text(
-                    text = "Charges:",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 12.ssp()
-                    ),
-                    color = Color.Black
-                )
-                Spacer(modifier = Modifier.width(4.sdp()))
-                Text(
-                    text = transport.charges,
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontSize = 11.ssp(),
                         color = Color.Black.copy(alpha = 0.7f)
@@ -338,10 +331,9 @@ fun TransportDetailsScreenPreview() {
                 transportDetails = listOf(
                     TransportDetails(
                         name = "Sohan Singh",
-                        address = "Rampur Village (Near Middle School)",
+                        location = "Rampur Village (Near Middle School)",
                         vehicleType = "Tractor - Mahindra 575",
-                        charges = "₹800 / Hour",
-                        phoneNumber = "1234567890"
+                        contact = "1234567890"
                     )
                 )
             ),

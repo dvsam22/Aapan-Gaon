@@ -1,9 +1,13 @@
 package com.dv.apna.feature.language.domain.repository
 
 import com.dv.apna.core.common.Resource
-import kotlinx.coroutines.flow.Flow
 import com.dv.apna.feature.language.domain.model.LanguageModel
+import com.dv.apna.feature.language.domain.model.VillageModel
+import kotlinx.coroutines.flow.Flow
 
 interface LanguageRepository {
-    fun getData(): Flow<Resource<List<LanguageModel>>>
+    fun getLanguages(): Flow<Resource<List<LanguageModel>>>
+    fun getVillages(): Flow<Resource<List<VillageModel>>>
+    suspend fun saveVillage(id: String, name: String)
+    suspend fun saveLanguage(code: String)
 }

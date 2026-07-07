@@ -3,11 +3,11 @@ package com.dv.apna.feature.transport.presentation.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.dv.apna.R
-import com.dv.apna.core.navigation.Route
-import com.dv.apna.feature.transport.domain.model.TransportDetails
+import com.dv.apna.core.common.Resource
+import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.feature.transport.domain.model.TransportService
+import com.dv.apna.feature.transport.domain.usecase.GetTransportByCategoryUseCase
 import com.dv.apna.feature.transport.presentation.effect.TransportEffect
 import com.dv.apna.feature.transport.presentation.event.TransportEvent
 import com.dv.apna.feature.transport.presentation.state.TransportState
@@ -16,12 +16,17 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class TransportViewModel @Inject constructor(
+    private val getTransportByCategoryUseCase: GetTransportByCategoryUseCase,
+    private val preferenceManager: PreferenceManager,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -37,23 +42,21 @@ class TransportViewModel @Inject constructor(
     }
 
     private fun checkTransportDetails() {
-        try {
-            val route = savedStateHandle.toRoute<Route.TransportDetails>()
-            _state.update { it.copy(selectedCategory = route.category) }
-            getTransportDetails(route.category)
-        } catch (e: Exception) {
-            // Not in TransportDetails route
+        val categoryId = savedStateHandle.get<String>("categoryId")
+        val categoryName = savedStateHandle.get<String>("categoryName")
+        if (categoryId != null && categoryName != null) {
+            _state.update { it.copy(selectedCategory = categoryName) }
+            getTransportDetails(categoryId)
         }
     }
 
     private fun getTransportServices() {
         val services = listOf(
-            TransportService("Tractor", R.drawable.transport),
-            TransportService("Car", R.drawable.iv_car),
-            TransportService("Pickup", R.drawable.pickup),
-            TransportService("Loader", R.drawable.iv_car),
-            TransportService("JCB", R.drawable.iv_car)
-
+            TransportService("Tractor", R.drawable.transport, "tractor"),
+            TransportService("Car", R.drawable.iv_car, "car"),
+            TransportService("Pickup", R.drawable.pickup, "pickup"),
+            TransportService("Loader", R.drawable.transport, "loader"),
+            TransportService("JCB", R.drawable.transport, "jcb")
         )
         _state.update { it.copy(services = services) }
     }
@@ -65,30 +68,36 @@ class TransportViewModel @Inject constructor(
             }
 
             is TransportEvent.CategoryClick -> {
-                _state.update { it.copy(selectedCategory = event.category) }
-                getTransportDetails(event.category)
-                viewModelScope.launch { _effect.emit(TransportEffect.NavigateToCategory(event.category)) }
+                viewModelScope.launch { 
+                    _effect.emit(TransportEffect.NavigateToCategory(event.categoryId, event.categoryName)) 
+                }
+            }
+            is TransportEvent.CallClick -> {
+                viewModelScope.launch { _effect.emit(TransportEffect.DialPhone(event.contact)) }
             }
         }
     }
 
-    private fun getTransportDetails(category: String) {
-        // Mock data
-        val details = listOf(
-            TransportDetails(
-                name = "Sohan Singh",
-                address = "Rampur Village (Near Middle School)",
-                vehicleType = "$category - Mahindra 575",
-                charges = "₹800 / Hour",
-                phoneNumber = "1234567890"
-            ), TransportDetails(
-                name = "Madan Lal",
-                address = "Rampur Village (Near Middle School)",
-                vehicleType = "$category - Swaraj 744",
-                charges = "₹750 / Hour",
-                phoneNumber = "1234567890"
-            )
-        )
-        _state.update { it.copy(transportDetails = details) }
+    private fun getTransportDetails(categoryId: String) {
+        viewModelScope.launch {
+            val villageId = preferenceManager.villageId.firstOrNull()
+            if (villageId != null) {
+                getTransportByCategoryUseCase(villageId, categoryId).onEach { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            _state.update { it.copy(transportDetails = result.data ?: emptyList(), isLoading = false) }
+                        }
+                        is Resource.Error -> {
+                            _state.update { it.copy(error = result.message, isLoading = false) }
+                        }
+                        is Resource.Loading -> {
+                            _state.update { it.copy(isLoading = true) }
+                        }
+                    }
+                }.launchIn(viewModelScope)
+            } else {
+                _state.update { it.copy(error = "Village not selected", isLoading = false) }
+            }
+        }
     }
 }

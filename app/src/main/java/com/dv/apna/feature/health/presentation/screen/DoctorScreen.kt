@@ -23,6 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
+import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.HealthSkeleton
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
 import com.dv.apna.feature.health.domain.model.DoctorModel
@@ -84,19 +86,35 @@ fun DoctorScreen(
         ) {
             DoctorTopBar(onBackClick = { onEvent(HealthEvent.BackClick) })
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 16.sdp(),
-                    end = 16.sdp(),
-                    top = 1.sdp(),
-                    bottom = 80.sdp()
-                ),
-                verticalArrangement = Arrangement.spacedBy(12.sdp())
-            ) {
-                items(state.doctors) { doctor ->
-                    DoctorItemCard(doctor = doctor, onCallClick = { onEvent(HealthEvent.CallClick(doctor.phone)) })
+            if (state.isLoading) {
+                HealthSkeleton()
+            } else {
+                if (state.doctors.isEmpty() && state.error == null) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(text = "No doctors found", color = Color.Gray)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            start = 16.sdp(),
+                            end = 16.sdp(),
+                            top = 1.sdp(),
+                            bottom = 80.sdp()
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(12.sdp())
+                    ) {
+                        items(state.doctors) { doctor ->
+                            DoctorItemCard(doctor = doctor, onCallClick = { onEvent(HealthEvent.CallClick(doctor.phone)) })
+                        }
+                    }
                 }
+            }
+        }
+
+        if (state.error != null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                AapanGavErrorScreen(message = state.error, onRetry = { /* TODO: Refresh */ })
             }
         }
     }

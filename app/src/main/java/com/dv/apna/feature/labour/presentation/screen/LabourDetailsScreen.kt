@@ -9,9 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
+import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.LabourSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -89,22 +88,38 @@ fun LabourDetailsScreen(
                 availableCount = state.labourDetails.size
             ) { onEvent(LabourEvent.BackClick) }
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 16.sdp(),
-                    end = 16.sdp(),
-                    top = 1.sdp(),
-                    bottom = 80.sdp()
-                ),
-                verticalArrangement = Arrangement.spacedBy(16.sdp())
-            ) {
-                items(state.labourDetails) { labour ->
-                    LabourWorkerCard(
-                        labour = labour,
-                        onCallClick = { /* Handle call event if needed */ }
-                    )
+            if (state.isLoading) {
+                LabourSkeleton()
+            } else {
+                if (state.labourDetails.isEmpty() && state.error == null) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(text = "No workers found", color = Color.Gray)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            start = 16.sdp(),
+                            end = 16.sdp(),
+                            top = 1.sdp(),
+                            bottom = 80.sdp()
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(16.sdp())
+                    ) {
+                        items(state.labourDetails) { labour ->
+                            LabourWorkerCard(
+                                labour = labour,
+                                onCallClick = { /* TODO: Trigger Dial Intent */ }
+                            )
+                        }
+                    }
                 }
+            }
+        }
+
+        if (state.error != null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                AapanGavErrorScreen(message = state.error, onRetry = { /* TODO: Refresh */ })
             }
         }
     }
@@ -228,7 +243,7 @@ fun LabourWorkerCard(
                         )
                         Spacer(modifier = Modifier.width(4.sdp()))
                         Text(
-                            text = labour.address,
+                            text = labour.location,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontSize = 11.ssp(),
                                 color = Color.Black.copy(alpha = 0.7f)
@@ -332,18 +347,7 @@ fun LabourWorkerCard(
 fun LabourDetailsScreenPreview() {
     AapanGavTheme {
         LabourDetailsScreen(
-            state = LabourState(
-                selectedCategory = "Plumber",
-                labourDetails = listOf(
-                    LabourDetails(
-                        name = "Suresh Paswan",
-                        address = "Rampur Village (Near Middle School)",
-                        skills = "Pipe Fitting, Bathroom Fitting, Tap Repair",
-                        charges = "₹450 / Day",
-                        phoneNumber = "1234567890"
-                    )
-                )
-            ),
+            state = LabourState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
             onNavigateBack = {}

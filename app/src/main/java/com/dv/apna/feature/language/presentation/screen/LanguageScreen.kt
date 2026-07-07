@@ -27,8 +27,10 @@ import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
 import com.dv.apna.feature.language.domain.model.LanguageModel
+import com.dv.apna.feature.language.domain.model.VillageModel
 import com.dv.apna.feature.language.presentation.effect.LanguageEffect
 import com.dv.apna.R
+import com.dv.apna.core.components.AapanGavLoading
 import com.dv.apna.feature.language.presentation.event.LanguageEvent
 import com.dv.apna.feature.language.presentation.state.LanguageState
 import kotlinx.coroutines.flow.collectLatest
@@ -58,7 +60,7 @@ fun LanguageScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        val (bottomImage, content, btnContinue) = createRefs()
+        val (bottomImage, content, btnContinue, loading) = createRefs()
 
         // Bottom Decoration Image - Stays at the very bottom, even under nav bar
         Image(
@@ -152,9 +154,9 @@ fun LanguageScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VillageSelector(
-    villages: List<String>,
-    selectedVillage: String?,
-    onVillageSelected: (String) -> Unit
+    villages: List<VillageModel>,
+    selectedVillage: VillageModel?,
+    onVillageSelected: (VillageModel) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -169,7 +171,6 @@ fun VillageSelector(
                 .height(42.sdp())
                 .menuAnchor(MenuAnchorType.PrimaryEditable, true)
                 .background(Color(0xFFEFFAF6), RoundedCornerShape(12.sdp()))
-               /* .border(1.sdp(), Color(0xFF38C792), RoundedCornerShape(12.sdp()))*/
                 .padding(horizontal = 16.sdp()),
             contentAlignment = Alignment.CenterStart
         ) {
@@ -180,7 +181,7 @@ fun VillageSelector(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = selectedVillage ?: "Select Here/ यहाँ चुनें",
+                    text = selectedVillage?.villageName ?: "Select Here/ यहाँ चुनें",
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = 12.ssp(),
                         color = if (selectedVillage == null) Color(0xFF8391A1) else Color.Black
@@ -210,7 +211,7 @@ fun VillageSelector(
                 )
             } else {
                 villages.forEachIndexed { index, village ->
-                    val isSelected = village == selectedVillage
+                    val isSelected = village.id == selectedVillage?.id
                     DropdownMenuItem(
                         text = {
                             Row(
@@ -218,13 +219,23 @@ fun VillageSelector(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text(
-                                    text = village,
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        fontSize = 12.ssp(),
-                                        color = Color.Black
+                                Column {
+                                    Text(
+                                        text = village.villageName,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            fontSize = 12.ssp(),
+                                            color = Color.Black,
+                                            fontWeight = FontWeight.Medium
+                                        )
                                     )
-                                )
+                                    Text(
+                                        text = "${village.district}, ${village.state}",
+                                        style = MaterialTheme.typography.bodySmall.copy(
+                                            fontSize = 10.ssp(),
+                                            color = Color.Gray
+                                        )
+                                    )
+                                }
 
                                 // Radio Selection Indicator
                                 Box(
@@ -335,35 +346,6 @@ fun LanguageScreenPreview() {
     AapanGavTheme {
         LanguageScreen(
             state = LanguageState(),
-            onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            onNavigateToHome = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LanguageScreenSelectedPreview() {
-    AapanGavTheme {
-        LanguageScreen(
-            state = LanguageState(selectedLanguageId = "1"),
-            onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            onNavigateToHome = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun LanguageScreenAllSelectedPreview() {
-    AapanGavTheme {
-        LanguageScreen(
-            state = LanguageState(
-                selectedLanguageId = "1",
-                selectedVillage = "Maharajganj"
-            ),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
             onNavigateToHome = {}

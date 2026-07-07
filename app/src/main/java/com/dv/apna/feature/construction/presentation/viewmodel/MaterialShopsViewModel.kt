@@ -2,22 +2,22 @@ package com.dv.apna.feature.construction.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dv.apna.feature.construction.domain.model.MaterialShopModel
-import com.dv.apna.feature.construction.domain.model.MaterialTypePrice
+import com.dv.apna.core.common.Resource
+import com.dv.apna.core.datastore.PreferenceManager
+import com.dv.apna.feature.construction.domain.usecase.GetMaterialShopsUseCase
 import com.dv.apna.feature.construction.presentation.effect.MaterialShopsEffect
 import com.dv.apna.feature.construction.presentation.event.MaterialShopsEvent
 import com.dv.apna.feature.construction.presentation.state.MaterialShopsState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MaterialShopsViewModel @Inject constructor() : ViewModel() {
+class MaterialShopsViewModel @Inject constructor(
+    private val getMaterialShopsUseCase: GetMaterialShopsUseCase,
+    private val preferenceManager: PreferenceManager
+) : ViewModel() {
 
     private val _state = MutableStateFlow(MaterialShopsState())
     val state = _state.asStateFlow()
@@ -30,47 +30,36 @@ class MaterialShopsViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun loadShops() {
-        val dummyShops = listOf(
-            MaterialShopModel(
-                id = "1",
-                name = "Shree Balaji Bricks",
-                address = "Rampur Village (Near Middle School)",
-                materials = listOf(
-                    MaterialTypePrice("Cement", "₹430 / 50Kg"),
-                    MaterialTypePrice("Concrete", "₹80 / Kg"),
-                    MaterialTypePrice("Sand", "₹60 / sqft"),
-                    MaterialTypePrice("Iron Rods", "₹100 / Kg")
-                )
-            ),
-            MaterialShopModel(
-                id = "2",
-                name = "Mahadev Bricks & Co.",
-                address = "Rampur Village (Near Middle School)",
-                materials = listOf(
-                    MaterialTypePrice("Cement", "₹430 / 50Kg"),
-                    MaterialTypePrice("Concrete", "₹80 / Kg"),
-                    MaterialTypePrice("Sand", "₹60 / sqft"),
-                    MaterialTypePrice("Iron Rods", "₹100 / Kg")
-                )
-            ),
-            MaterialShopModel(
-                id = "3",
-                name = "Sri Lakshmi Brick Works",
-                address = "Rampur Village (Near Middle School)",
-                materials = listOf(
-                    MaterialTypePrice("Cement", "₹430 / 50Kg"),
-                    MaterialTypePrice("Concrete", "₹80 / Kg"),
-                    MaterialTypePrice("Sand", "₹60 / sqft"),
-                    MaterialTypePrice("Iron Rods", "₹100 / Kg")
-                )
-            )
-        )
-        _state.update { it.copy(shops = dummyShops) }
+        viewModelScope.launch {
+            val villageId = preferenceManager.villageId.firstOrNull()
+            if (villageId != null) {
+                getMaterialShopsUseCase(villageId).onEach { result ->
+                    when (result) {
+                        is Resource.Success<*> -> {
+                            _state.update { 
+                                it.copy(
+                                    shops = result.data as? List<com.dv.apna.feature.construction.domain.model.MaterialShopModel> ?: emptyList(),
+                                    isLoading = false 
+                                ) 
+                            }
+                        }
+                        is Resource.Error<*> -> {
+                            _state.update { it.copy(error = result.message, isLoading = false) }
+                        }
+                        is Resource.Loading<*> -> {
+                            _state.update { it.copy(isLoading = true) }
+                        }
+                    }
+                }.launchIn(viewModelScope)
+            } else {
+                _state.update { it.copy(error = "Village not selected", isLoading = false) }
+            }
+        }
     }
 
     fun onEvent(event: MaterialShopsEvent) {
         when (event) {
-            is MaterialShopsEvent.BackClick -> {
+            MaterialShopsEvent.BackClick -> {
                 viewModelScope.launch { _effect.emit(MaterialShopsEffect.NavigateBack) }
             }
             is MaterialShopsEvent.CallClick -> {

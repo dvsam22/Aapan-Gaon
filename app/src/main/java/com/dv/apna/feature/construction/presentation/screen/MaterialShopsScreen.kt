@@ -5,31 +5,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -44,6 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
+import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.ConstructionSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -66,18 +49,19 @@ fun MaterialShopsScreen(
             when (effect) {
                 is MaterialShopsEffect.NavigateBack -> onNavigateBack()
                 is MaterialShopsEffect.DialPhone -> {
-                    // TODO: Dial Phone
+                    // Handled in NavGraph
                 }
             }
         }
     }
+
 
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        val (bottomImage, mainContent) = createRefs()
+        val (bottomImage, mainContent, loading, error) = createRefs()
 
         Image(
             painter = painterResource(id = R.drawable.iv_bottomview),
@@ -101,22 +85,53 @@ fun MaterialShopsScreen(
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }) {
+                }
+        ) {
             MaterialShopsTopBar(
                 onBackClick = { onEvent(MaterialShopsEvent.BackClick) },
                 availableCount = state.shops.size
             )
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 80.sdp()),
-                verticalArrangement = Arrangement.spacedBy(10.sdp())
-            ) {
-                items(state.shops) { shop ->
-                    MaterialShopCard(
-                        shop = shop,
-                        onCallClick = { onEvent(MaterialShopsEvent.CallClick("1234567890")) })
+            if (state.isLoading) {
+                ConstructionSkeleton()
+            } else {
+                if (state.shops.isEmpty() && state.error == null) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(text = "No shops found", color = Color.Gray)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 80.sdp()),
+                        verticalArrangement = Arrangement.spacedBy(10.sdp())
+                    ) {
+                        items(state.shops) { shop ->
+                            MaterialShopCard(
+                                shop = shop,
+                                onCallClick = { onEvent(MaterialShopsEvent.CallClick(shop.phone)) }
+                            )
+                        }
+                    }
                 }
+            }
+        }
+
+        if (state.error != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .constrainAs(error) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                AapanGavErrorScreen(
+                    message = state.error,
+                    onRetry = { /* TODO: Refresh */ }
+                )
             }
         }
     }
@@ -234,42 +249,44 @@ fun MaterialShopCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.sdp()))
+            if (shop.materials.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.sdp()))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = painterResource(R.drawable.receipt),
-                    contentDescription = null,
-                    modifier = Modifier.size(14.sdp()),
-                    tint = Color(0xFF2CA074)
-                )
-                Spacer(modifier = Modifier.width(8.sdp()))
-                Text(
-                    text = "Materials:", style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium, fontSize = 12.ssp()
-                    ), color = Color.Black
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.sdp()))
-
-            shop.materials.forEach { material ->
-                Row(
-                    modifier = Modifier.padding(start = 4.sdp(), bottom = 3.sdp()),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(6.sdp())
-                            .background(Color(0xFF38C792), CircleShape)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(R.drawable.receipt),
+                        contentDescription = null,
+                        modifier = Modifier.size(14.sdp()),
+                        tint = Color(0xFF2CA074)
                     )
                     Spacer(modifier = Modifier.width(8.sdp()))
                     Text(
-                        text = "${material.name} - ${material.price}",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontSize = 11.ssp(), color = Color.Black.copy(alpha = 0.7f)
-                        )
+                        text = "Materials:", style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Medium, fontSize = 12.ssp()
+                        ), color = Color.Black
                     )
+                }
+
+                Spacer(modifier = Modifier.height(8.sdp()))
+
+                shop.materials.forEach { material ->
+                    Row(
+                        modifier = Modifier.padding(start = 4.sdp(), bottom = 3.sdp()),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.sdp())
+                                .background(Color(0xFF38C792), CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.sdp()))
+                        Text(
+                            text = "${material.name} - ₹${material.price} / ${material.unit}",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontSize = 11.ssp(), color = Color.Black.copy(alpha = 0.7f)
+                            )
+                        )
+                    }
                 }
             }
 

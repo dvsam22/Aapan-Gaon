@@ -65,6 +65,7 @@ fun MandiHubScreen(
                 MandiEffect.NavigateToCropPrices -> onNavigateToCropPrices()
                 MandiEffect.NavigateToTodayMarket -> onNavigateToTodayMarket()
                 MandiEffect.NavigateToLocalBuyers -> onNavigateToLocalBuyers()
+                is MandiEffect.DialPhone -> { /* Handled in sub-screens or NavGraph */ }
             }
         }
     }

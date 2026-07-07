@@ -223,9 +223,9 @@ fun LabourBoardScreenPreview() {
         LabourBoardScreen(
             state = LabourState(
                 services = listOf(
-                    com.dv.apna.feature.labour.domain.model.LabourService("Rajmistri", R.drawable.labour),
-                    com.dv.apna.feature.labour.domain.model.LabourService("Plumber", R.drawable.labour),
-                    com.dv.apna.feature.labour.domain.model.LabourService("Electrician", R.drawable.labour),
+                    com.dv.apna.feature.labour.domain.model.LabourService("Rajmistri", R.drawable.labour, "rajmistri"),
+                    com.dv.apna.feature.labour.domain.model.LabourService("Plumber", R.drawable.labour, "plumber"),
+                    com.dv.apna.feature.labour.domain.model.LabourService("Electrician", R.drawable.labour, "electrician"),
                 )
             ),
             onEvent = {},

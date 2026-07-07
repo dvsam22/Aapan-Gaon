@@ -22,6 +22,7 @@ import com.dv.apna.feature.health.presentation.screen.HealthHubScreen
 import com.dv.apna.feature.health.presentation.screen.DoctorScreen
 import com.dv.apna.feature.health.presentation.screen.HospitalScreen
 import com.dv.apna.feature.health.presentation.screen.PharmacyScreen
+import com.dv.apna.feature.health.presentation.screen.EmergencyListScreen
 import com.dv.apna.feature.health.presentation.viewmodel.HealthViewModel
 import com.dv.apna.feature.construction.presentation.screen.ConstructionHubScreen
 import com.dv.apna.feature.construction.presentation.screen.BricksSuppliersScreen
@@ -34,10 +35,12 @@ import com.dv.apna.feature.construction.presentation.viewmodel.HardwareShopsView
 import com.dv.apna.feature.labour.presentation.screen.LabourBoardScreen
 import com.dv.apna.feature.labour.presentation.screen.LabourDetailsScreen
 import com.dv.apna.feature.labour.presentation.viewmodel.LabourViewModel
+import com.dv.apna.feature.transport.presentation.effect.TransportEffect
 import com.dv.apna.feature.transport.presentation.screen.TransportBoardScreen
 import com.dv.apna.feature.transport.presentation.screen.TransportDetailsScreen
 import com.dv.apna.feature.transport.presentation.viewmodel.TransportViewModel
 import com.dv.apna.feature.news.presentation.screen.LocalNewsScreen
+import kotlinx.coroutines.flow.collectLatest
 import com.dv.apna.feature.news.presentation.screen.NewsDetailsScreen
 import com.dv.apna.feature.news.presentation.screen.NoticeDetailsScreen
 import com.dv.apna.feature.news.presentation.viewmodel.NewsViewModel
@@ -150,6 +153,8 @@ fun RootNavGraph(
                 onNavigateToDoctors = { navController.navigate(Route.Doctors) },
                 onNavigateToHospitals = { navController.navigate(Route.Hospitals) },
                 onNavigateToPharmacy = { navController.navigate(Route.Pharmacy) },
+                onNavigateToAmbulance = { navController.navigate(Route.Ambulance) },
+                onNavigateToPolice = { navController.navigate(Route.Police) },
                 onDialPhone = { phone -> context.dial(phone) }
             )
         }
@@ -183,6 +188,36 @@ fun RootNavGraph(
             val context = LocalContext.current
             PharmacyScreen(
                 state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() },
+                onDialPhone = { phone -> context.dial(phone) }
+            )
+        }
+        composable<Route.Ambulance> {
+            val viewModel: HealthViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+            EmergencyListScreen(
+                title = "Ambulance",
+                list = state.ambulances,
+                isLoading = state.isLoading,
+                error = state.error,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() },
+                onDialPhone = { phone -> context.dial(phone) }
+            )
+        }
+        composable<Route.Police> {
+            val viewModel: HealthViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+            EmergencyListScreen(
+                title = "Police",
+                list = state.police,
+                isLoading = state.isLoading,
+                error = state.error,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
                 onNavigateBack = { navController.popBackStack() },
@@ -320,8 +355,8 @@ fun RootNavGraph(
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToCategory = { category ->
-                    navController.navigate(Route.TransportDetails(category))
+                onNavigateToCategory = { id, name ->
+                    navController.navigate(Route.TransportDetails(id, name))
                 }
             )
         }
@@ -329,6 +364,17 @@ fun RootNavGraph(
         composable<Route.TransportDetails> {
             val viewModel: TransportViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                viewModel.effect.collectLatest { effect ->
+                    when (effect) {
+                        is TransportEffect.DialPhone -> context.dial(effect.contact)
+                        else -> {}
+                    }
+                }
+            }
+
             TransportDetailsScreen(
                 state = state,
                 onEvent = viewModel::onEvent,

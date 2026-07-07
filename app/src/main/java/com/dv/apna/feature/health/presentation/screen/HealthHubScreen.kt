@@ -40,6 +40,8 @@ fun HealthHubScreen(
     onNavigateToDoctors: () -> Unit,
     onNavigateToHospitals: () -> Unit,
     onNavigateToPharmacy: () -> Unit,
+    onNavigateToAmbulance: () -> Unit,
+    onNavigateToPolice: () -> Unit,
     onDialPhone: (String) -> Unit
 ) {
     LaunchedEffect(Unit) {
@@ -50,6 +52,8 @@ fun HealthHubScreen(
                 HealthEffect.NavigateToDoctors -> onNavigateToDoctors()
                 HealthEffect.NavigateToHospitals -> onNavigateToHospitals()
                 HealthEffect.NavigateToPharmacy -> onNavigateToPharmacy()
+                HealthEffect.NavigateToAmbulance -> onNavigateToAmbulance()
+                HealthEffect.NavigateToPolice -> onNavigateToPolice()
             }
         }
     }
@@ -102,13 +106,21 @@ fun HealthHubScreen(
                         EmergencyCard(
                             title = "Ambulance",
                             icon = R.drawable.ambulance,
-                            onClick = { onEvent(HealthEvent.CallAmbulance("108")) },
+                            onClick = { 
+                                val phone = state.ambulances.firstOrNull()?.phone ?: "108"
+                                onEvent(HealthEvent.CallAmbulance(phone)) 
+                            },
+                            onCardClick = null,
                             modifier = Modifier.weight(1f)
                         )
                         EmergencyCard(
                             title = "Police",
                             icon = R.drawable.police,
-                            onClick = { onEvent(HealthEvent.CallPolice("100")) },
+                            onClick = { 
+                                val phone = state.police.firstOrNull()?.phone ?: "100"
+                                onEvent(HealthEvent.CallPolice(phone)) 
+                            },
+                            onCardClick = null,
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -188,10 +200,20 @@ fun EmergencyCard(
     title: String,
     icon: Int,
     onClick: () -> Unit,
+    onCardClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.wrapContentHeight(),
+        modifier = modifier
+            .wrapContentHeight()
+            .then(
+                if (onCardClick != null) {
+                    Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onCardClick() }
+                } else Modifier
+            ),
         shape = RoundedCornerShape(15.sdp()),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.sdp())
@@ -350,6 +372,8 @@ fun HealthHubScreenPreview() {
             onNavigateToDoctors = {},
             onNavigateToHospitals = {},
             onNavigateToPharmacy = {},
+            onNavigateToAmbulance = {},
+            onNavigateToPolice = {},
             onDialPhone = {}
         )
     }

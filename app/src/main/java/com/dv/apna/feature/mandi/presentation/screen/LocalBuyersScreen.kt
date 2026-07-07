@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
+import com.dv.apna.core.components.LocalBuyerSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -48,6 +49,10 @@ fun LocalBuyersScreen(
         effect.collectLatest { effect ->
             when (effect) {
                 MandiEffect.NavigateBack -> onNavigateBack()
+                is MandiEffect.DialPhone -> {
+                    // This is usually handled in the NavGraph or via a context-aware function
+                    // For now, it emits the effect which the parent can handle
+                }
                 else -> {}
             }
         }
@@ -92,21 +97,25 @@ fun LocalBuyersScreen(
                 onBackClick = { onEvent(MandiEvent.BackClick) }
             )
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 16.sdp(),
-                    end = 16.sdp(),
-                    top = 1.sdp(),
-                    bottom = 80.sdp()
-                ),
-                verticalArrangement = Arrangement.spacedBy(12.sdp())
-            ) {
-                items(state.localBuyers) { buyer ->
-                    LocalBuyerCard(
-                        buyer = buyer,
-                        onCallClick = { /* Handle call event */ }
-                    )
+            if (state.isLoading) {
+                LocalBuyerSkeleton()
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        start = 16.sdp(),
+                        end = 16.sdp(),
+                        top = 1.sdp(),
+                        bottom = 80.sdp()
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(12.sdp())
+                ) {
+                    items(state.localBuyers) { buyer ->
+                        LocalBuyerCard(
+                            buyer = buyer,
+                            onCallClick = { onEvent(MandiEvent.CallClick(buyer.contact)) }
+                        )
+                    }
                 }
             }
         }
@@ -313,7 +322,7 @@ fun LocalBuyersScreenPreview() {
                         name = "Ramchand",
                         address = "Rampur Village (Near Middle School)",
                         category = "Vegetables",
-                        phone = "1234567890"
+                        contact = "1234567890"
                     )
                 )
             ),

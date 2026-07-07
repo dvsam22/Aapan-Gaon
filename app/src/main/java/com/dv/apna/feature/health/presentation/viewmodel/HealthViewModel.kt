@@ -2,9 +2,9 @@ package com.dv.apna.feature.health.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dv.apna.feature.health.domain.model.DoctorModel
-import com.dv.apna.feature.health.domain.model.HospitalModel
-import com.dv.apna.feature.health.domain.model.PharmacyModel
+import com.dv.apna.core.common.Resource
+import com.dv.apna.core.datastore.PreferenceManager
+import com.dv.apna.feature.health.domain.usecase.*
 import com.dv.apna.feature.health.presentation.effect.HealthEffect
 import com.dv.apna.feature.health.presentation.event.HealthEvent
 import com.dv.apna.feature.health.presentation.state.HealthState
@@ -13,12 +13,22 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HealthViewModel @Inject constructor() : ViewModel() {
+class HealthViewModel @Inject constructor(
+    private val getDoctorsUseCase: GetDoctorsUseCase,
+    private val getHospitalsUseCase: GetHospitalsUseCase,
+    private val getPharmaciesUseCase: GetPharmaciesUseCase,
+    private val getAmbulancesUseCase: GetAmbulancesUseCase,
+    private val getPoliceUseCase: GetPoliceUseCase,
+    private val preferenceManager: PreferenceManager
+) : ViewModel() {
 
     private val _state = MutableStateFlow(HealthState())
     val state = _state.asStateFlow()
@@ -27,35 +37,102 @@ class HealthViewModel @Inject constructor() : ViewModel() {
     val effect = _effect.asSharedFlow()
 
     init {
-        loadData()
+        loadHealthData()
     }
 
-    private fun loadData() {
-        val dummyDoctors = listOf(
-            DoctorModel("1", "Dr. Anil Sharma", "Rampur Village (Near Middle School)", "General Physician", "09:30AM - 04:00PM", "1234567890"),
-            DoctorModel("2", "Dr. Priya Verma", "Rampur Village (Near Middle School)", "Gynaecologist", "10:00AM - 05:00PM", "1234567890"),
-            DoctorModel("3", "Dr. Rahul Mehta", "Rampur Village (Near Middle School)", "Paediatrician", "10:00AM - 05:00PM", "1234567890")
-        )
-
-        val dummyHospitals = listOf(
-            HospitalModel("1", "Rampur Community Hospital", "Rampur Village (Near Middle School)", "Multi Speciality Hospital", "OPD, Emergency, Pharmacy, Lab, ICU", "Open: 24 Hours", "1234567890"),
-            HospitalModel("2", "Sharma Hospitals", "Rampur Village (Near Middle School)", "Multi Speciality Hospital", "OPD, Emergency, Pharmacy, Lab, ICU", "Open: 24 Hours", "1234567890"),
-            HospitalModel("3", "Life Care Hospitals", "Rampur Village (Near Middle School)", "Multi Speciality Hospital", "OPD, Emergency, Pharmacy, Lab, ICU", "Open: 24 Hours", "1234567890")
-        )
-
-        val dummyPharmacies = listOf(
-            PharmacyModel("1", "Sharma Medical Store", "Rampur Village (Near Middle School)", "All Medicines Available", "Open: 08:00AM - 10:00PM", "1234567890"),
-            PharmacyModel("2", "Life Care Pharmacy", "Rampur Village (Near Middle School)", "All Medicines Available", "Open: 24 Hours", "1234567890"),
-            PharmacyModel("3", "MedPlus Pharmacy", "Rampur Village (Near Middle School)", "All Medicines Available", "Open: 08:00AM - 11:00PM", "1234567890")
-        )
-
-        _state.update { 
-            it.copy(
-                doctors = dummyDoctors,
-                hospitals = dummyHospitals,
-                pharmacies = dummyPharmacies
-            ) 
+    private fun loadHealthData() {
+        viewModelScope.launch {
+            val villageId = preferenceManager.villageId.firstOrNull()
+            if (villageId != null) {
+                fetchDoctors(villageId)
+                fetchHospitals(villageId)
+                fetchPharmacies(villageId)
+                fetchAmbulances(villageId)
+                fetchPolice(villageId)
+            } else {
+                _state.update { it.copy(error = "Village not selected") }
+            }
         }
+    }
+
+    private fun fetchDoctors(villageId: String) {
+        getDoctorsUseCase(villageId).onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _state.update { it.copy(doctors = result.data ?: emptyList(), isLoading = false) }
+                }
+                is Resource.Error -> {
+                    _state.update { it.copy(error = result.message, isLoading = false) }
+                }
+                is Resource.Loading -> {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun fetchHospitals(villageId: String) {
+        getHospitalsUseCase(villageId).onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _state.update { it.copy(hospitals = result.data ?: emptyList(), isLoading = false) }
+                }
+                is Resource.Error -> {
+                    _state.update { it.copy(error = result.message, isLoading = false) }
+                }
+                is Resource.Loading -> {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun fetchPharmacies(villageId: String) {
+        getPharmaciesUseCase(villageId).onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _state.update { it.copy(pharmacies = result.data ?: emptyList(), isLoading = false) }
+                }
+                is Resource.Error -> {
+                    _state.update { it.copy(error = result.message, isLoading = false) }
+                }
+                is Resource.Loading -> {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun fetchAmbulances(villageId: String) {
+        getAmbulancesUseCase(villageId).onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _state.update { it.copy(ambulances = result.data ?: emptyList(), isLoading = false) }
+                }
+                is Resource.Error -> {
+                    _state.update { it.copy(error = result.message, isLoading = false) }
+                }
+                is Resource.Loading -> {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            }
+        }.launchIn(viewModelScope)
+    }
+
+    private fun fetchPolice(villageId: String) {
+        getPoliceUseCase(villageId).onEach { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _state.update { it.copy(police = result.data ?: emptyList(), isLoading = false) }
+                }
+                is Resource.Error -> {
+                    _state.update { it.copy(error = result.message, isLoading = false) }
+                }
+                is Resource.Loading -> {
+                    _state.update { it.copy(isLoading = true) }
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     fun onEvent(event: HealthEvent) {
@@ -77,6 +154,12 @@ class HealthViewModel @Inject constructor() : ViewModel() {
             }
             HealthEvent.PharmacyClick -> {
                 viewModelScope.launch { _effect.emit(HealthEffect.NavigateToPharmacy) }
+            }
+            HealthEvent.AmbulanceClick -> {
+                viewModelScope.launch { _effect.emit(HealthEffect.NavigateToAmbulance) }
+            }
+            HealthEvent.PoliceClick -> {
+                viewModelScope.launch { _effect.emit(HealthEffect.NavigateToPolice) }
             }
             is HealthEvent.CallClick -> {
                 viewModelScope.launch { _effect.emit(HealthEffect.DialPhone(event.phone)) }

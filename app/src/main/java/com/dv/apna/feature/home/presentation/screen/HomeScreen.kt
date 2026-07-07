@@ -25,8 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.dv.apna.core.components.AapanGavLoading
 import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.HomeSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -124,9 +124,7 @@ fun HomeScreen(
                 )
 
                 if (state.isLoading) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        AapanGavLoading()
-                    }
+                    HomeSkeleton()
                 } else if (state.error != null) {
                     AapanGavErrorScreen(
                         message = state.error,

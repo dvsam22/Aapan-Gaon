@@ -10,11 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,11 +21,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
+import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.ConstructionSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -53,18 +49,19 @@ fun BricksSuppliersScreen(
             when (effect) {
                 is BricksEffect.NavigateBack -> onNavigateBack()
                 is BricksEffect.DialPhone -> {
-                    // TODO: Intent to dial phone
+                    // Handled in NavGraph usually
                 }
             }
         }
     }
+
 
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
-        val (bottomImage, mainContent) = createRefs()
+        val (bottomImage, mainContent, loading, error) = createRefs()
 
         Image(
             painter = painterResource(id = R.drawable.iv_bottomview),
@@ -95,17 +92,46 @@ fun BricksSuppliersScreen(
                 availableCount = state.suppliers.size
             )
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 80.sdp()),
-                verticalArrangement = Arrangement.spacedBy(10.sdp())
-            ) {
-                items(state.suppliers) { supplier ->
-                    BricksSupplierCard(
-                        supplier = supplier,
-                        onCallClick = { onEvent(BricksEvent.CallClick("1234567890")) }
-                    )
+            if (state.isLoading) {
+                ConstructionSkeleton()
+            } else {
+                if (state.suppliers.isEmpty() && state.error == null) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(text = "No suppliers found", color = Color.Gray)
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 80.sdp()),
+                        verticalArrangement = Arrangement.spacedBy(10.sdp())
+                    ) {
+                        items(state.suppliers) { supplier ->
+                            BricksSupplierCard(
+                                supplier = supplier,
+                                onCallClick = { onEvent(BricksEvent.CallClick(supplier.phone)) }
+                            )
+                        }
+                    }
                 }
+            }
+        }
+
+        if (state.error != null) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .constrainAs(error) {
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                AapanGavErrorScreen(
+                    message = state.error,
+                    onRetry = { /* TODO: Add refresh event */ }
+                )
             }
         }
     }
@@ -236,46 +262,48 @@ fun BricksSupplierCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.sdp()))
+            if (supplier.brickTypes.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.sdp()))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = painterResource(R.drawable.receipt),
-                    contentDescription = null,
-                    modifier = Modifier.size(14.sdp()),
-                    tint = Color(0xFF2CA074)
-                )
-                Spacer(modifier = Modifier.width(8.sdp()))
-                Text(
-                    text = "Brick Types:",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 12.ssp()
-                    ),
-                    color = Color.Black
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.sdp()))
-
-            supplier.brickTypes.forEach { brickType ->
-                Row(
-                    modifier = Modifier.padding(start = 4.sdp(), bottom = 3.sdp()),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(6.sdp())
-                            .background(Color(0xFF38C792), CircleShape)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(R.drawable.receipt),
+                        contentDescription = null,
+                        modifier = Modifier.size(14.sdp()),
+                        tint = Color(0xFF2CA074)
                     )
                     Spacer(modifier = Modifier.width(8.sdp()))
                     Text(
-                        text = "${brickType.name} - ${brickType.price}",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontSize = 11.ssp(),
-                            color = Color.Black.copy(alpha = 0.7f)
-                        )
+                        text = "Brick Types:",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 12.ssp()
+                        ),
+                        color = Color.Black
                     )
+                }
+
+                Spacer(modifier = Modifier.height(8.sdp()))
+
+                supplier.brickTypes.forEach { brickType ->
+                    Row(
+                        modifier = Modifier.padding(start = 4.sdp(), bottom = 3.sdp()),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.sdp())
+                                .background(Color(0xFF38C792), CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.sdp()))
+                        Text(
+                            text = "${brickType.name} - ₹${brickType.price} / ${brickType.unit}",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontSize = 11.ssp(),
+                                color = Color.Black.copy(alpha = 0.7f)
+                            )
+                        )
+                    }
                 }
             }
 
@@ -317,17 +345,7 @@ fun BricksSupplierCard(
 fun BricksSuppliersScreenPreview() {
     AapanGavTheme {
         BricksSuppliersScreen(
-            state = BricksState(
-                suppliers = listOf(
-                    BricksSupplierModel(
-                        name = "Shree Balaji Bricks",
-                        address = "Rampur Village (Near Middle School)",
-                        brickTypes = listOf(
-                            com.dv.apna.feature.construction.domain.model.BrickTypePrice("Red Clay", "₹8 / Brick")
-                        )
-                    )
-                )
-            ),
+            state = BricksState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
             onNavigateBack = {}
