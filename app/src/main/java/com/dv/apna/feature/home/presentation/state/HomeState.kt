@@ -7,6 +7,6 @@ data class HomeState(
     val isLoading: Boolean = false,
     val banners: List<BannerModel> = emptyList(),
     val data: List<HomeModel> = emptyList(),
-    val selectedVillage: String? = "Maharajganj",
+    val selectedVillage: String? = null,
     val error: String? = null
 )

@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -84,7 +85,7 @@ fun LabourDetailsScreen(
                 }
         ) {
             LabourDetailsTopBar(
-                title = "${state.selectedCategory} Details",
+                title = stringResource(id = R.string.details_title, state.selectedCategory),
                 availableCount = state.labourDetails.size
             ) { onEvent(LabourEvent.BackClick) }
 
@@ -93,7 +94,7 @@ fun LabourDetailsScreen(
             } else {
                 if (state.labourDetails.isEmpty() && state.error == null) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = "No workers found", color = Color.Gray)
+                        Text(text = stringResource(id = R.string.no_workers), color = Color.Gray)
                     }
                 } else {
                     LazyColumn(
@@ -119,7 +120,7 @@ fun LabourDetailsScreen(
 
         if (state.error != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                AapanGavErrorScreen(message = state.error, onRetry = { /* TODO: Refresh */ })
+                AapanGavErrorScreen(message = state.error, onRetry = { onEvent(LabourEvent.Refresh) })
             }
         }
     }
@@ -152,7 +153,7 @@ fun LabourDetailsTopBar(
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_left),
-                    contentDescription = "Back",
+                    contentDescription = stringResource(id = R.string.back),
                     modifier = Modifier.size(20.sdp()),
                     tint = Color.Black
                 )
@@ -172,7 +173,7 @@ fun LabourDetailsTopBar(
                 color = Color.Black
             )
             Text(
-                text = "$availableCount Available",
+                text = stringResource(id = R.string.available, availableCount),
                 style = MaterialTheme.typography.bodySmall.copy(
                     fontSize = 12.ssp(),
                     color = Color.Black.copy(alpha = 0.6f)
@@ -264,7 +265,7 @@ fun LabourWorkerCard(
                 )
                 Spacer(modifier = Modifier.width(8.sdp()))
                 Text(
-                    text = "Skills:",
+                    text = stringResource(id = R.string.skills),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Medium,
                         fontSize = 12.ssp()
@@ -292,7 +293,7 @@ fun LabourWorkerCard(
                 )
                 Spacer(modifier = Modifier.width(8.sdp()))
                 Text(
-                    text = "Charges:",
+                    text = stringResource(id = R.string.charges),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Medium,
                         fontSize = 12.ssp()
@@ -329,7 +330,7 @@ fun LabourWorkerCard(
                     )
                     Spacer(modifier = Modifier.width(8.sdp()))
                     Text(
-                        text = "Call Now",
+                        text = stringResource(id = R.string.call_now),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.ssp()

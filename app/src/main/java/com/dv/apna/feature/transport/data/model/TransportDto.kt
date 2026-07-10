@@ -10,8 +10,8 @@ data class TransportDto(
     val categoryId: String = "",
     val contact: String = "",
     val image: String = "",
-    val location: String = "",
-    val name: String = "",
-    val vehicleType: String = "",
+    val location: Any? = null,
+    val name: Any? = null,
+    val vehicleType: Any? = null,
     val villageId: String = ""
 )

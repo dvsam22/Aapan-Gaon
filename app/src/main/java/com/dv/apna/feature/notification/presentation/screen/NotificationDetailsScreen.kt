@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
+import com.dv.apna.core.components.NotificationDetailsSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -38,8 +39,6 @@ import com.dv.apna.feature.notification.presentation.state.NotificationState
 fun NotificationDetailsScreen(
     notificationId: String, state: NotificationState, onNavigateBack: () -> Unit
 ) {
-    val notification = state.notifications.find { it.id == notificationId } ?: return
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -76,48 +75,57 @@ fun NotificationDetailsScreen(
                 onBackClick = onNavigateBack
             )
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.sdp())
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Text(
-                    text = notification.title, style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold, fontSize = 18.ssp()
-                    ), color = Color.Black
-                )
+            if (state.isLoading) {
+                NotificationDetailsSkeleton()
+            } else {
+                val notification = state.notifications.find { it.id == notificationId }
+                if (notification != null) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.sdp())
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        Text(
+                            text = notification.title,
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.Bold, fontSize = 18.ssp()
+                            ),
+                            color = Color.Black
+                        )
 
-                Spacer(modifier = Modifier.height(12.sdp()))
+                        Spacer(modifier = Modifier.height(12.sdp()))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.sdp())
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.clock),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.sdp()),
-                        tint = Color(0xFF38C792)
-                    )
-                    Text(
-                        text = "Published: ${notification.date}",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontSize = 11.ssp(), fontWeight = FontWeight.Medium
-                        ),
-                        color = Color.Gray
-                    )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.sdp())
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.clock),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.sdp()),
+                                tint = Color(0xFF38C792)
+                            )
+                            Text(
+                                text = "Published: ${notification.date}",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 11.ssp(), fontWeight = FontWeight.Medium
+                                ),
+                                color = Color.Gray
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(20.sdp()))
+
+                        Text(
+                            text = notification.description,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontSize = 14.ssp(), lineHeight = 22.ssp()
+                            ),
+                            color = Color.DarkGray
+                        )
+                    }
                 }
-
-                Spacer(modifier = Modifier.height(20.sdp()))
-
-                Text(
-                    text = notification.description,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontSize = 14.ssp(), lineHeight = 22.ssp()
-                    ),
-                    color = Color.DarkGray
-                )
             }
         }
     }

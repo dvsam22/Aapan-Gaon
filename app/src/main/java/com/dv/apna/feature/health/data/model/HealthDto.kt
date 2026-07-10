@@ -7,15 +7,15 @@ import com.google.firebase.firestore.IgnoreExtraProperties
 @IgnoreExtraProperties
 data class HealthDto(
     val id: String = "",
-    val address: String = "",
-    val availability: String = "",
+    val address: Any? = null,
+    val availability: Any? = null,
     val categoryId: String = "",
     val contact: String = "",
-    val facilities: String = "",
+    val facilities: Any? = null,
     val image: String = "",
-    val name: String = "",
-    val services: String = "",
-    val specialisation: String = "",
+    val name: Any? = null,
+    val services: Any? = null,
+    val specialisation: Any? = null,
     val type: String = "",
     val villageId: String = ""
 )

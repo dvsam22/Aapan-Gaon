@@ -32,12 +32,14 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun SplashScreen(
     viewModel: SplashViewModel,
-    onNextScreen: () -> Unit
+    onNavigateToHome: () -> Unit,
+    onNavigateToLanguage: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                is SplashEffect.NavigateToNext -> onNextScreen()
+                is SplashEffect.NavigateToHome -> onNavigateToHome()
+                is SplashEffect.NavigateToLanguage -> onNavigateToLanguage()
             }
         }
     }

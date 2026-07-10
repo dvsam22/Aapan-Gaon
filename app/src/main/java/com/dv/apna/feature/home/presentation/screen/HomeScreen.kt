@@ -15,7 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,8 +25,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.AsyncImage
 import com.dv.apna.core.components.AapanGavErrorScreen
-import com.dv.apna.core.components.HomeSkeleton
+import com.dv.apna.core.components.BannerSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -35,10 +36,11 @@ import com.dv.apna.feature.home.presentation.event.HomeEvent
 import com.dv.apna.feature.home.domain.model.BannerModel
 import com.dv.apna.R
 import androidx.annotation.DrawableRes
-
-import androidx.compose.runtime.rememberCoroutineScope
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import kotlinx.coroutines.launch
-
 @Composable
 fun HomeScreen(
     state: HomeState,
@@ -58,6 +60,19 @@ fun HomeScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            // Handle result if needed
+        }
+    )
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -123,15 +138,14 @@ fun HomeScreen(
                     }
                 )
 
-                if (state.isLoading) {
-                    HomeSkeleton()
-                } else if (state.error != null) {
+                if (state.error != null) {
                     AapanGavErrorScreen(
                         message = state.error,
                         onRetry = { onEvent(HomeEvent.Refresh) }
                     )
                 } else {
                     HomeContent(
+                        isLoading = state.isLoading,
                         banners = state.banners,
                         onConstructionClick = onNavigateToConstruction,
                         onLabourClick = onNavigateToLabour,
@@ -320,6 +334,7 @@ fun HomeTopBar(
 
 @Composable
 fun HomeContent(
+    isLoading: Boolean,
     banners: List<BannerModel>,
     onConstructionClick: () -> Unit,
     onLabourClick: () -> Unit,
@@ -333,7 +348,11 @@ fun HomeContent(
         contentPadding = PaddingValues(bottom = 80.sdp(), top = 10.sdp())
     ) {
         item {
-            BannerCarousel(banners = banners)
+            if (isLoading) {
+                BannerSkeleton()
+            } else {
+                BannerCarousel(banners = banners)
+            }
         }
 
         item {
@@ -364,7 +383,13 @@ fun HomeContent(
 fun BannerCarousel(banners: List<BannerModel>) {
     if (banners.isEmpty()) return
 
-    val pagerState = rememberPagerState(pageCount = { banners.size })
+    val realSize = banners.size
+    // Starting from a large number for infinite scroll
+    val initialPage = 500 * realSize
+    val pagerState = rememberPagerState(
+        initialPage = initialPage,
+        pageCount = { if (realSize > 1) Int.MAX_VALUE else 1 }
+    )
 
     Column {
         HorizontalPager(
@@ -375,38 +400,51 @@ fun BannerCarousel(banners: List<BannerModel>) {
             contentPadding = PaddingValues(horizontal = 16.sdp()),
             pageSpacing = 8.sdp()
         ) { page ->
-            val banner = banners[page]
+            val banner = banners[page % realSize]
             Card(
                 modifier = Modifier.fillMaxSize(),
                 shape = RoundedCornerShape(12.sdp()),
-                colors = CardDefaults.cardColors(
-                    containerColor = try {
-                        Color(android.graphics.Color.parseColor(banner.backgroundColor))
-                    } catch (e: Exception) {
-                        Color.White
-                    }
-                ),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
                 border = BorderStroke(1.sdp(), Color(0x1A000000))
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    // Content based on banner data
+                    AsyncImage(
+                        model = banner.imageUrl,
+                        contentDescription = banner.title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(id = R.drawable.iv_dummy_banner),
+                        error = painterResource(id = R.drawable.iv_dummy_banner)
+                    )
+
+                    // Overlay for content if needed
                     Column(
                         modifier = Modifier
-                            .fillMaxHeight()
-                            .fillMaxWidth(0.6f)
+                            .fillMaxSize()
+                            .background(
+                                brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.9f),
+                                        Color.White.copy(alpha = 0.4f),
+                                        Color.Transparent
+                                    )
+                                )
+                            )
                             .padding(16.sdp()),
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            text = banner.title,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 13.ssp()
-                            ),
-                            color = Color.Black,
-                            maxLines = 2
-                        )
-                        
+                        if (banner.title.isNotEmpty()) {
+                            Text(
+                                text = banner.title,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.ssp()
+                                ),
+                                color = Color.Black,
+                                modifier = Modifier.fillMaxWidth(0.6f)
+                            )
+                        }
+
                         if (banner.discountText.isNotEmpty()) {
                             Spacer(modifier = Modifier.height(8.sdp()))
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -425,19 +463,10 @@ fun BannerCarousel(banners: List<BannerModel>) {
                             }
                         }
                     }
-
-                    Image(
-                        painter = painterResource(id = R.drawable.iv_dummy_banner),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .fillMaxWidth(),
-                        contentScale = ContentScale.Crop
-                    )
                 }
             }
         }
-        
+
         // Page indicator dots
         Row(
             modifier = Modifier
@@ -446,9 +475,9 @@ fun BannerCarousel(banners: List<BannerModel>) {
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            repeat(banners.size) { iteration ->
-                val color = if (pagerState.currentPage == iteration) Color(0xFF38C792) else Color(0xFFD8D8D8)
-                val size = if (pagerState.currentPage == iteration) 8.sdp() else 6.sdp()
+            repeat(realSize) { iteration ->
+                val color = if (pagerState.currentPage % realSize == iteration) Color(0xFF38C792) else Color(0xFFD8D8D8)
+                val size = if (pagerState.currentPage % realSize == iteration) 8.sdp() else 6.sdp()
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 4.sdp())

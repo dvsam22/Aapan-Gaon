@@ -132,6 +132,26 @@ fun LanguageScreen(
                 selectedVillage = state.selectedVillage,
                 onVillageSelected = { onEvent(LanguageEvent.SelectVillage(it)) }
             )
+
+            state.error?.let { error ->
+                Text(
+                    text = error,
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 8.sdp())
+                )
+            }
+        }
+
+        if (state.isLoading) {
+            AapanGavLoading(
+                modifier = Modifier.constrainAs(loading) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+            )
         }
 
         // Bottom Button - Uses navigationBarsPadding to stay above nav bar
@@ -278,7 +298,8 @@ fun LanguageCard(
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
-) {
+)
+{
     val backgroundColor = Color(0xFFEFFAF6)
     val borderColor = if (isSelected) Color(0xFF38C792) else Color.Transparent
 

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -109,7 +110,7 @@ fun ChangeLanguageScreen(
         }
 
         AapanGavButton(
-            text = "Save Changes",
+            text = stringResource(id = R.string.save_changes),
             onClick = { onEvent(LanguageEvent.Continue) },
             enabled = state.selectedLanguageId != null,
             modifier = Modifier
@@ -147,14 +148,14 @@ fun ChangeLanguageTopBar(onBackClick: () -> Unit) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_left),
-                    contentDescription = "Back",
+                    contentDescription = stringResource(id = R.string.back),
                     modifier = Modifier.size(20.sdp()),
                     tint = Color.Black
                 )
             }
         }
         Text(
-            text = "Select Language/ भाषा चुने",
+            text = stringResource(id = R.string.select_language),
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.ssp()

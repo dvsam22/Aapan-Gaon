@@ -1,16 +1,19 @@
 package com.dv.apna.feature.transport.data.repository
 
 import com.dv.apna.core.common.Resource
+import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.feature.transport.data.datasource.TransportDataSource
 import com.dv.apna.feature.transport.data.mapper.toDomain
 import com.dv.apna.feature.transport.domain.model.TransportDetails
 import com.dv.apna.feature.transport.domain.repository.TransportRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class TransportRepositoryImpl @Inject constructor(
-    private val dataSource: TransportDataSource
+    private val dataSource: TransportDataSource,
+    private val preferenceManager: PreferenceManager
 ) : TransportRepository {
 
     override fun getTransportByCategory(
@@ -19,8 +22,9 @@ class TransportRepositoryImpl @Inject constructor(
     ): Flow<Resource<List<TransportDetails>>> = flow {
         emit(Resource.Loading())
         try {
+            val languageCode = preferenceManager.languageCode.firstOrNull() ?: "en"
             val data = dataSource.getTransportData(villageId, categoryId)
-                .map { it.toDomain() }
+                .map { it.toDomain(languageCode) }
             emit(Resource.Success(data))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))

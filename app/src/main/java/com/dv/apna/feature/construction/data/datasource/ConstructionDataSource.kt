@@ -11,16 +11,12 @@ class ConstructionDataSource @Inject constructor(
 ) : FirestoreDataSource(firestore) {
 
     suspend fun getConstructionData(villageId: String, categoryId: String): List<ConstructionDto> {
-        return try {
-            getCollection("villages")
-                .document(villageId)
-                .collection("construction")
-                .whereEqualTo("categoryId", categoryId)
-                .get()
-                .await()
-                .toObjects(ConstructionDto::class.java)
-        } catch (e: Exception) {
-            emptyList()
-        }
+        return getCollection("villages")
+            .document(villageId)
+            .collection("construction")
+            .whereEqualTo("categoryId", categoryId)
+            .get()
+            .await()
+            .toObjects(ConstructionDto::class.java)
     }
 }

@@ -11,14 +11,9 @@ class LanguageDataSource @Inject constructor(
 ) : FirestoreDataSource(firestore) {
 
     suspend fun getVillages(): List<VillageDto> {
-        return try {
-            getCollection("villages")
-                .whereEqualTo("active", true)
-                .get()
-                .await()
-                .toObjects(VillageDto::class.java)
-        } catch (e: Exception) {
-            emptyList()
-        }
+        return getCollection("villages")
+            .get()
+            .await()
+            .toObjects(VillageDto::class.java)
     }
 }

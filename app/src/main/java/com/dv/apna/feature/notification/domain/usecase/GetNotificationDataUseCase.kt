@@ -6,5 +6,5 @@ import javax.inject.Inject
 class GetNotificationDataUseCase @Inject constructor(
     private val repository: NotificationRepository
 ) {
-    operator fun invoke() = repository.getData()
+    operator fun invoke(villageId: String) = repository.getNotifications(villageId)
 }

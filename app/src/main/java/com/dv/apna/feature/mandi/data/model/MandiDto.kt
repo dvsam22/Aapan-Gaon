@@ -7,14 +7,14 @@ import com.google.firebase.firestore.IgnoreExtraProperties
 @IgnoreExtraProperties
 data class MandiDto(
     val id: String = "",
-    val address: String = "",
-    val buyerName: String = "",
+    val address: Any? = null,
+    val buyerName: Any? = null,
     val categoryId: String = "",
     val contact: String = "",
-    val cropName: String = "",
+    val cropName: Any? = null,
     val date: Long = 0,
     val price: Double = 0.0,
-    val trend: String = "",
-    val unit: String = "",
+    val trend: Any? = null,
+    val unit: Any? = null,
     val villageId: String = ""
 )

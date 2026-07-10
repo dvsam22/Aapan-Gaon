@@ -14,12 +14,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class BricksViewModel @Inject constructor(
     private val getBricksSuppliersUseCase: GetBricksSuppliersUseCase,
@@ -32,36 +37,40 @@ class BricksViewModel @Inject constructor(
     private val _effect = MutableSharedFlow<BricksEffect>()
     val effect = _effect.asSharedFlow()
 
+    private var loadJob: Job? = null
+
     init {
         loadSuppliers()
     }
 
     private fun loadSuppliers() {
-        viewModelScope.launch {
-            val villageId = preferenceManager.villageId.firstOrNull()
-            if (villageId != null) {
-                getBricksSuppliersUseCase(villageId).onEach { result ->
-                    when (result) {
-                        is Resource.Success<*> -> {
-                            _state.update { 
-                                it.copy(
-                                    suppliers = result.data as? List<com.dv.apna.feature.construction.domain.model.BricksSupplierModel> ?: emptyList(),
-                                    isLoading = false 
-                                ) 
-                            }
-                        }
-                        is Resource.Error<*> -> {
-                            _state.update { it.copy(error = result.message, isLoading = false) }
-                        }
-                        is Resource.Loading<*> -> {
-                            _state.update { it.copy(isLoading = true) }
+        loadJob?.cancel()
+        loadJob = preferenceManager.villageId
+            .filterNotNull()
+            .flatMapLatest { villageId ->
+                getBricksSuppliersUseCase(villageId)
+            }
+            .onEach { result ->
+                when (result) {
+                    is Resource.Success<*> -> {
+                        _state.update {
+                            it.copy(
+                                suppliers = result.data as? List<com.dv.apna.feature.construction.domain.model.BricksSupplierModel>
+                                    ?: emptyList(),
+                                isLoading = false
+                            )
                         }
                     }
-                }.launchIn(viewModelScope)
-            } else {
-                _state.update { it.copy(error = "Village not selected", isLoading = false) }
-            }
-        }
+
+                    is Resource.Error<*> -> {
+                        _state.update { it.copy(error = result.message, isLoading = false) }
+                    }
+
+                    is Resource.Loading<*> -> {
+                        _state.update { it.copy(isLoading = true) }
+                    }
+                }
+            }.launchIn(viewModelScope)
     }
 
     fun onEvent(event: BricksEvent) {
@@ -69,8 +78,13 @@ class BricksViewModel @Inject constructor(
             is BricksEvent.BackClick -> {
                 viewModelScope.launch { _effect.emit(BricksEffect.NavigateBack) }
             }
+
             is BricksEvent.CallClick -> {
                 viewModelScope.launch { _effect.emit(BricksEffect.DialPhone(event.phone)) }
+            }
+
+            is BricksEvent.Refresh -> {
+                loadSuppliers()
             }
         }
     }

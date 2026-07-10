@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">आपन गांव</string>
+    <string name="notification">सूचनाएं</string>
+    <string name="back">पीछे</string>
+    <string name="select_language">भाषा चुनें</string>
+    <string name="select_village">गांव चुनें</string>
+    <string name="save_changes">बदलाव सुरक्षित करें</string>
+    <string name="continue_text">जारी रखें</string>
+    <string name="refresh">रीफ्रेश करें</string>
+    <string name="no_notifications">कोई सूचना नहीं मिली</string>
+    <string name="today">आज</string>
+    <string name="yesterday">कल</string>
+
+    <string name="bricks_suppliers">ईंट आपूर्तिकर्ता</string>
+    <string name="available">%1$d उपलब्ध</string>
+    <string name="call_now">अभी कॉल करें</string>
+    <string name="brick_types">ईंटों के प्रकार:</string>
+    <string name="no_suppliers">कोई आपूर्तिकर्ता नहीं मिला</string>
+
+    <string name="skills">कौशल:</string>
+    <string name="charges">शुल्क:</string>
+    <string name="no_workers">कोई कर्मचारी नहीं मिला</string>
+    <string name="details_title">%1$s विवरण</string>
+</resources>

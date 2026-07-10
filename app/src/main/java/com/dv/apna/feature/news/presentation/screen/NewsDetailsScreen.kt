@@ -19,10 +19,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.AsyncImage
 import com.dv.apna.R
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
+import com.dv.apna.core.components.NewsDetailsSkeleton
 import com.dv.apna.feature.news.presentation.state.NewsState
 
 @Composable
@@ -31,7 +33,7 @@ fun NewsDetailsScreen(
     state: NewsState,
     onNavigateBack: () -> Unit,
 ) {
-    val news = state.breakingNews.find { it.id == newsId } ?: return
+    val news = state.news.find { it.id == newsId }
 
     ConstraintLayout(
         modifier = Modifier
@@ -67,12 +69,15 @@ fun NewsDetailsScreen(
         ) {
             NewsTopBar(title = "News Details", onBackClick = onNavigateBack)
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.sdp())
-                    .verticalScroll(rememberScrollState())
-            ) {
+            if (state.isLoading) {
+                NewsDetailsSkeleton()
+            } else if (news != null) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.sdp())
+                        .verticalScroll(rememberScrollState())
+                ) {
                 Text(
                     text = news.title,
                     style = MaterialTheme.typography.titleLarge.copy(
@@ -96,7 +101,7 @@ fun NewsDetailsScreen(
                         tint = Color(0xFF2CA074)
                     )
                     Text(
-                        text = "Published: ${news.time}",
+                        text = "Published: ${formatDate(news.date)}",
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontSize = 12.ssp(),
                             fontWeight = FontWeight.Medium
@@ -107,14 +112,16 @@ fun NewsDetailsScreen(
 
                 Spacer(modifier = Modifier.height(16.sdp()))
 
-                Image(
-                    painter = painterResource(id = R.drawable.iv_dummy_banner),
+                AsyncImage(
+                    model = news.image,
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(180.sdp())
                         .clip(RoundedCornerShape(15.sdp())),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.iv_dummy_banner),
+                    error = painterResource(id = R.drawable.iv_dummy_banner)
                 )
 
                 Spacer(modifier = Modifier.height(20.sdp()))
@@ -132,6 +139,7 @@ fun NewsDetailsScreen(
             }
         }
     }
+}
 }
 
 @Preview(showBackground = true)

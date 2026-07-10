@@ -23,6 +23,7 @@ import com.dv.apna.R
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
+import com.dv.apna.core.components.NewsDetailsSkeleton
 import com.dv.apna.feature.news.presentation.state.NewsState
 
 @Composable
@@ -31,7 +32,7 @@ fun NoticeDetailsScreen(
     state: NewsState,
     onNavigateBack: () -> Unit,
 ) {
-    val notice = state.notices.find { it.id == noticeId } ?: return
+    val notice = state.notices.find { it.id == noticeId }
 
     ConstraintLayout(
         modifier = Modifier
@@ -67,12 +68,15 @@ fun NoticeDetailsScreen(
         ) {
             NewsTopBar(title = "Notice Details", onBackClick = onNavigateBack)
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.sdp())
-                    .verticalScroll(rememberScrollState())
-            ) {
+            if (state.isLoading) {
+                NewsDetailsSkeleton()
+            } else if (notice != null) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.sdp())
+                        .verticalScroll(rememberScrollState())
+                ) {
                 Text(
                     text = notice.title,
                     style = MaterialTheme.typography.titleLarge.copy(
@@ -96,7 +100,7 @@ fun NoticeDetailsScreen(
                         tint = Color(0xFF2CA074)
                     )
                     Text(
-                        text = "Date: ${notice.date}",
+                        text = "Date: ${formatDate(notice.date)}",
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontSize = 12.ssp(),
                             fontWeight = FontWeight.Medium
@@ -108,7 +112,7 @@ fun NoticeDetailsScreen(
                 Spacer(modifier = Modifier.height(20.sdp()))
 
                 Text(
-                    text = notice.description.ifEmpty { notice.summary },
+                    text = notice.description,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontSize = 14.ssp(),
                         lineHeight = 22.ssp()
@@ -120,6 +124,7 @@ fun NoticeDetailsScreen(
             }
         }
     }
+}
 }
 
 @Preview(showBackground = true)

@@ -22,19 +22,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
+import coil.compose.AsyncImage
 import com.dv.apna.R
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
+import com.dv.apna.core.components.NewsSkeleton
 import com.dv.apna.feature.news.domain.model.NewsModel
-import com.dv.apna.feature.news.domain.model.NoticeModel
 import com.dv.apna.feature.news.presentation.effect.NewsEffect
 import com.dv.apna.feature.news.presentation.event.NewsEvent
 import com.dv.apna.feature.news.presentation.state.NewsState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun LocalNewsScreen(
@@ -87,50 +92,70 @@ fun LocalNewsScreen(
                     end.linkTo(parent.end)
                 }
         ) {
-            NewsTopBar(title = "Local News", onBackClick = { onEvent(NewsEvent.BackClick) })
+            NewsTopBar(title = "News & Notices", onBackClick = { onEvent(NewsEvent.BackClick) })
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 80.sdp())
-            ) {
-                // Breaking News Section
-                item {
-                    Text(
-                        text = "Breaking News",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.ssp()
-                        ),
-                        modifier = Modifier.padding(horizontal = 16.sdp(), vertical = 12.sdp()),
-                        color = Color.Black
-                    )
+            if (state.isLoading) {
+                NewsSkeleton()
+            } else if (state.error != null) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = state.error, color = Color.Red)
                 }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 80.sdp())
+                ) {
+                    // Breaking News Section
+                    if (state.news.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = "Breaking News",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 16.ssp()
+                                ),
+                                modifier = Modifier.padding(horizontal = 16.sdp(), vertical = 12.sdp()),
+                                color = Color.Black
+                            )
+                        }
 
-                items(state.breakingNews) { news ->
-                    NewsItemCard(
-                        news = news,
-                        onClick = { onEvent(NewsEvent.NewsClick(news.id)) }
-                    )
-                }
+                        items(state.news) { news ->
+                            NewsItemCard(
+                                news = news,
+                                onClick = { onEvent(NewsEvent.NewsClick(news.id)) }
+                            )
+                        }
+                    }
 
-                // Notices Section
-                item {
-                    Text(
-                        text = "Notices",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.ssp()
-                        ),
-                        modifier = Modifier.padding(horizontal = 16.sdp(), vertical = 12.sdp()),
-                        color = Color.Black
-                    )
-                }
+                    // Notices Section
+                    if (state.notices.isNotEmpty()) {
+                        item {
+                            Text(
+                                text = "Official Notices",
+                                style = MaterialTheme.typography.titleLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 16.ssp()
+                                ),
+                                modifier = Modifier.padding(horizontal = 16.sdp(), vertical = 12.sdp()),
+                                color = Color.Black
+                            )
+                        }
 
-                items(state.notices) { notice ->
-                    NoticeItemCard(
-                        notice = notice,
-                        onClick = { onEvent(NewsEvent.NoticeClick(notice.id)) }
-                    )
+                        items(state.notices) { notice ->
+                            NoticeItemCard(
+                                notice = notice,
+                                onClick = { onEvent(NewsEvent.NoticeClick(notice.id)) }
+                            )
+                        }
+                    }
+
+                    if (state.news.isEmpty() && state.notices.isEmpty() && !state.isLoading) {
+                        item {
+                            Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
+                                Text(text = "No news or notices available")
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -199,13 +224,15 @@ fun NewsItemCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.Top
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.iv_dummy_banner), // Using placeholder
+            AsyncImage(
+                model = news.image,
                 contentDescription = null,
                 modifier = Modifier
                     .size(80.sdp())
                     .clip(RoundedCornerShape(10.sdp())),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                placeholder = painterResource(id = R.drawable.iv_dummy_banner),
+                error = painterResource(id = R.drawable.iv_dummy_banner)
             )
 
             Spacer(modifier = Modifier.width(12.sdp()))
@@ -219,18 +246,20 @@ fun NewsItemCard(
                         lineHeight = 16.ssp()
                     ),
                     color = Color.Black,
-                    maxLines = 2
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(4.sdp()))
 
                 Text(
-                    text = news.summary,
+                    text = news.description,
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontSize = 10.ssp(),
                         color = Color.Gray
                     ),
-                    maxLines = 2
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(8.sdp()))
@@ -244,7 +273,7 @@ fun NewsItemCard(
                     )
                     Spacer(modifier = Modifier.width(4.sdp()))
                     Text(
-                        text = news.time,
+                        text = formatDate(news.date),
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontSize = 10.ssp(),
                             color = Color.Gray
@@ -258,7 +287,7 @@ fun NewsItemCard(
 
 @Composable
 fun NoticeItemCard(
-    notice: NoticeModel,
+    notice: NewsModel,
     onClick: () -> Unit
 ) {
     Card(
@@ -284,7 +313,7 @@ fun NoticeItemCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.receipt), // Using placeholder
+                    painter = painterResource(id = R.drawable.receipt),
                     contentDescription = null,
                     modifier = Modifier.size(28.sdp()),
                     tint = Color(0xFF2CA074)
@@ -300,18 +329,21 @@ fun NoticeItemCard(
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 12.ssp()
                     ),
-                    color = Color.Black
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(4.sdp()))
 
                 Text(
-                    text = notice.summary,
+                    text = notice.description,
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontSize = 10.ssp(),
                         color = Color.Gray
                     ),
-                    maxLines = 1
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
 
                 Spacer(modifier = Modifier.height(6.sdp()))
@@ -325,7 +357,7 @@ fun NoticeItemCard(
                     )
                     Spacer(modifier = Modifier.width(4.sdp()))
                     Text(
-                        text = notice.date,
+                        text = formatDate(notice.date),
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontSize = 10.ssp(),
                             color = Color.Gray
@@ -335,6 +367,12 @@ fun NoticeItemCard(
             }
         }
     }
+}
+
+fun formatDate(timestamp: Long): String {
+    if (timestamp == 0L) return ""
+    val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+    return sdf.format(Date(timestamp))
 }
 
 @Preview(showBackground = true)

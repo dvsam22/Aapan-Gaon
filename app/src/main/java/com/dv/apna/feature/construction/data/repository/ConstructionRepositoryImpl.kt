@@ -1,6 +1,7 @@
 package com.dv.apna.feature.construction.data.repository
 
 import com.dv.apna.core.common.Resource
+import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.feature.construction.data.datasource.ConstructionDataSource
 import com.dv.apna.feature.construction.data.mapper.toBricksSupplier
 import com.dv.apna.feature.construction.data.mapper.toHardwareShop
@@ -10,18 +11,21 @@ import com.dv.apna.feature.construction.domain.model.HardwareShopModel
 import com.dv.apna.feature.construction.domain.model.MaterialShopModel
 import com.dv.apna.feature.construction.domain.repository.ConstructionRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class ConstructionRepositoryImpl @Inject constructor(
-    private val dataSource: ConstructionDataSource
+    private val dataSource: ConstructionDataSource,
+    private val preferenceManager: PreferenceManager
 ) : ConstructionRepository {
 
     override fun getBricksSuppliers(villageId: String): Flow<Resource<List<BricksSupplierModel>>> = flow {
         emit(Resource.Loading())
         try {
+            val languageCode = preferenceManager.languageCode.firstOrNull() ?: "en"
             val data = dataSource.getConstructionData(villageId, "bricks")
-                .map { it.toBricksSupplier() }
+                .map { it.toBricksSupplier(languageCode) }
             emit(Resource.Success(data))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
@@ -31,8 +35,9 @@ class ConstructionRepositoryImpl @Inject constructor(
     override fun getMaterialShops(villageId: String): Flow<Resource<List<MaterialShopModel>>> = flow {
         emit(Resource.Loading())
         try {
+            val languageCode = preferenceManager.languageCode.firstOrNull() ?: "en"
             val data = dataSource.getConstructionData(villageId, "material_shops")
-                .map { it.toMaterialShop() }
+                .map { it.toMaterialShop(languageCode) }
             emit(Resource.Success(data))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))
@@ -42,8 +47,9 @@ class ConstructionRepositoryImpl @Inject constructor(
     override fun getHardwareShops(villageId: String): Flow<Resource<List<HardwareShopModel>>> = flow {
         emit(Resource.Loading())
         try {
+            val languageCode = preferenceManager.languageCode.firstOrNull() ?: "en"
             val data = dataSource.getConstructionData(villageId, "hardware_shops")
-                .map { it.toHardwareShop() }
+                .map { it.toHardwareShop(languageCode) }
             emit(Resource.Success(data))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))

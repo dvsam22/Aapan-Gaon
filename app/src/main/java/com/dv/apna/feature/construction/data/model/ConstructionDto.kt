@@ -2,8 +2,8 @@ package com.dv.apna.feature.construction.data.model
 
 data class ConstructionDto(
     val id: String? = null,
-    val shopName: String? = null,
-    val address: String? = null,
+    val shopName: Any? = null,
+    val address: Any? = null,
     val contact: String? = null,
     val image: String? = null,
     val categoryId: String? = null,
@@ -12,7 +12,7 @@ data class ConstructionDto(
 )
 
 data class ProductDto(
-    val name: String? = null,
+    val name: Any? = null,
     val price: String? = null,
-    val unit: String? = null
+    val unit: Any? = null
 )

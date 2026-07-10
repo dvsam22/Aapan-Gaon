@@ -36,11 +36,11 @@ class HardwareShopsViewModel @Inject constructor(
                 getHardwareShopsUseCase(villageId).onEach { result ->
                     when (result) {
                         is Resource.Success<*> -> {
-                            _state.update { 
+                            _state.update {
                                 it.copy(
                                     shops = result.data as? List<com.dv.apna.feature.construction.domain.model.HardwareShopModel> ?: emptyList(),
-                                    isLoading = false 
-                                ) 
+                                    isLoading = false
+                                )
                             }
                         }
                         is Resource.Error<*> -> {

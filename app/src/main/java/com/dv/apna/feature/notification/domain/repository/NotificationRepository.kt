@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.Flow
 import com.dv.apna.feature.notification.domain.model.NotificationModel
 
 interface NotificationRepository {
-    fun getData(): Flow<Resource<List<NotificationModel>>>
+    fun getNotifications(villageId: String): Flow<Resource<List<NotificationModel>>>
 }

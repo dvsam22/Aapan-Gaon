@@ -46,6 +46,90 @@ fun Modifier.shimmerEffect(): Modifier = composed {
 }
 
 @Composable
+fun BannerSkeleton() {
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.sdp())
+                .height(130.sdp())
+                .shadow(elevation = 2.sdp(), shape = RoundedCornerShape(12.sdp()))
+                .clip(RoundedCornerShape(12.sdp()))
+                .background(Color.White)
+        ) {
+            // Full background shimmer to simulate loading image
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shimmerEffect()
+            )
+
+            // Content simulation
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.sdp()),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(16.sdp())
+                        .clip(RoundedCornerShape(4.sdp()))
+                        .background(Color.White.copy(alpha = 0.5f))
+                )
+                Spacer(modifier = Modifier.height(10.sdp()))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.3f)
+                        .height(16.sdp())
+                        .clip(RoundedCornerShape(4.sdp()))
+                        .background(Color.White.copy(alpha = 0.5f))
+                )
+
+                Spacer(modifier = Modifier.height(15.sdp()))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .width(40.sdp())
+                            .height(12.sdp())
+                            .clip(RoundedCornerShape(2.sdp()))
+                            .background(Color.White.copy(alpha = 0.5f))
+                    )
+                    Spacer(modifier = Modifier.width(8.sdp()))
+                    Box(
+                        modifier = Modifier
+                            .width(60.sdp())
+                            .height(24.sdp())
+                            .clip(RoundedCornerShape(4.sdp()))
+                            .background(Color.White.copy(alpha = 0.5f))
+                    )
+                }
+            }
+        }
+        
+        // Placeholder area for indicator dots to reserve space and prevent jumping
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.sdp())
+                .height(8.sdp()), // Matches max dot size to reserve exact space
+            contentAlignment = Alignment.Center
+        ) {
+            // A subtle shimmering bar instead of discrete dots, since count is unknown
+            Box(
+                modifier = Modifier
+                    .width(40.sdp())
+                    .height(4.sdp())
+                    .clip(RoundedCornerShape(2.sdp()))
+                    .background(Color(0xFFD8D8D8).copy(alpha = 0.5f))
+            )
+        }
+    }
+}
+
+@Composable
 fun LabourSkeleton() {
     Column(
         modifier = Modifier
@@ -134,10 +218,9 @@ fun LabourSkeleton() {
     }
 }
 
-
 @Composable
 fun ConstructionSkeleton() {
-    LabourSkeleton() // Since they have very similar card layouts
+    LabourSkeleton()
 }
 
 @Composable
@@ -147,7 +230,6 @@ fun HomeSkeleton() {
             .fillMaxSize()
             .padding(top = 10.sdp())
     ) {
-        // Banner Skeleton
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -159,7 +241,6 @@ fun HomeSkeleton() {
 
         Spacer(modifier = Modifier.height(20.sdp()))
 
-        // Services Title Skeleton
         Box(
             modifier = Modifier
                 .padding(start = 16.sdp())
@@ -171,7 +252,6 @@ fun HomeSkeleton() {
 
         Spacer(modifier = Modifier.height(15.sdp()))
 
-        // Services Grid Skeleton
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -225,7 +305,6 @@ fun MandiTableSkeleton() {
                 .padding(16.sdp())
         ) {
             Column {
-                // Skeleton Header
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -255,7 +334,6 @@ fun MandiTableSkeleton() {
                     )
                 }
 
-                // Skeleton Rows
                 Column(verticalArrangement = Arrangement.spacedBy(12.sdp())) {
                     repeat(12) {
                         Row(
@@ -389,7 +467,7 @@ fun LocalBuyerSkeleton() {
 
 @Composable
 fun TransportSkeleton() {
-    LocalBuyerSkeleton() // Layout is very similar
+    LocalBuyerSkeleton()
 }
 
 @Composable
@@ -416,7 +494,6 @@ fun HealthSkeleton() {
                         .fillMaxWidth()
                         .padding(16.sdp())
                 ) {
-                    // Top row: Icon + Name/Address
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
@@ -447,7 +524,6 @@ fun HealthSkeleton() {
 
                     Spacer(modifier = Modifier.height(16.sdp()))
 
-                    // Detail rows: Specialization/Facilities and Timing/Status
                     repeat(2) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Box(
@@ -470,7 +546,6 @@ fun HealthSkeleton() {
 
                     Spacer(modifier = Modifier.height(8.sdp()))
 
-                    // Call Button
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -480,6 +555,369 @@ fun HealthSkeleton() {
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun NewsSkeleton() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 80.sdp()),
+        verticalArrangement = Arrangement.spacedBy(12.sdp())
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 16.sdp(), vertical = 12.sdp())
+                .width(120.sdp())
+                .height(20.sdp())
+                .clip(RoundedCornerShape(4.sdp()))
+                .shimmerEffect()
+        )
+
+        repeat(3) {
+            NewsItemSkeleton()
+        }
+
+        Spacer(modifier = Modifier.height(12.sdp()))
+
+        Box(
+            modifier = Modifier
+                .padding(horizontal = 16.sdp(), vertical = 12.sdp())
+                .width(100.sdp())
+                .height(20.sdp())
+                .clip(RoundedCornerShape(4.sdp()))
+                .shimmerEffect()
+        )
+
+        repeat(2) {
+            NoticeItemSkeleton()
+        }
+    }
+}
+
+@Composable
+fun NewsItemSkeleton() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.sdp(), vertical = 6.sdp())
+            .shadow(elevation = 2.sdp(), shape = RoundedCornerShape(15.sdp()))
+            .clip(RoundedCornerShape(15.sdp()))
+            .background(Color.White)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.sdp())
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.Top
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(80.sdp())
+                    .clip(RoundedCornerShape(10.sdp()))
+                    .shimmerEffect()
+            )
+
+            Spacer(modifier = Modifier.width(12.sdp()))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(16.sdp())
+                        .clip(RoundedCornerShape(4.sdp()))
+                        .shimmerEffect()
+                )
+
+                Spacer(modifier = Modifier.height(8.sdp()))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.7f)
+                        .height(12.sdp())
+                        .clip(RoundedCornerShape(4.sdp()))
+                        .shimmerEffect()
+                )
+
+                Spacer(modifier = Modifier.height(16.sdp()))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(14.sdp())
+                            .clip(CircleShape)
+                            .shimmerEffect()
+                    )
+                    Spacer(modifier = Modifier.width(4.sdp()))
+                    Box(
+                        modifier = Modifier
+                            .width(80.sdp())
+                            .height(10.sdp())
+                            .clip(RoundedCornerShape(4.sdp()))
+                            .shimmerEffect()
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NoticeItemSkeleton() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.sdp(), vertical = 6.sdp())
+            .shadow(elevation = 2.sdp(), shape = RoundedCornerShape(15.sdp()))
+            .clip(RoundedCornerShape(15.sdp()))
+            .background(Color.White)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(12.sdp())
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(50.sdp())
+                    .clip(RoundedCornerShape(10.sdp()))
+                    .shimmerEffect()
+            )
+
+            Spacer(modifier = Modifier.width(12.sdp()))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .height(16.sdp())
+                        .clip(RoundedCornerShape(4.sdp()))
+                        .shimmerEffect()
+                )
+
+                Spacer(modifier = Modifier.height(8.sdp()))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(12.sdp())
+                        .clip(RoundedCornerShape(4.sdp()))
+                        .shimmerEffect()
+                )
+
+                Spacer(modifier = Modifier.height(8.sdp()))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(14.sdp())
+                            .clip(CircleShape)
+                            .shimmerEffect()
+                    )
+                    Spacer(modifier = Modifier.width(4.sdp()))
+                    Box(
+                        modifier = Modifier
+                            .width(60.sdp())
+                            .height(10.sdp())
+                            .clip(RoundedCornerShape(4.sdp()))
+                            .shimmerEffect()
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NewsDetailsSkeleton() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.sdp())
+    ) {
+        Spacer(modifier = Modifier.height(16.sdp()))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.sdp())
+                .clip(RoundedCornerShape(4.sdp()))
+                .shimmerEffect()
+        )
+        Spacer(modifier = Modifier.height(8.sdp()))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.6f)
+                .height(24.sdp())
+                .clip(RoundedCornerShape(4.sdp()))
+                .shimmerEffect()
+        )
+
+        Spacer(modifier = Modifier.height(12.sdp()))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(14.sdp())
+                    .clip(CircleShape)
+                    .shimmerEffect()
+            )
+            Spacer(modifier = Modifier.width(6.sdp()))
+            Box(
+                modifier = Modifier
+                    .width(150.sdp())
+                    .height(12.sdp())
+                    .clip(RoundedCornerShape(4.sdp()))
+                    .shimmerEffect()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.sdp()))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(180.sdp())
+                .clip(RoundedCornerShape(15.sdp()))
+                .shimmerEffect()
+        )
+
+        Spacer(modifier = Modifier.height(20.sdp()))
+
+        repeat(8) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(if (it % 2 == 0) 1f else 0.85f)
+                    .height(14.sdp())
+                    .clip(RoundedCornerShape(4.sdp()))
+                    .shimmerEffect()
+            )
+            Spacer(modifier = Modifier.height(8.sdp()))
+        }
+    }
+}
+
+@Composable
+fun NotificationSkeleton() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.sdp()),
+        verticalArrangement = Arrangement.spacedBy(12.sdp())
+    ) {
+        Box(
+            modifier = Modifier
+                .width(80.sdp())
+                .height(16.sdp())
+                .clip(RoundedCornerShape(4.sdp()))
+                .shimmerEffect()
+        )
+
+        repeat(6) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(70.sdp())
+                    .shadow(elevation = 2.sdp(), shape = RoundedCornerShape(15.sdp()))
+                    .clip(RoundedCornerShape(15.sdp()))
+                    .background(Color.White)
+                    .padding(12.sdp())
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(40.sdp())
+                            .clip(RoundedCornerShape(8.sdp()))
+                            .shimmerEffect()
+                    )
+                    Spacer(modifier = Modifier.width(12.sdp()))
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.sdp())) {
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.7f)
+                                    .height(14.sdp())
+                                    .clip(RoundedCornerShape(4.sdp()))
+                                    .shimmerEffect()
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .width(40.sdp())
+                                    .height(10.sdp())
+                                    .clip(RoundedCornerShape(4.sdp()))
+                                    .shimmerEffect()
+                            )
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(0.5f)
+                                .height(12.sdp())
+                                .clip(RoundedCornerShape(4.sdp()))
+                                .shimmerEffect()
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NotificationDetailsSkeleton() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.sdp())
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.sdp())
+                .clip(RoundedCornerShape(4.sdp()))
+                .shimmerEffect()
+        )
+        Spacer(modifier = Modifier.height(12.sdp()))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.4f)
+                .height(24.sdp())
+                .clip(RoundedCornerShape(4.sdp()))
+                .shimmerEffect()
+        )
+
+        Spacer(modifier = Modifier.height(16.sdp()))
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(16.sdp())
+                    .clip(CircleShape)
+                    .shimmerEffect()
+            )
+            Spacer(modifier = Modifier.width(8.sdp()))
+            Box(
+                modifier = Modifier
+                    .width(120.sdp())
+                    .height(12.sdp())
+                    .clip(RoundedCornerShape(4.sdp()))
+                    .shimmerEffect()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(24.sdp()))
+
+        repeat(10) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(if (it % 3 == 0) 1f else 0.9f)
+                    .height(14.sdp())
+                    .clip(RoundedCornerShape(4.sdp()))
+                    .shimmerEffect()
+            )
+            Spacer(modifier = Modifier.height(10.sdp()))
         }
     }
 }
