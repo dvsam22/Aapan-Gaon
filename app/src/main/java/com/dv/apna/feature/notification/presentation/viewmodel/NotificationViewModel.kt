@@ -3,6 +3,7 @@ package com.dv.apna.feature.notification.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dv.apna.core.common.Resource
+import com.dv.apna.core.common.UiText
 import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.feature.notification.domain.usecase.GetNotificationDataUseCase
 import com.dv.apna.feature.notification.presentation.effect.NotificationEffect
@@ -50,9 +51,12 @@ class NotificationViewModel @Inject constructor(
 
     private fun loadNotifications() {
         loadJob?.cancel()
-        loadJob = preferenceManager.villageId
-            .filterNotNull()
-            .flatMapLatest { villageId ->
+        loadJob = combine(
+            preferenceManager.villageId.filterNotNull(),
+            preferenceManager.languageCode
+        ) { villageId, _ ->
+            villageId
+        }.flatMapLatest { villageId ->
                 getNotificationDataUseCase(villageId)
             }
             .onEach { result ->
@@ -68,7 +72,7 @@ class NotificationViewModel @Inject constructor(
                     }
 
                     is Resource.Error<*> -> {
-                        _state.update { it.copy(error = result.message, isLoading = false) }
+                        _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
                     }
 
                     is Resource.Loading<*> -> {

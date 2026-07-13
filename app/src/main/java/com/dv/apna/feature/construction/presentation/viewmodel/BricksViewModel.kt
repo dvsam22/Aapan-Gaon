@@ -3,6 +3,7 @@ package com.dv.apna.feature.construction.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dv.apna.core.common.Resource
+import com.dv.apna.core.common.UiText
 import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.feature.construction.domain.usecase.GetBricksSuppliersUseCase
 import com.dv.apna.feature.construction.presentation.effect.BricksEffect
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -45,9 +47,12 @@ class BricksViewModel @Inject constructor(
 
     private fun loadSuppliers() {
         loadJob?.cancel()
-        loadJob = preferenceManager.villageId
-            .filterNotNull()
-            .flatMapLatest { villageId ->
+        loadJob = combine(
+            preferenceManager.villageId.filterNotNull(),
+            preferenceManager.languageCode
+        ) { villageId, _ ->
+            villageId
+        }.flatMapLatest { villageId ->
                 getBricksSuppliersUseCase(villageId)
             }
             .onEach { result ->
@@ -63,7 +68,7 @@ class BricksViewModel @Inject constructor(
                     }
 
                     is Resource.Error<*> -> {
-                        _state.update { it.copy(error = result.message, isLoading = false) }
+                        _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
                     }
 
                     is Resource.Loading<*> -> {

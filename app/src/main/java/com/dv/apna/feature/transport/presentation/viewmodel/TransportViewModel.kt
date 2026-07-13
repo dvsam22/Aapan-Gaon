@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dv.apna.R
 import com.dv.apna.core.common.Resource
+import com.dv.apna.core.common.UiText
 import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.feature.transport.domain.model.TransportService
 import com.dv.apna.feature.transport.domain.usecase.GetTransportByCategoryUseCase
@@ -43,20 +44,30 @@ class TransportViewModel @Inject constructor(
 
     private fun checkTransportDetails() {
         val categoryId = savedStateHandle.get<String>("categoryId")
-        val categoryName = savedStateHandle.get<String>("categoryName")
-        if (categoryId != null && categoryName != null) {
-            _state.update { it.copy(selectedCategory = categoryName) }
+        if (categoryId != null) {
+            val services = listOf(
+                TransportService(UiText.StringResource(R.string.tractor), R.drawable.transport, "tractor"),
+                TransportService(UiText.StringResource(R.string.car), R.drawable.iv_car, "car"),
+                TransportService(UiText.StringResource(R.string.pickup), R.drawable.pickup, "pickup"),
+                TransportService(UiText.StringResource(R.string.loader), R.drawable.transport, "loader"),
+                TransportService(UiText.StringResource(R.string.jcb), R.drawable.transport, "jcb")
+            )
+            val service = services.find { it.categoryId == categoryId }
+            _state.update { it.copy(
+                selectedCategory = categoryId,
+                selectedCategoryTitle = service?.title ?: UiText.DynamicString(categoryId)
+            ) }
             getTransportDetails(categoryId)
         }
     }
 
     private fun getTransportServices() {
         val services = listOf(
-            TransportService("Tractor", R.drawable.transport, "tractor"),
-            TransportService("Car", R.drawable.iv_car, "car"),
-            TransportService("Pickup", R.drawable.pickup, "pickup"),
-            TransportService("Loader", R.drawable.transport, "loader"),
-            TransportService("JCB", R.drawable.transport, "jcb")
+            TransportService(UiText.StringResource(R.string.tractor), R.drawable.transport, "tractor"),
+            TransportService(UiText.StringResource(R.string.car), R.drawable.iv_car, "car"),
+            TransportService(UiText.StringResource(R.string.pickup), R.drawable.pickup, "pickup"),
+            TransportService(UiText.StringResource(R.string.loader), R.drawable.transport, "loader"),
+            TransportService(UiText.StringResource(R.string.jcb), R.drawable.transport, "jcb")
         )
         _state.update { it.copy(services = services) }
     }
@@ -88,7 +99,7 @@ class TransportViewModel @Inject constructor(
                             _state.update { it.copy(transportDetails = result.data ?: emptyList(), isLoading = false) }
                         }
                         is Resource.Error -> {
-                            _state.update { it.copy(error = result.message, isLoading = false) }
+                            _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
                         }
                         is Resource.Loading -> {
                             _state.update { it.copy(isLoading = true) }
@@ -96,7 +107,7 @@ class TransportViewModel @Inject constructor(
                     }
                 }.launchIn(viewModelScope)
             } else {
-                _state.update { it.copy(error = "Village not selected", isLoading = false) }
+                _state.update { it.copy(error = UiText.StringResource(R.string.error_village_not_selected), isLoading = false) }
             }
         }
     }

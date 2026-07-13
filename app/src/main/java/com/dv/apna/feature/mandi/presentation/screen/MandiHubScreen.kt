@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -103,7 +104,7 @@ fun MandiHubScreen(
                     end.linkTo(parent.end)
                 }
         ) {
-            MandiTopBar(title = "Mandi Hub", onBackClick = onNavigateBack)
+            MandiTopBar(title = stringResource(id = R.string.mandi_hub), onBackClick = onNavigateBack)
 
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -112,21 +113,21 @@ fun MandiHubScreen(
             ) {
                 item {
                     MandiOptionCard(
-                        title = "Crop Prices",
+                        title = stringResource(id = R.string.crop_prices),
                         icon = painterResource(id = R.drawable.crops),
                         onClick = { onEvent(MandiEvent.CropPricesClick) }
                     )
                 }
                 item {
                     MandiOptionCard(
-                        title = "Today’s Market",
+                        title = stringResource(id = R.string.today_market),
                         icon = painterResource(id = R.drawable.market),
                         onClick = { onEvent(MandiEvent.TodayMarketClick) }
                     )
                 }
                 item {
                     MandiOptionCard(
-                        title = "Local Buyers",
+                        title = stringResource(id = R.string.local_buyers),
                         icon = painterResource(id = R.drawable.local_buyer),
                         onClick = { onEvent(MandiEvent.LocalBuyersClick) }
                     )

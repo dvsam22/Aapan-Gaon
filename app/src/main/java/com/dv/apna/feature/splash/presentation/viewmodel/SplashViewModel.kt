@@ -33,9 +33,8 @@ class SplashViewModel @Inject constructor(
 
     private fun checkNavigation() {
         viewModelScope.launch {
-            delay(2000)
+            delay(800)
             val villageId = preferenceManager.villageId.first()
-
             if (villageId != null) {
                 _effect.emit(SplashEffect.NavigateToHome)
             } else {

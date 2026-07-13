@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -85,10 +86,10 @@ fun SplashContent() {
             Text(
                 text = buildAnnotatedString {
                     withStyle(style = SpanStyle(color = Color(0xFF424242))) {
-                        append("हर काम का साथी, ")
+                        append(stringResource(id = R.string.splash_text_part1))
                     }
                     withStyle(style = SpanStyle(color = Primary)) {
-                        append("अपना गाँव")
+                        append(stringResource(id = R.string.splash_text_part2))
                     }
                 },
                 fontSize = 16.ssp(),

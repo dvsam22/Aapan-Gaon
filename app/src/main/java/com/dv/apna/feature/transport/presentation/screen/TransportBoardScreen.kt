@@ -5,11 +5,28 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -17,11 +34,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
+import com.dv.apna.core.common.UiText
+import com.dv.apna.core.components.AapanGavEmptyData
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -40,11 +61,15 @@ fun TransportBoardScreen(
     onNavigateBack: () -> Unit,
     onNavigateToCategory: (String, String) -> Unit
 ) {
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         effect.collectLatest { effect ->
             when (effect) {
                 TransportEffect.NavigateBack -> onNavigateBack()
-                is TransportEffect.NavigateToCategory -> onNavigateToCategory(effect.categoryId, effect.categoryName)
+                is TransportEffect.NavigateToCategory -> onNavigateToCategory(
+                    effect.categoryId, effect.categoryName
+                )
+
                 else -> {}
             }
         }
@@ -79,26 +104,29 @@ fun TransportBoardScreen(
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                }
-        ) {
+                }) {
             TransportTopBar(onBackClick = onNavigateBack)
 
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 16.sdp(),
-                    end = 16.sdp(),
-                    top = 1.sdp(),
-                    bottom = 80.sdp()
-                ),
-                verticalArrangement = Arrangement.spacedBy(12.sdp())
-            ) {
-                items(state.services) { service ->
-                    TransportOptionCard(
-                        title = service.title,
-                        icon = painterResource(id = service.icon),
-                        onClick = { onEvent(TransportEvent.CategoryClick(service.categoryId, service.title)) }
-                    )
+            if (state.services.isEmpty() && !state.isLoading) {
+                AapanGavEmptyData(message = stringResource(id = R.string.no_records_found))
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(
+                        start = 16.sdp(), end = 16.sdp(), top = 1.sdp(), bottom = 80.sdp()
+                    ), verticalArrangement = Arrangement.spacedBy(12.sdp())
+                ) {
+                    items(state.services) { service ->
+                        TransportOptionCard(
+                            title = service.title.asString(),
+                            icon = painterResource(id = service.icon),
+                            onClick = {
+                                onEvent(
+                                    TransportEvent.CategoryClick(
+                                        service.categoryId, service.title.asString(context)
+                                    )
+                                )
+                            })
+                    }
                 }
             }
         }
@@ -118,8 +146,7 @@ fun TransportTopBar(onBackClick: () -> Unit) {
                 .width(34.sdp())
                 .height(46.sdp())
                 .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
+                    interactionSource = remember { MutableInteractionSource() }, indication = null
                 ) { onBackClick() },
             shape = RoundedCornerShape(24.sdp()),
             color = Color(0xFFEFFAF6),
@@ -136,10 +163,9 @@ fun TransportTopBar(onBackClick: () -> Unit) {
         }
 
         Text(
-            text = "Transport & Rentals",
+            text = stringResource(id = R.string.transport_rentals),
             style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.ssp()
+                fontWeight = FontWeight.SemiBold, fontSize = 16.ssp()
             ),
             modifier = Modifier.align(Alignment.Center)
         )
@@ -148,17 +174,14 @@ fun TransportTopBar(onBackClick: () -> Unit) {
 
 @Composable
 fun TransportOptionCard(
-    title: String,
-    icon: androidx.compose.ui.graphics.painter.Painter,
-    onClick: () -> Unit
+    title: String, icon: androidx.compose.ui.graphics.painter.Painter, onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(85.sdp())
             .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null
+                interactionSource = remember { MutableInteractionSource() }, indication = null
             ) { onClick() },
         shape = RoundedCornerShape(12.sdp()),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -197,12 +220,9 @@ fun TransportOptionCard(
                     Spacer(modifier = Modifier.width(12.sdp()))
 
                     Text(
-                        text = title,
-                        style = MaterialTheme.typography.bodyLarge.copy(
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 14.ssp()
-                        ),
-                        color = Color.Black
+                        text = title, style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = FontWeight.Medium, fontSize = 14.ssp()
+                        ), color = Color.Black
                     )
                 }
 
@@ -223,16 +243,19 @@ fun TransportBoardScreenPreview() {
     AapanGavTheme {
         TransportBoardScreen(
             state = TransportState(
-                services = listOf(
-                    TransportService("Tractor", R.drawable.transport, "tractor"),
-                    TransportService("Car", R.drawable.iv_car, "car"),
-                    TransportService("Pickup", R.drawable.pickup, "pickup"),
+            services = listOf(
+                TransportService(
+                    UiText.StringResource(R.string.tractor), R.drawable.transport, "tractor"
+                ),
+                TransportService(UiText.StringResource(R.string.car), R.drawable.iv_car, "car"),
+                TransportService(
+                    UiText.StringResource(R.string.pickup), R.drawable.pickup, "pickup"
                 )
-            ),
+            )
+        ),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
             onNavigateBack = {},
-            onNavigateToCategory = { _, _ -> }
-        )
+            onNavigateToCategory = { _, _ -> })
     }
 }

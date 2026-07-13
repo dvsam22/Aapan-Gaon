@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -112,21 +113,21 @@ fun ConstructionHubScreen(
             ) {
                 item {
                     ConstructionOptionCard(
-                        title = "Bricks",
+                        title = stringResource(id = R.string.bricks),
                         icon = painterResource(id = R.drawable.iv_bricks),
                         onClick = { onEvent(ConstructionEvent.BricksClick) }
                     )
                 }
                 item {
                     ConstructionOptionCard(
-                        title = "Material Shops",
+                        title = stringResource(id = R.string.material_shops),
                         icon = painterResource(id = R.drawable.iv_material_shpos),
                         onClick = { onEvent(ConstructionEvent.MaterialShopsClick) }
                     )
                 }
                 item {
                     ConstructionOptionCard(
-                        title = "Hardware Shops",
+                        title = stringResource(id = R.string.hardware_shops),
                         icon = painterResource(id = R.drawable.hardware_shops),
                         onClick = { onEvent(ConstructionEvent.HardwareShopsClick) }
                     )
@@ -167,7 +168,7 @@ fun ConstructionTopBar(onBackClick: () -> Unit) {
         }
 
         Text(
-            text = "Construction Hub",
+            text = stringResource(id = R.string.construction_hub),
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.ssp()

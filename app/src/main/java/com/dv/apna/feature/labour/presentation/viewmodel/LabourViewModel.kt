@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.dv.apna.R
 import com.dv.apna.core.common.Resource
+import com.dv.apna.core.common.UiText
 import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.core.navigation.Route
 import com.dv.apna.feature.labour.domain.model.LabourService
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
@@ -52,7 +54,19 @@ class LabourViewModel @Inject constructor(
     private fun checkLabourDetails() {
         try {
             val route = savedStateHandle.toRoute<Route.LabourDetails>()
-            _state.update { it.copy(selectedCategory = route.category) }
+            val services = listOf(
+                LabourService(UiText.StringResource(R.string.rajmistri), R.drawable.rajmistri, "rajmistri"),
+                LabourService(UiText.StringResource(R.string.plumber), R.drawable.plumber, "plumber"),
+                LabourService(UiText.StringResource(R.string.electrician), R.drawable.electrician, "electrician"),
+                LabourService(UiText.StringResource(R.string.carpenter), R.drawable.carpenter, "carpenter"),
+                LabourService(UiText.StringResource(R.string.tailor), R.drawable.tailor, "tailor"),
+                LabourService(UiText.StringResource(R.string.labour), R.drawable.labour, "labour")
+            )
+            val service = services.find { it.categoryId == route.category }
+            _state.update { it.copy(
+                selectedCategory = route.category,
+                selectedCategoryTitle = service?.title ?: UiText.DynamicString(route.category)
+            ) }
             fetchLabourDetails(route.category)
         } catch (e: Exception) {
             // Not in LabourDetails route or no args
@@ -61,12 +75,12 @@ class LabourViewModel @Inject constructor(
 
     private fun getLabourServices() {
         val services = listOf(
-            LabourService("Rajmistri", R.drawable.rajmistri, "rajmistri"),
-            LabourService("Plumber", R.drawable.plumber, "plumber"),
-            LabourService("Electrician", R.drawable.electrician, "electrician"),
-            LabourService("Carpenter", R.drawable.carpenter, "carpenter"),
-            LabourService("Tailor", R.drawable.tailor, "tailor"),
-            LabourService("Labour", R.drawable.labour, "labour")
+            LabourService(UiText.StringResource(R.string.rajmistri), R.drawable.rajmistri, "rajmistri"),
+            LabourService(UiText.StringResource(R.string.plumber), R.drawable.plumber, "plumber"),
+            LabourService(UiText.StringResource(R.string.electrician), R.drawable.electrician, "electrician"),
+            LabourService(UiText.StringResource(R.string.carpenter), R.drawable.carpenter, "carpenter"),
+            LabourService(UiText.StringResource(R.string.tailor), R.drawable.tailor, "tailor"),
+            LabourService(UiText.StringResource(R.string.labour), R.drawable.labour, "labour")
         )
         _state.update { it.copy(services = services) }
     }
@@ -78,8 +92,7 @@ class LabourViewModel @Inject constructor(
             }
 
             is LabourEvent.CategoryClick -> {
-                val categoryId = _state.value.services.find { it.title == event.category }?.categoryId ?: event.category
-                viewModelScope.launch { _effect.emit(LabourEffect.NavigateToCategory(categoryId)) }
+                viewModelScope.launch { _effect.emit(LabourEffect.NavigateToCategory(event.category)) }
             }
 
             is LabourEvent.Refresh -> {
@@ -90,11 +103,14 @@ class LabourViewModel @Inject constructor(
 
     private fun fetchLabourDetails(categoryId: String) {
         loadJob?.cancel()
-        loadJob = preferenceManager.villageId
-            .filterNotNull()
-            .flatMapLatest { villageId ->
-                getLaboursByCategoryUseCase(villageId, categoryId)
-            }
+        loadJob = combine(
+            preferenceManager.villageId.filterNotNull(),
+            preferenceManager.languageCode
+        ) { villageId, _ ->
+            villageId
+        }.flatMapLatest { villageId ->
+            getLaboursByCategoryUseCase(villageId, categoryId)
+        }
             .onEach { result ->
                 when (result) {
                     is Resource.Success<*> -> {
@@ -108,7 +124,7 @@ class LabourViewModel @Inject constructor(
                     }
 
                     is Resource.Error<*> -> {
-                        _state.update { it.copy(error = result.message, isLoading = false) }
+                        _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
                     }
 
                     is Resource.Loading<*> -> {

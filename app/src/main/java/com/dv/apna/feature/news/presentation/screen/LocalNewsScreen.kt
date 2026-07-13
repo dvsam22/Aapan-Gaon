@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +32,7 @@ import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
 import com.dv.apna.core.components.NewsSkeleton
+import com.dv.apna.core.components.AapanGavEmptyData
 import com.dv.apna.feature.news.domain.model.NewsModel
 import com.dv.apna.feature.news.presentation.effect.NewsEffect
 import com.dv.apna.feature.news.presentation.event.NewsEvent
@@ -92,13 +94,13 @@ fun LocalNewsScreen(
                     end.linkTo(parent.end)
                 }
         ) {
-            NewsTopBar(title = "News & Notices", onBackClick = { onEvent(NewsEvent.BackClick) })
+            NewsTopBar(title = stringResource(id = R.string.news_notices), onBackClick = { onEvent(NewsEvent.BackClick) })
 
             if (state.isLoading) {
                 NewsSkeleton()
             } else if (state.error != null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = state.error, color = Color.Red)
+                    Text(text = state.error.asString(), color = Color.Red)
                 }
             } else {
                 LazyColumn(
@@ -109,7 +111,7 @@ fun LocalNewsScreen(
                     if (state.news.isNotEmpty()) {
                         item {
                             Text(
-                                text = "Breaking News",
+                                text = stringResource(id = R.string.breaking_news),
                                 style = MaterialTheme.typography.titleLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 16.ssp()
@@ -131,7 +133,7 @@ fun LocalNewsScreen(
                     if (state.notices.isNotEmpty()) {
                         item {
                             Text(
-                                text = "Official Notices",
+                                text = stringResource(id = R.string.official_notices),
                                 style = MaterialTheme.typography.titleLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 16.ssp()
@@ -151,9 +153,10 @@ fun LocalNewsScreen(
 
                     if (state.news.isEmpty() && state.notices.isEmpty() && !state.isLoading) {
                         item {
-                            Box(modifier = Modifier.fillParentMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(text = "No news or notices available")
-                            }
+                            AapanGavEmptyData(
+                                modifier = Modifier.fillParentMaxSize(),
+                                message = stringResource(id = R.string.no_news_available)
+                            )
                         }
                     }
                 }

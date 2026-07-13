@@ -19,12 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
 import com.dv.apna.core.components.MandiTableSkeleton
+import com.dv.apna.core.components.AapanGavEmptyData
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -82,10 +84,14 @@ fun CropPricesScreen(
                     end.linkTo(parent.end)
                 }
         ) {
-            MandiTopBar(title = "Crop Prices", onBackClick = { onEvent(MandiEvent.BackClick) })
+            MandiTopBar(title = stringResource(id = R.string.crop_prices), onBackClick = { onEvent(MandiEvent.BackClick) })
 
             if (state.isLoading) {
                 MandiTableSkeleton()
+            } else if (state.cropPrices.isEmpty()) {
+                AapanGavEmptyData(
+                    message = stringResource(id = R.string.no_records_found)
+                )
             } else {
                 Card(
                     modifier = Modifier
@@ -104,7 +110,7 @@ fun CropPricesScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Crop",
+                                text = stringResource(id = R.string.crop),
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.ssp()
@@ -113,7 +119,7 @@ fun CropPricesScreen(
                                 modifier = Modifier.weight(1.5f)
                             )
                             Text(
-                                text = "Unit",
+                                text = stringResource(id = R.string.unit),
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.ssp()
@@ -123,7 +129,7 @@ fun CropPricesScreen(
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = "Price",
+                                text = stringResource(id = R.string.price),
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.ssp()

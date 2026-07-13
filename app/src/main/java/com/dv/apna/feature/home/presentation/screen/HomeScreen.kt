@@ -4,6 +4,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,7 +14,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +55,7 @@ fun HomeScreen(
     onNavigateToMandi: () -> Unit,
     onNavigateToNews: () -> Unit,
     onNavigateToHealth: () -> Unit,
+    onNavigateToFamilyFunction: () -> Unit,
     onNavigateToLanguage: () -> Unit,
     onNavigateToChangeVillage: () -> Unit,
     onNavigateToAboutUs: () -> Unit,
@@ -83,6 +87,9 @@ fun HomeScreen(
                 drawerShape = RoundedCornerShape(topEnd = 0.sdp(), bottomEnd = 0.sdp())
             ) {
                 HomeDrawer(
+                    onCloseClick = {
+                        scope.launch { drawerState.close() }
+                    },
                     onItemClick = { item ->
                         scope.launch { drawerState.close() }
                         when (item) {
@@ -140,7 +147,7 @@ fun HomeScreen(
 
                 if (state.error != null) {
                     AapanGavErrorScreen(
-                        message = state.error,
+                        message = state.error.asString(),
                         onRetry = { onEvent(HomeEvent.Refresh) }
                     )
                 } else {
@@ -152,7 +159,8 @@ fun HomeScreen(
                         onTransportClick = onNavigateToTransport,
                         onMandiClick = onNavigateToMandi,
                         onNewsClick = onNavigateToNews,
-                        onHealthClick = onNavigateToHealth
+                        onHealthClick = onNavigateToHealth,
+                        onFamilyFunctionClick = onNavigateToFamilyFunction
                     )
                 }
             }
@@ -162,60 +170,84 @@ fun HomeScreen(
 
 @Composable
 fun HomeDrawer(
+    onCloseClick: () -> Unit,
     onItemClick: (DrawerItem) -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .statusBarsPadding()
-            .padding(horizontal = 24.sdp(), vertical = 20.sdp())
     ) {
-        IconButton(
-            onClick = { /* Handled by gesture or system back */ },
+        // Header
+        Box(
             modifier = Modifier
-                .size(28.sdp())
-                .padding(bottom = 20.sdp())
+                .fillMaxWidth()
+                .padding(24.sdp()),
+            contentAlignment = Alignment.CenterStart
         ) {
-            Icon(
-                imageVector = Icons.Default.Menu,
-                contentDescription = "Menu",
-                modifier = Modifier.size(28.sdp()),
-                tint = Color.Black
+            // App Logo
+            Image(
+                painter = painterResource(id = R.drawable.iv_splash_logo),
+                contentDescription = "App Logo",
+                modifier = Modifier
+                    .size(65.sdp())
+                    .clip(CircleShape),
+                contentScale = ContentScale.Fit
             )
+
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .size(28.sdp())
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onCloseClick() },
+                shape = CircleShape,
+                color = Color.White,
+                border = BorderStroke(1.sdp(), Color(0xFFD9D9D9))
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close",
+                        modifier = Modifier.size(16.sdp()),
+                        tint = Color.Black
+                    )
+                }
+            }
         }
 
-        Spacer(modifier = Modifier.height(20.sdp()))
-
         DrawerMenuItem(
-            title = "Change Language",
+            title = stringResource(id = R.string.change_language),
             onClick = { onItemClick(DrawerItem.Language) }
         )
         DrawerMenuItem(
-            title = "Change Village",
+            title = stringResource(id = R.string.change_village),
             onClick = { onItemClick(DrawerItem.Village) }
         )
         DrawerMenuItem(
-            title = "About Us",
+            title = stringResource(id = R.string.about_us),
             onClick = { onItemClick(DrawerItem.AboutUs) }
         )
         DrawerMenuItem(
-            title = "Privacy Policy",
+            title = stringResource(id = R.string.privacy_policy),
             onClick = { onItemClick(DrawerItem.PrivacyPolicy) }
         )
         DrawerMenuItem(
-            title = "Terms & Conditions",
+            title = stringResource(id = R.string.terms_and_conditions),
             onClick = { onItemClick(DrawerItem.Terms) }
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-            text = "Version 1.1",
+            text = stringResource(id = R.string.version_format, "1.1"),
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 12.ssp(),
                 color = Color(0xFF8391A1)
             ),
-            modifier = Modifier.padding(bottom = 20.sdp())
+            modifier = Modifier.padding(horizontal = 24.sdp(), vertical = 20.sdp())
         )
     }
 }
@@ -228,12 +260,15 @@ fun DrawerMenuItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick() }
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { onClick() }
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 16.sdp()),
+                .padding(horizontal = 24.sdp(), vertical = 12.sdp()),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -246,15 +281,14 @@ fun DrawerMenuItem(
                 color = Color.Black
             )
             Icon(
-                painter = painterResource(id = R.drawable.arrow_left),
+                painter = painterResource(id = R.drawable.arrow_circle_right),
                 contentDescription = null,
-                modifier = Modifier
-                    .size(20.sdp())
-                    .rotate(180f),
+                modifier = Modifier.size(20.sdp()),
                 tint = Color(0xFF38C792)
             )
         }
         HorizontalDivider(
+            modifier = Modifier.padding(horizontal = 24.sdp()),
             thickness = 1.sdp(),
             color = Color(0xFFF1F4F7)
         )
@@ -341,7 +375,8 @@ fun HomeContent(
     onTransportClick: () -> Unit,
     onMandiClick: () -> Unit,
     onNewsClick: () -> Unit,
-    onHealthClick: () -> Unit
+    onHealthClick: () -> Unit,
+    onFamilyFunctionClick: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -357,7 +392,7 @@ fun HomeContent(
 
         item {
             Text(
-                text = "Services",
+                text = stringResource(id = R.string.services),
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.ssp()
@@ -373,7 +408,8 @@ fun HomeContent(
                 onTransportClick = onTransportClick,
                 onMandiClick = onMandiClick,
                 onNewsClick = onNewsClick,
-                onHealthClick = onHealthClick
+                onHealthClick = onHealthClick,
+                onFamilyFunctionClick = onFamilyFunctionClick
             )
         }
     }
@@ -449,7 +485,7 @@ fun BannerCarousel(banners: List<BannerModel>) {
                             Spacer(modifier = Modifier.height(8.sdp()))
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = "Disc. ",
+                                    text = stringResource(id = R.string.discount_label),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = Color.Black
                                 )
@@ -496,7 +532,8 @@ fun ServicesGrid(
     onTransportClick: () -> Unit,
     onMandiClick: () -> Unit,
     onNewsClick: () -> Unit,
-    onHealthClick: () -> Unit
+    onHealthClick: () -> Unit,
+    onFamilyFunctionClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -506,7 +543,7 @@ fun ServicesGrid(
     ) {
         // Construction Hub
         ServiceCard(
-            title = "Construction Hub",
+            title = stringResource(id = R.string.construction_hub),
             icon = R.drawable.construction,
             modifier = Modifier
                 .fillMaxWidth()
@@ -520,7 +557,7 @@ fun ServicesGrid(
         ) {
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.sdp())) {
                 ServiceCard(
-                    title = "Labour Board",
+                    title = stringResource(id = R.string.labour_board),
                     icon = R.drawable.labour,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -528,7 +565,7 @@ fun ServicesGrid(
                     onClick = onLabourClick
                 )
                 ServiceCard(
-                    title = "Transport & Rentals",
+                    title = stringResource(id = R.string.transport_rentals),
                     icon = R.drawable.transport,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -538,7 +575,7 @@ fun ServicesGrid(
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.sdp())) {
                 ServiceCard(
-                    title = "Mandi Hub",
+                    title = stringResource(id = R.string.mandi_hub),
                     icon = R.drawable.mandi,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -546,7 +583,7 @@ fun ServicesGrid(
                     onClick = onMandiClick
                 )
                 ServiceCard(
-                    title = "Local News",
+                    title = stringResource(id = R.string.local_news),
                     icon = R.drawable.local_news,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -556,15 +593,30 @@ fun ServicesGrid(
             }
         }
 
-        // Health & Emergency
-        ServiceCard(
-            title = "Health & Emergency",
-            icon = R.drawable.health,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.sdp()),
-            onClick = onHealthClick
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.sdp())
+        ) {
+            // Health & Emergency
+            ServiceCard(
+                title = stringResource(id = R.string.health_emergency),
+                icon = R.drawable.health,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(150.sdp()),
+                onClick = onHealthClick
+            )
+
+            // Family Function
+            ServiceCard(
+                title = stringResource(id = R.string.family_functions),
+                icon = R.drawable.mandi, // TODO: Replace with family function icon
+                modifier = Modifier
+                    .weight(1f)
+                    .height(150.sdp()),
+                onClick = onFamilyFunctionClick
+            )
+        }
     }
 }
 
@@ -631,6 +683,7 @@ fun HomeScreenPreview() {
             onNavigateToMandi = {},
             onNavigateToNews = {},
             onNavigateToHealth = {},
+            onNavigateToFamilyFunction = {},
             onNavigateToLanguage = {},
             onNavigateToChangeVillage = {},
             onNavigateToAboutUs = {},

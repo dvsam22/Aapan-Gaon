@@ -22,11 +22,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
 import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.AapanGavEmptyData
 import com.dv.apna.core.components.HealthSkeleton
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -42,7 +44,7 @@ fun EmergencyListScreen(
     title: String,
     list: List<DoctorModel>,
     isLoading: Boolean,
-    error: String?,
+    error: com.dv.apna.core.common.UiText?,
     onEvent: (HealthEvent) -> Unit,
     effect: Flow<HealthEffect>,
     onNavigateBack: () -> Unit,
@@ -96,9 +98,7 @@ fun EmergencyListScreen(
                 HealthSkeleton()
             } else {
                 if (list.isEmpty() && error == null) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = "No records found", color = Color.Gray)
-                    }
+                    AapanGavEmptyData(message = stringResource(id = R.string.no_records_found))
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -126,7 +126,7 @@ fun EmergencyListScreen(
 
         if (error != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                AapanGavErrorScreen(message = error, onRetry = { /* TODO: Refresh */ })
+                AapanGavErrorScreen(message = error.asString(), onRetry = { /* TODO: Refresh */ })
             }
         }
     }
@@ -258,7 +258,7 @@ fun EmergencyItemCard(
                 )
                 Spacer(modifier = Modifier.width(8.sdp()))
                 Text(
-                    text = "Info:",
+                    text = stringResource(id = R.string.info_label),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Medium,
                         fontSize = 12.ssp()
@@ -295,7 +295,7 @@ fun EmergencyItemCard(
                     )
                     Spacer(modifier = Modifier.width(8.sdp()))
                     Text(
-                        text = "Call Now",
+                        text = stringResource(id = R.string.call_now),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.ssp()

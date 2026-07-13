@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -82,7 +83,7 @@ fun TodayMarketScreen(
                     end.linkTo(parent.end)
                 }
         ) {
-            MandiTopBar(title = "Today’s Market", onBackClick = { onEvent(MandiEvent.BackClick) })
+            MandiTopBar(title = stringResource(id = R.string.today_market), onBackClick = { onEvent(MandiEvent.BackClick) })
 
             if (state.isLoading) {
                 MandiTableSkeleton()
@@ -104,7 +105,7 @@ fun TodayMarketScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Vegetables",
+                                text = stringResource(id = R.string.vegetables),
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.ssp()
@@ -113,7 +114,7 @@ fun TodayMarketScreen(
                                 modifier = Modifier.weight(1.5f)
                             )
                             Text(
-                                text = "Unit",
+                                text = stringResource(id = R.string.unit),
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.ssp()
@@ -123,7 +124,7 @@ fun TodayMarketScreen(
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = "Price",
+                                text = stringResource(id = R.string.price),
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.ssp()

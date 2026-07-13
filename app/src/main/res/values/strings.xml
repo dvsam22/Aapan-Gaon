@@ -21,4 +21,110 @@
     <string name="charges">Charges:</string>
     <string name="no_workers">No workers found</string>
     <string name="details_title">%1$s Details</string>
+
+    <!-- Navigation & Menu -->
+    <string name="change_language">Change Language</string>
+    <string name="change_village">Change Village</string>
+    <string name="about_us">About Us</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_and_conditions">Terms &amp; Conditions</string>
+    <string name="version_format">Version %1$s</string>
+
+    <!-- Services -->
+    <string name="services">Services</string>
+    <string name="construction_hub">Construction Hub</string>
+    <string name="labour_board">Labour Board</string>
+    <string name="transport_rentals">Transport &amp; Rentals</string>
+    <string name="mandi_hub">Mandi Hub</string>
+    <string name="local_news">Local News</string>
+    <string name="health_emergency">Health &amp; Emergency</string>
+
+    <!-- Language Selection Screen -->
+    <string name="select_language_bilingual">Select Language/ भाषा चुने</string>
+    <string name="select_village_bilingual">Select Village/ गाँव चुनें</string>
+    <string name="select_here_bilingual">Select Here/ यहाँ चुनें</string>
+    <string name="no_villages_found">No villages found</string>
+
+    <!-- Mandi Hub -->
+    <string name="crop_prices">Crop Prices</string>
+    <string name="today_market">Today’s Market</string>
+    <string name="local_buyers">Local Buyers</string>
+    <string name="crop">Crop</string>
+    <string name="unit">Unit</string>
+    <string name="price">Price</string>
+    <string name="vegetables">Vegetables</string>
+    <string name="for_label">For:</string>
+
+    <!-- Construction Hub -->
+    <string name="bricks">Bricks</string>
+    <string name="material_shops">Material Shops</string>
+    <string name="hardware_shops">Hardware Shops</string>
+    <string name="no_shops_found">No shops found</string>
+    <string name="items_available">Items Available:</string>
+    <string name="materials_available">Materials Available:</string>
+
+    <!-- Health & Emergency -->
+    <string name="ambulance">Ambulance</string>
+    <string name="police">Police</string>
+    <string name="doctors">Doctors</string>
+    <string name="hospitals">Hospitals</string>
+    <string name="pharmacy">Pharmacy</string>
+    <string name="no_doctors_found">No doctors found</string>
+    <string name="no_hospitals_found">No hospitals found</string>
+    <string name="no_pharmacies_found">No pharmacies found</string>
+    <string name="specialization_label">Specialist:</string>
+    <string name="availability_label">Timing:</string>
+    <string name="type_label">Type:</string>
+    <string name="facilities_label">Facilities:</string>
+    <string name="services_label">Services:</string>
+    <string name="status_label">Status:</string>
+
+    <!-- General -->
+    <string name="no_records_found">No records found</string>
+    <string name="info_label">Info:</string>
+    <string name="news_notices">News &amp; Notices</string>
+    <string name="breaking_news">Breaking News</string>
+    <string name="official_notices">Official Notices</string>
+    <string name="no_news_available">No news or notices available</string>
+    <string name="discount_label">Disc. </string>
+    <!-- Splash Screen -->
+    <string name="splash_text_part1">Your partner for every task, </string>
+    <string name="splash_text_part2">Aapan Gav</string>
+
+    <!-- Errors -->
+    <string name="error_select_language">Please select a language</string>
+    <string name="error_select_village">Please select a village</string>
+    <string name="error_village_not_selected">Village not selected</string>
+    <!-- Transport & News -->
+    <string name="no_vehicles_found">No vehicles found</string>
+    <string name="location_label">Location:</string>
+    <string name="vehicle_type_label">Vehicle:</string>
+    <string name="news_details">News Details</string>
+    <string name="notice_details">Notice Details</string>
+    <string name="published_label">Published: %1$s</string>
+    <string name="date_label">Date: %1$s</string>
+    <!-- Labour Services -->
+    <string name="rajmistri">Rajmistri</string>
+    <string name="plumber">Plumber</string>
+    <string name="electrician">Electrician</string>
+    <string name="carpenter">Carpenter</string>
+    <string name="tailor">Tailor</string>
+    <string name="labour">Labour</string>
+
+    <!-- Transport Services -->
+    <string name="tractor">Tractor</string>
+    <string name="car">Car</string>
+    <string name="pickup">Pickup</string>
+    <string name="loader">Loader</string>
+    <string name="jcb">JCB</string>
+
+    <!-- Family Functions -->
+    <string name="family_functions">Family Functions</string>
+    <string name="tent_pandal_decor">Tent, Pandal &amp; Decor</string>
+    <string name="catering_halwai">Catering &amp; Halwai</string>
+    <string name="photo_videography">Photo &amp; Videography</string>
+    <string name="dj_sound_band">DJ, Sound &amp; Band</string>
+    <string name="marriage_halls_lawns">Marriage Halls &amp; Lawns</string>
+    <string name="starting_price_label">Starting Price:</string>
+    <string name="no_service_providers">No service providers found</string>
 </resources>

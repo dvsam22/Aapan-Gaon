@@ -8,8 +8,9 @@ import com.dv.apna.feature.language.domain.model.LanguageModel
 import com.dv.apna.feature.language.domain.model.VillageModel
 import com.dv.apna.feature.language.domain.repository.LanguageRepository
 import android.util.Log
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
@@ -27,18 +28,21 @@ class LanguageRepositoryImpl @Inject constructor(
         )))
     }
 
-    override fun getVillages(): Flow<Resource<List<VillageModel>>> = flow {
-        emit(Resource.Loading())
-        try {
-            val languageCode = preferenceManager.languageCode.firstOrNull() ?: "en"
-            Log.d("LanguageRepo", "Fetching villages for language: $languageCode")
-            val villagesDto = dataSource.getVillages()
-            Log.d("LanguageRepo", "Fetched ${villagesDto.size} villages from DataSource")
-            val villages = villagesDto.map { it.toDomain(languageCode) }
-            emit(Resource.Success(villages))
-        } catch (e: Exception) {
-            Log.e("LanguageRepo", "Error fetching villages: ${e.message}", e)
-            emit(Resource.Error(e.message ?: "Unknown Error"))
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getVillages(): Flow<Resource<List<VillageModel>>> = preferenceManager.languageCode.flatMapLatest { languageCode ->
+        flow {
+            emit(Resource.Loading())
+            try {
+                val currentLang = languageCode ?: "en"
+                Log.d("LanguageRepo", "Fetching villages for language: $currentLang")
+                val villagesDto = dataSource.getVillages()
+                Log.d("LanguageRepo", "Fetched ${villagesDto.size} villages from DataSource")
+                val villages = villagesDto.map { it.toDomain(currentLang) }
+                emit(Resource.Success(villages))
+            } catch (e: Exception) {
+                Log.e("LanguageRepo", "Error fetching villages: ${e.message}", e)
+                emit(Resource.Error(e.message ?: "Unknown Error"))
+            }
         }
     }
 

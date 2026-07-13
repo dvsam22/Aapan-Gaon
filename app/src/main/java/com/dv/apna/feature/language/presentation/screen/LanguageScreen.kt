@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -88,7 +89,7 @@ fun LanguageScreen(
                 }
         ) {
             Text(
-                text = "Select Language/ भाषा चुने",
+                text = stringResource(id = R.string.select_language_bilingual),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.ssp(),
@@ -116,7 +117,7 @@ fun LanguageScreen(
             Spacer(modifier = Modifier.height(35.sdp()))
 
             Text(
-                text = "Select Village/ गाँव चुनें",
+                text = stringResource(id = R.string.select_village_bilingual),
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.ssp(),
@@ -135,7 +136,7 @@ fun LanguageScreen(
 
             state.error?.let { error ->
                 Text(
-                    text = error,
+                    text = error.asString(),
                     color = Color.Red,
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(top = 8.sdp())
@@ -156,7 +157,7 @@ fun LanguageScreen(
 
         // Bottom Button - Uses navigationBarsPadding to stay above nav bar
         AapanGavButton(
-            text = "Continue",
+            text = stringResource(id = R.string.continue_text),
             onClick = { onEvent(LanguageEvent.Continue) },
             enabled = state.selectedLanguageId != null && state.selectedVillage != null,
             modifier = Modifier
@@ -201,7 +202,7 @@ fun VillageSelector(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = selectedVillage?.villageName ?: "Select Here/ यहाँ चुनें",
+                    text = selectedVillage?.villageName ?: stringResource(id = R.string.select_here_bilingual),
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = 12.ssp(),
                         color = if (selectedVillage == null) Color(0xFF8391A1) else Color.Black
@@ -226,7 +227,7 @@ fun VillageSelector(
         ) {
             if (villages.isEmpty()) {
                 DropdownMenuItem(
-                    text = { Text("No villages found", color = Color.Gray) },
+                    text = { Text(stringResource(id = R.string.no_villages_found), color = Color.Gray) },
                     onClick = { expanded = false }
                 )
             } else {

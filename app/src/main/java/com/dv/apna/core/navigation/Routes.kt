@@ -79,6 +79,12 @@ sealed interface Route {
     data class TransportDetails(val categoryId: String, val categoryName: String) : Route
 
     @Serializable
+    data object FamilyFunction : Route
+
+    @Serializable
+    data class FamilyFunctionDetails(val categoryId: String) : Route
+
+    @Serializable
     data object News : Route
 
     @Serializable

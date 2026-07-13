@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -66,7 +67,7 @@ fun NoticeDetailsScreen(
                     end.linkTo(parent.end)
                 }
         ) {
-            NewsTopBar(title = "Notice Details", onBackClick = onNavigateBack)
+            NewsTopBar(title = stringResource(id = R.string.notice_details), onBackClick = onNavigateBack)
 
             if (state.isLoading) {
                 NewsDetailsSkeleton()
@@ -100,7 +101,7 @@ fun NoticeDetailsScreen(
                         tint = Color(0xFF2CA074)
                     )
                     Text(
-                        text = "Date: ${formatDate(notice.date)}",
+                        text = stringResource(id = R.string.date_label, formatDate(notice.date)),
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontSize = 12.ssp(),
                             fontWeight = FontWeight.Medium

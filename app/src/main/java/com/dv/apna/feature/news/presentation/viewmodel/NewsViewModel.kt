@@ -3,6 +3,7 @@ package com.dv.apna.feature.news.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dv.apna.core.common.Resource
+import com.dv.apna.core.common.UiText
 import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.feature.news.domain.usecase.GetNewsDataUseCase
 import com.dv.apna.feature.news.presentation.effect.NewsEffect
@@ -15,6 +16,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -39,8 +42,13 @@ class NewsViewModel @Inject constructor(
 
     private fun fetchNews() {
         viewModelScope.launch {
-            preferenceManager.villageId.flatMapLatest { villageId ->
-                getNewsDataUseCase(villageId ?: "")
+            combine(
+                preferenceManager.villageId.filterNotNull(),
+                preferenceManager.languageCode
+            ) { villageId, _ ->
+                villageId
+            }.flatMapLatest { villageId ->
+                getNewsDataUseCase(villageId)
             }.collectLatest { result ->
                 when (result) {
                     is Resource.Success -> {
@@ -58,7 +66,7 @@ class NewsViewModel @Inject constructor(
                         _state.update {
                             it.copy(
                                 isLoading = false,
-                                error = result.message
+                                error = UiText.DynamicString(result.message ?: "Unknown error")
                             )
                         }
                     }

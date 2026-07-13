@@ -20,12 +20,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
 import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.AapanGavEmptyData
 import com.dv.apna.core.components.ConstructionSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
@@ -96,9 +98,7 @@ fun MaterialShopsScreen(
                 ConstructionSkeleton()
             } else {
                 if (state.shops.isEmpty() && state.error == null) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = "No shops found", color = Color.Gray)
-                    }
+                    AapanGavEmptyData(message = stringResource(id = R.string.no_shops_found))
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -129,7 +129,7 @@ fun MaterialShopsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 AapanGavErrorScreen(
-                    message = state.error,
+                    message = state.error.asString(),
                     onRetry = { /* TODO: Refresh */ }
                 )
             }
@@ -170,12 +170,12 @@ fun MaterialShopsTopBar(onBackClick: () -> Unit, availableCount: Int) {
             modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Material Shops", style = MaterialTheme.typography.titleLarge.copy(
+                text = stringResource(id = R.string.material_shops), style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.SemiBold, fontSize = 16.ssp()
                 ), color = Color.Black
             )
             Text(
-                text = "$availableCount Available", style = MaterialTheme.typography.bodySmall.copy(
+                text = stringResource(id = R.string.available, availableCount), style = MaterialTheme.typography.bodySmall.copy(
                     fontSize = 12.ssp(), color = Color.Black.copy(alpha = 0.6f)
                 )
             )
@@ -261,7 +261,7 @@ fun MaterialShopCard(
                     )
                     Spacer(modifier = Modifier.width(8.sdp()))
                     Text(
-                        text = "Materials:", style = MaterialTheme.typography.bodyMedium.copy(
+                        text = stringResource(id = R.string.materials_available), style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Medium, fontSize = 12.ssp()
                         ), color = Color.Black
                     )
@@ -310,7 +310,7 @@ fun MaterialShopCard(
                     )
                     Spacer(modifier = Modifier.width(8.sdp()))
                     Text(
-                        text = "Call Now", style = MaterialTheme.typography.bodyMedium.copy(
+                        text = stringResource(id = R.string.call_now), style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Medium, fontSize = 14.ssp()
                         ), color = Color.White
                     )

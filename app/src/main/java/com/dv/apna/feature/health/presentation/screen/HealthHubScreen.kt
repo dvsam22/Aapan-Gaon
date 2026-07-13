@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -104,7 +105,7 @@ fun HealthHubScreen(
                         horizontalArrangement = Arrangement.spacedBy(16.sdp())
                     ) {
                         EmergencyCard(
-                            title = "Ambulance",
+                            title = stringResource(id = R.string.ambulance),
                             icon = R.drawable.ambulance,
                             onClick = { 
                                 val phone = state.ambulances.firstOrNull()?.phone ?: "108"
@@ -114,7 +115,7 @@ fun HealthHubScreen(
                             modifier = Modifier.weight(1f)
                         )
                         EmergencyCard(
-                            title = "Police",
+                            title = stringResource(id = R.string.police),
                             icon = R.drawable.police,
                             onClick = { 
                                 val phone = state.police.firstOrNull()?.phone ?: "100"
@@ -130,21 +131,21 @@ fun HealthHubScreen(
                 item {
                     Spacer(modifier = Modifier.height(8.sdp()))
                     HealthOptionCard(
-                        title = "Doctors",
+                        title = stringResource(id = R.string.doctors),
                         icon = painterResource(id = R.drawable.doctor),
                         onClick = { onEvent(HealthEvent.DoctorsClick) }
                     )
                 }
                 item {
                     HealthOptionCard(
-                        title = "Hospitals",
+                        title = stringResource(id = R.string.hospitals),
                         icon = painterResource(id = R.drawable.hospital),
                         onClick = { onEvent(HealthEvent.HospitalsClick) }
                     )
                 }
                 item {
                     HealthOptionCard(
-                        title = "Pharmacy",
+                        title = stringResource(id = R.string.pharmacy),
                         icon = painterResource(id = R.drawable.pharmecy),
                         onClick = { onEvent(HealthEvent.PharmacyClick) }
                     )
@@ -185,7 +186,7 @@ fun HealthTopBar(onBackClick: () -> Unit) {
         }
 
         Text(
-            text = "Health & Emergency",
+            text = stringResource(id = R.string.health_emergency),
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.ssp()
@@ -268,7 +269,7 @@ fun EmergencyCard(
                         contentPadding = PaddingValues(0.dp)
                     ) {
                         Text(
-                            text = "Call Now",
+                            text = stringResource(id = R.string.call_now),
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontSize = 11.ssp(),
                                 fontWeight = FontWeight.Medium

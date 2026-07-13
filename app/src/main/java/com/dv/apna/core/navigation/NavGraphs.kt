@@ -59,6 +59,10 @@ import com.dv.apna.feature.settings.presentation.screen.TermsAndConditionsScreen
 import com.dv.apna.feature.notification.presentation.screen.NotificationScreen
 import com.dv.apna.feature.notification.presentation.screen.NotificationDetailsScreen
 import com.dv.apna.feature.notification.presentation.viewmodel.NotificationViewModel
+import com.dv.apna.feature.family.presentation.screen.FamilyFunctionScreen
+import com.dv.apna.feature.family.presentation.screen.FamilyFunctionDetailsScreen
+import com.dv.apna.feature.family.presentation.viewmodel.FamilyFunctionViewModel
+import com.dv.apna.feature.family.presentation.effect.FamilyFunctionEffect
 
 @Composable
 fun RootNavGraph(
@@ -164,6 +168,7 @@ fun RootNavGraph(
                 onNavigateToMandi = { navController.navigate(Route.Mandi) },
                 onNavigateToNews = { navController.navigate(Route.News) },
                 onNavigateToHealth = { navController.navigate(Route.Health) },
+                onNavigateToFamilyFunction = { navController.navigate(Route.FamilyFunction) },
                 onNavigateToLanguage = { navController.navigate(Route.ChangeLanguage) },
                 onNavigateToChangeVillage = { navController.navigate(Route.ChangeVillage) },
                 onNavigateToAboutUs = { navController.navigate(Route.AboutUs) },
@@ -473,6 +478,38 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
+
+        composable<Route.FamilyFunction> {
+            FamilyFunctionScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToDetails = { categoryId ->
+                    navController.navigate(Route.FamilyFunctionDetails(categoryId))
+                }
+            )
+        }
+
+        composable<Route.FamilyFunctionDetails> {
+            val viewModel: FamilyFunctionViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                viewModel.effect.collectLatest { effect ->
+                    when (effect) {
+                        is FamilyFunctionEffect.DialPhone -> context.dial(effect.contact)
+                        else -> {}
+                    }
+                }
+            }
+
+            FamilyFunctionDetailsScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
         composable<Route.Settings> { }
     }
 }

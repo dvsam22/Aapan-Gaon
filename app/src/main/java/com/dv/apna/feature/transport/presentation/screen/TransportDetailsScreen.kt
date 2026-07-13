@@ -22,12 +22,14 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
 import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.AapanGavEmptyData
 import com.dv.apna.core.components.TransportSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
@@ -89,8 +91,9 @@ fun TransportDetailsScreen(
                     end.linkTo(parent.end)
                 }
         ) {
+            val title = state.selectedCategoryTitle?.asString() ?: state.selectedCategory
             TransportDetailsTopBar(
-                title = "${state.selectedCategory} Details",
+                title = stringResource(id = R.string.details_title, title),
                 availableCount = state.transportDetails.size,
                 onBackClick = { onEvent(TransportEvent.BackClick) }
             )
@@ -99,9 +102,7 @@ fun TransportDetailsScreen(
                 TransportSkeleton()
             } else {
                 if (state.transportDetails.isEmpty() && state.error == null) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = "No vehicles found", color = Color.Gray)
-                    }
+                    AapanGavEmptyData(message = stringResource(id = R.string.no_vehicles_found))
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -111,7 +112,7 @@ fun TransportDetailsScreen(
                             top = 1.sdp(),
                             bottom = 80.sdp()
                         ),
-                        verticalArrangement = Arrangement.spacedBy(16.sdp())
+                        verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
                         items(state.transportDetails) { transport ->
                             TransportVehicleCard(
@@ -126,7 +127,7 @@ fun TransportDetailsScreen(
 
         if (state.error != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                AapanGavErrorScreen(message = state.error, onRetry = { /* TODO: Refresh */ })
+                AapanGavErrorScreen(message = state.error.asString(), onRetry = { /* TODO: Refresh */ })
             }
         }
     }
@@ -179,7 +180,7 @@ fun TransportDetailsTopBar(
                 color = Color.Black
             )
             Text(
-                text = "$availableCount Available",
+                text = stringResource(id = R.string.available, availableCount),
                 style = MaterialTheme.typography.bodySmall.copy(
                     fontSize = 12.ssp(),
                     color = Color.Black.copy(alpha = 0.6f)
@@ -271,7 +272,7 @@ fun TransportVehicleCard(
                 )
                 Spacer(modifier = Modifier.width(8.sdp()))
                 Text(
-                    text = "Vehicle:",
+                    text = stringResource(id = R.string.vehicle_type_label),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Medium,
                         fontSize = 12.ssp()
@@ -308,7 +309,7 @@ fun TransportVehicleCard(
                     )
                     Spacer(modifier = Modifier.width(8.sdp()))
                     Text(
-                        text = "Call Now",
+                        text = stringResource(id = R.string.call_now),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.ssp()

@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
 import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.AapanGavEmptyData
 import com.dv.apna.core.components.NotificationSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
@@ -94,12 +95,10 @@ fun NotificationScreen(
                 NotificationSkeleton()
             } else if (state.error != null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    AapanGavErrorScreen(message = state.error, onRetry = { onEvent(NotificationEvent.Refresh) })
+                    AapanGavErrorScreen(message = state.error.asString(), onRetry = { onEvent(NotificationEvent.Refresh) })
                 }
             } else if (state.notifications.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(text = stringResource(id = R.string.no_notifications), color = Color.Gray)
-                }
+                AapanGavEmptyData(message = stringResource(id = R.string.no_notifications))
             } else {
                 val groupedNotifications = state.notifications.groupBy { it.category }
 

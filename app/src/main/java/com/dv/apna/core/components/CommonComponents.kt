@@ -26,11 +26,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.dv.apna.R
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
 
@@ -138,6 +145,40 @@ fun AapanGavLoading(
         CircularProgressIndicator(
             modifier = Modifier.size(48.sdp()),
             color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@Composable
+fun AapanGavEmptyData(
+    modifier: Modifier = Modifier.fillMaxSize(),
+    message: String = "No Data Found"
+) {
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.no_data_found))
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
+
+    Column(
+        modifier = modifier.padding(24.sdp()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = Modifier.size(200.sdp())
+        )
+        Spacer(modifier = Modifier.height(16.sdp()))
+        Text(
+            text = message,
+            style = MaterialTheme.typography.bodyLarge.copy(
+                fontSize = 16.ssp(),
+                fontWeight = FontWeight.Medium
+            ),
+            color = Color.Gray,
+            textAlign = TextAlign.Center
         )
     }
 }

@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
 import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.AapanGavEmptyData
 import com.dv.apna.core.components.ConstructionSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
@@ -97,9 +98,7 @@ fun BricksSuppliersScreen(
                 ConstructionSkeleton()
             } else {
                 if (state.suppliers.isEmpty() && state.error == null) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = stringResource(id = R.string.no_suppliers), color = Color.Gray)
-                    }
+                    AapanGavEmptyData(message = stringResource(id = R.string.no_suppliers))
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -130,7 +129,7 @@ fun BricksSuppliersScreen(
                 contentAlignment = Alignment.Center
             ) {
                 AapanGavErrorScreen(
-                    message = state.error,
+                    message = state.error.asString(),
                     onRetry = { onEvent(BricksEvent.Refresh) }
                 )
             }

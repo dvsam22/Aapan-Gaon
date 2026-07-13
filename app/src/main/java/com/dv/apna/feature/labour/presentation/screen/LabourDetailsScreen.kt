@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
 import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.AapanGavEmptyData
 import com.dv.apna.core.components.LabourSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
@@ -84,8 +85,9 @@ fun LabourDetailsScreen(
                     end.linkTo(parent.end)
                 }
         ) {
+            val title = state.selectedCategoryTitle?.asString() ?: state.selectedCategory
             LabourDetailsTopBar(
-                title = stringResource(id = R.string.details_title, state.selectedCategory),
+                title = stringResource(id = R.string.details_title, title),
                 availableCount = state.labourDetails.size
             ) { onEvent(LabourEvent.BackClick) }
 
@@ -93,9 +95,7 @@ fun LabourDetailsScreen(
                 LabourSkeleton()
             } else {
                 if (state.labourDetails.isEmpty() && state.error == null) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = stringResource(id = R.string.no_workers), color = Color.Gray)
-                    }
+                    AapanGavEmptyData(message = stringResource(id = R.string.no_workers))
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -120,7 +120,7 @@ fun LabourDetailsScreen(
 
         if (state.error != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                AapanGavErrorScreen(message = state.error, onRetry = { onEvent(LabourEvent.Refresh) })
+                AapanGavErrorScreen(message = state.error.asString(), onRetry = { onEvent(LabourEvent.Refresh) })
             }
         }
     }

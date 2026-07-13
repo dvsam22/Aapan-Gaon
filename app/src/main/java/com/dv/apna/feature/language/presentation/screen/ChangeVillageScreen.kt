@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -114,7 +115,7 @@ fun ChangeVillageScreen(
         }
 
         AapanGavButton(
-            text = "Save Changes",
+            text = stringResource(id = R.string.save_changes),
             onClick = { onEvent(LanguageEvent.Continue) },
             enabled = state.selectedVillage != null,
             modifier = Modifier
@@ -160,7 +161,7 @@ fun ChangeVillageTopBar(onBackClick: () -> Unit) {
         }
 
         Text(
-            text = "Change Village",
+            text = stringResource(id = R.string.change_village),
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.ssp()

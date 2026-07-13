@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -92,7 +93,7 @@ fun LocalBuyersScreen(
                 }
         ) {
             LocalBuyersTopBar(
-                title = "Local Buyers",
+                title = stringResource(id = R.string.local_buyers),
                 availableCount = state.localBuyers.size,
                 onBackClick = { onEvent(MandiEvent.BackClick) }
             )
@@ -169,7 +170,7 @@ fun LocalBuyersTopBar(
                 color = Color.Black
             )
             Text(
-                text = "$availableCount Available",
+                text = stringResource(id = R.string.available, availableCount),
                 style = MaterialTheme.typography.bodySmall.copy(
                     fontSize = 12.ssp(),
                     color = Color.Black.copy(alpha = 0.6f)
@@ -261,7 +262,7 @@ fun LocalBuyerCard(
                 )
                 Spacer(modifier = Modifier.width(8.sdp()))
                 Text(
-                    text = "For:",
+                    text = stringResource(id = R.string.for_label),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Medium,
                         fontSize = 12.ssp()
@@ -298,7 +299,7 @@ fun LocalBuyerCard(
                     )
                     Spacer(modifier = Modifier.width(8.sdp()))
                     Text(
-                        text = "Call Now",
+                        text = stringResource(id = R.string.call_now),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.ssp()

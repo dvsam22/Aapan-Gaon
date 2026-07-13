@@ -19,11 +19,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
 import com.dv.apna.core.components.AapanGavErrorScreen
+import com.dv.apna.core.components.AapanGavEmptyData
 import com.dv.apna.core.components.HealthSkeleton
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -90,9 +92,7 @@ fun DoctorScreen(
                 HealthSkeleton()
             } else {
                 if (state.doctors.isEmpty() && state.error == null) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = "No doctors found", color = Color.Gray)
-                    }
+                    AapanGavEmptyData(message = stringResource(id = R.string.no_doctors_found))
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -114,7 +114,7 @@ fun DoctorScreen(
 
         if (state.error != null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                AapanGavErrorScreen(message = state.error, onRetry = { /* TODO: Refresh */ })
+                AapanGavErrorScreen(message = state.error.asString(), onRetry = { /* TODO: Refresh */ })
             }
         }
     }
@@ -151,7 +151,7 @@ fun DoctorTopBar(onBackClick: () -> Unit) {
         }
 
         Text(
-            text = "Doctors",
+            text = stringResource(id = R.string.doctors),
             style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.ssp()
@@ -243,7 +243,7 @@ fun DoctorItemCard(
                 )
                 Spacer(modifier = Modifier.width(8.sdp()))
                 Text(
-                    text = "Specialist:",
+                    text = stringResource(id = R.string.specialization_label),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Medium,
                         fontSize = 12.ssp()
@@ -271,7 +271,7 @@ fun DoctorItemCard(
                 )
                 Spacer(modifier = Modifier.width(8.sdp()))
                 Text(
-                    text = "Timing:",
+                    text = stringResource(id = R.string.availability_label),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.Medium,
                         fontSize = 12.ssp()
@@ -308,7 +308,7 @@ fun DoctorItemCard(
                     )
                     Spacer(modifier = Modifier.width(8.sdp()))
                     Text(
-                        text = "Call Now",
+                        text = stringResource(id = R.string.call_now),
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.ssp()

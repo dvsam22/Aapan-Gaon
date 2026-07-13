@@ -3,6 +3,7 @@ package com.dv.apna.feature.health.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dv.apna.core.common.Resource
+import com.dv.apna.core.common.UiText
 import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.feature.health.domain.usecase.*
 import com.dv.apna.feature.health.presentation.effect.HealthEffect
@@ -13,13 +14,18 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.dv.apna.R
 import javax.inject.Inject
 
+@kotlinx.coroutines.ExperimentalCoroutinesApi
 @HiltViewModel
 class HealthViewModel @Inject constructor(
     private val getDoctorsUseCase: GetDoctorsUseCase,
@@ -42,16 +48,18 @@ class HealthViewModel @Inject constructor(
 
     private fun loadHealthData() {
         viewModelScope.launch {
-            val villageId = preferenceManager.villageId.firstOrNull()
-            if (villageId != null) {
+            combine(
+                preferenceManager.villageId.filterNotNull(),
+                preferenceManager.languageCode
+            ) { villageId, _ ->
+                villageId
+            }.onEach { villageId ->
                 fetchDoctors(villageId)
                 fetchHospitals(villageId)
                 fetchPharmacies(villageId)
                 fetchAmbulances(villageId)
                 fetchPolice(villageId)
-            } else {
-                _state.update { it.copy(error = "Village not selected") }
-            }
+            }.launchIn(viewModelScope)
         }
     }
 
@@ -62,7 +70,7 @@ class HealthViewModel @Inject constructor(
                     _state.update { it.copy(doctors = result.data ?: emptyList(), isLoading = false) }
                 }
                 is Resource.Error -> {
-                    _state.update { it.copy(error = result.message, isLoading = false) }
+                    _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
                 }
                 is Resource.Loading -> {
                     _state.update { it.copy(isLoading = true) }
@@ -78,7 +86,7 @@ class HealthViewModel @Inject constructor(
                     _state.update { it.copy(hospitals = result.data ?: emptyList(), isLoading = false) }
                 }
                 is Resource.Error -> {
-                    _state.update { it.copy(error = result.message, isLoading = false) }
+                    _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
                 }
                 is Resource.Loading -> {
                     _state.update { it.copy(isLoading = true) }
@@ -94,7 +102,7 @@ class HealthViewModel @Inject constructor(
                     _state.update { it.copy(pharmacies = result.data ?: emptyList(), isLoading = false) }
                 }
                 is Resource.Error -> {
-                    _state.update { it.copy(error = result.message, isLoading = false) }
+                    _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
                 }
                 is Resource.Loading -> {
                     _state.update { it.copy(isLoading = true) }
@@ -110,7 +118,7 @@ class HealthViewModel @Inject constructor(
                     _state.update { it.copy(ambulances = result.data ?: emptyList(), isLoading = false) }
                 }
                 is Resource.Error -> {
-                    _state.update { it.copy(error = result.message, isLoading = false) }
+                    _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
                 }
                 is Resource.Loading -> {
                     _state.update { it.copy(isLoading = true) }
@@ -126,7 +134,7 @@ class HealthViewModel @Inject constructor(
                     _state.update { it.copy(police = result.data ?: emptyList(), isLoading = false) }
                 }
                 is Resource.Error -> {
-                    _state.update { it.copy(error = result.message, isLoading = false) }
+                    _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
                 }
                 is Resource.Loading -> {
                     _state.update { it.copy(isLoading = true) }

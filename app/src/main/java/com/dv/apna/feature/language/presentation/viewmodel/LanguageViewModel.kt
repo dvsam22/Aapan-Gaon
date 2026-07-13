@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.dv.apna.core.common.Resource
+import com.dv.apna.core.common.UiText
 import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.core.navigation.Route
 import com.dv.apna.feature.language.domain.usecase.GetLanguageDataUseCase
@@ -15,6 +16,7 @@ import com.dv.apna.feature.language.presentation.effect.LanguageEffect
 import com.dv.apna.feature.language.presentation.event.LanguageEvent
 import com.dv.apna.feature.language.presentation.state.LanguageState
 import android.util.Log
+import com.dv.apna.R
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,7 +59,11 @@ class LanguageViewModel @Inject constructor(
             preferenceManager.villageId
         ) { langResult, villageResult, savedLanguageCode, savedVillageId ->
             val isLoading = langResult is Resource.Loading<*> || villageResult is Resource.Loading<*>
-            val error = (langResult as? Resource.Error<*>)?.message ?: (villageResult as? Resource.Error<*>)?.message
+            val error = if (langResult is Resource.Error<*>) {
+                UiText.DynamicString(langResult.message ?: "Unknown Error")
+            } else if (villageResult is Resource.Error<*>) {
+                UiText.DynamicString(villageResult.message ?: "Unknown Error")
+            } else null
 
             val languages = (langResult as? Resource.Success<*>)?.data as? List<com.dv.apna.feature.language.domain.model.LanguageModel> ?: _state.value.languages
             val villages = (villageResult as? Resource.Success<*>)?.data as? List<com.dv.apna.feature.language.domain.model.VillageModel> ?: _state.value.villages
@@ -142,9 +148,9 @@ class LanguageViewModel @Inject constructor(
                         com.dv.apna.core.utils.LocaleUtils.setLocale(selectedLanguage.code)
                         _effect.emit(LanguageEffect.NavigateToHome)
                     } else if (selectedLanguage == null) {
-                        _state.update { it.copy(error = "Please select a language") }
+                        _state.update { it.copy(error = UiText.StringResource(R.string.error_select_language)) }
                     } else {
-                        _state.update { it.copy(error = "Please select a village") }
+                        _state.update { it.copy(error = UiText.StringResource(R.string.error_select_village)) }
                     }
                 }
             }
