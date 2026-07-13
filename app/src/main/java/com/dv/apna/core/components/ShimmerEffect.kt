@@ -921,3 +921,26 @@ fun NotificationDetailsSkeleton() {
         }
     }
 }
+
+@Composable
+fun LanguageSkeleton() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.sdp())
+        ) {
+            repeat(2) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(175.5f / 173f)
+                        .clip(RoundedCornerShape(15.sdp()))
+                        .shimmerEffect()
+                )
+            }
+        }
+    }
+}

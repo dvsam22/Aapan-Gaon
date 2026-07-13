@@ -17,6 +17,7 @@ import com.dv.apna.feature.language.presentation.event.LanguageEvent
 import com.dv.apna.feature.language.presentation.state.LanguageState
 import android.util.Log
 import com.dv.apna.R
+import com.dv.apna.core.utils.LocaleUtils
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -117,6 +118,19 @@ class LanguageViewModel @Inject constructor(
                     val selectedLanguage = currentState.languages.find { it.id == selectedLanguageId }
 
                     if (selectedVillage != null && selectedLanguage != null) {
+                        _state.update { it.copy(isLoading = true) }
+
+                        // Detect if this is onboarding or settings change
+                        // If current destination is Route.Language, it's onboarding
+                        val isOnboarding = try {
+                            savedStateHandle.toRoute<Route.Language>()
+                            true
+                        } catch (e: Exception) {
+                            false
+                        }
+
+                        Log.d("LanguageVM", "isOnboarding: $isOnboarding")
+
                         // Handle FCM Topic Subscription
                         try {
                             val oldVillageId = preferenceManager.villageId.firstOrNull()
@@ -145,8 +159,15 @@ class LanguageViewModel @Inject constructor(
 
                         saveVillageSelectionUseCase(selectedVillage.id, selectedVillage.villageName)
                         saveLanguageUseCase(selectedLanguage.code)
-                        com.dv.apna.core.utils.LocaleUtils.setLocale(selectedLanguage.code)
-                        _effect.emit(LanguageEffect.NavigateToHome)
+
+                        if (isOnboarding) {
+                            Log.d("LanguageVM", "Emitting NavigateToHome")
+                            _effect.emit(LanguageEffect.NavigateToHome)
+                        } else {
+                            Log.d("LanguageVM", "Applying Settings change")
+                            LocaleUtils.setLocale(selectedLanguage.code)
+                            _state.update { it.copy(isLoading = false) }
+                        }
                     } else if (selectedLanguage == null) {
                         _state.update { it.copy(error = UiText.StringResource(R.string.error_select_language)) }
                     } else {

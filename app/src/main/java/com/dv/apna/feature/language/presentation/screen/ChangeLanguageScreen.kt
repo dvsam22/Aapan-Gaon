@@ -26,6 +26,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.dv.apna.R
 import com.dv.apna.core.components.AapanGavButton
+import com.dv.apna.core.components.LanguageSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -93,17 +94,21 @@ fun ChangeLanguageScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 18.sdp(), vertical = 20.sdp())
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.sdp())
-                ) {
-                    state.languages.forEach { language ->
-                        LanguageCard(
-                            language = language,
-                            isSelected = state.selectedLanguageId == language.id,
-                            onClick = { onEvent(LanguageEvent.SelectLanguage(language.id)) },
-                            modifier = Modifier.weight(1f)
-                        )
+                if (state.isLoading) {
+                    LanguageSkeleton()
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.sdp())
+                    ) {
+                        state.languages.forEach { language ->
+                            LanguageCard(
+                                language = language,
+                                isSelected = state.selectedLanguageId == language.id,
+                                onClick = { onEvent(LanguageEvent.SelectLanguage(language.id)) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
                 }
             }
@@ -112,7 +117,7 @@ fun ChangeLanguageScreen(
         AapanGavButton(
             text = stringResource(id = R.string.save_changes),
             onClick = { onEvent(LanguageEvent.Continue) },
-            enabled = state.selectedLanguageId != null,
+            enabled = state.selectedLanguageId != null && !state.isLoading,
             modifier = Modifier
                 .navigationBarsPadding()
                 .constrainAs(btnSave) {

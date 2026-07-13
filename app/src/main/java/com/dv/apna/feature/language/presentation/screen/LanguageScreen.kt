@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.dv.apna.core.components.AapanGavButton
+import com.dv.apna.core.components.LanguageSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -31,7 +32,6 @@ import com.dv.apna.feature.language.domain.model.LanguageModel
 import com.dv.apna.feature.language.domain.model.VillageModel
 import com.dv.apna.feature.language.presentation.effect.LanguageEffect
 import com.dv.apna.R
-import com.dv.apna.core.components.AapanGavLoading
 import com.dv.apna.feature.language.presentation.event.LanguageEvent
 import com.dv.apna.feature.language.presentation.state.LanguageState
 import kotlinx.coroutines.flow.collectLatest
@@ -61,7 +61,7 @@ fun LanguageScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        val (bottomImage, content, btnContinue, loading) = createRefs()
+        val (bottomImage, content, btnContinue) = createRefs()
 
         // Bottom Decoration Image - Stays at the very bottom, even under nav bar
         Image(
@@ -100,17 +100,21 @@ fun LanguageScreen(
 
             Spacer(modifier = Modifier.height(20.sdp()))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.sdp())
-            ) {
-                state.languages.forEach { language ->
-                    LanguageCard(
-                        language = language,
-                        isSelected = state.selectedLanguageId == language.id,
-                        onClick = { onEvent(LanguageEvent.SelectLanguage(language.id)) },
-                        modifier = Modifier.weight(1f)
-                    )
+            if (state.isLoading && state.languages.isEmpty()) {
+                LanguageSkeleton()
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.sdp())
+                ) {
+                    state.languages.forEach { language ->
+                        LanguageCard(
+                            language = language,
+                            isSelected = state.selectedLanguageId == language.id,
+                            onClick = { onEvent(LanguageEvent.SelectLanguage(language.id)) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
             }
 
@@ -128,11 +132,21 @@ fun LanguageScreen(
 
             Spacer(modifier = Modifier.height(20.sdp()))
 
-            VillageSelector(
-                villages = state.villages,
-                selectedVillage = state.selectedVillage,
-                onVillageSelected = { onEvent(LanguageEvent.SelectVillage(it)) }
-            )
+            if (state.isLoading && state.villages.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(42.sdp())
+                        .background(Color(0xFFEFFAF6), RoundedCornerShape(12.sdp()))
+                        .padding(horizontal = 16.sdp())
+                )
+            } else {
+                VillageSelector(
+                    villages = state.villages,
+                    selectedVillage = state.selectedVillage,
+                    onVillageSelected = { onEvent(LanguageEvent.SelectVillage(it)) }
+                )
+            }
 
             state.error?.let { error ->
                 Text(
@@ -148,7 +162,7 @@ fun LanguageScreen(
         AapanGavButton(
             text = stringResource(id = R.string.continue_text),
             onClick = { onEvent(LanguageEvent.Continue) },
-            enabled = state.selectedLanguageId != null && state.selectedVillage != null,
+            enabled = state.selectedLanguageId != null && state.selectedVillage != null && !state.isLoading,
             modifier = Modifier
                 .navigationBarsPadding()
                 .constrainAs(btnContinue) {
@@ -158,6 +172,10 @@ fun LanguageScreen(
                     width = Dimension.fillToConstraints
                 }
         )
+    }
+
+    if (state.isLoading && state.languages.isNotEmpty()) {
+        Box(modifier = Modifier.fillMaxSize().background(Color.White.copy(alpha = 0.3f)))
     }
 }
 
