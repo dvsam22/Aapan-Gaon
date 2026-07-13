@@ -144,17 +144,6 @@ fun LanguageScreen(
             }
         }
 
-        if (state.isLoading) {
-            AapanGavLoading(
-                modifier = Modifier.constrainAs(loading) {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-            )
-        }
-
         // Bottom Button - Uses navigationBarsPadding to stay above nav bar
         AapanGavButton(
             text = stringResource(id = R.string.continue_text),
