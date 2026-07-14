@@ -34,7 +34,8 @@ fun NewsDetailsScreen(
     state: NewsState,
     onNavigateBack: () -> Unit,
 ) {
-    val news = state.news.find { it.id == newsId }
+    // Try to find in news first, then in notices as a fallback
+    val news = state.news.find { it.id == newsId } ?: state.notices.find { it.id == newsId }
 
     ConstraintLayout(
         modifier = Modifier
@@ -79,66 +80,73 @@ fun NewsDetailsScreen(
                         .padding(horizontal = 16.sdp())
                         .verticalScroll(rememberScrollState())
                 ) {
-                Text(
-                    text = news.title,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.ssp(),
-                        lineHeight = 24.ssp()
-                    ),
-                    color = Color.Black
-                )
-
-                Spacer(modifier = Modifier.height(12.sdp()))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.sdp())
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.clock),
-                        contentDescription = null,
-                        modifier = Modifier.size(14.sdp()),
-                        tint = Color(0xFF2CA074)
-                    )
                     Text(
-                        text = stringResource(id = R.string.published_label, formatDate(news.date)),
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontSize = 12.ssp(),
-                            fontWeight = FontWeight.Medium
+                        text = news.title,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.ssp(),
+                            lineHeight = 24.ssp()
                         ),
-                        color = Color.Gray
+                        color = Color.Black
+                    )
+
+                    Spacer(modifier = Modifier.height(12.sdp()))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.sdp())
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.clock),
+                            contentDescription = null,
+                            modifier = Modifier.size(14.sdp()),
+                            tint = Color(0xFF2CA074)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.published_label, formatDate(news.date)),
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontSize = 12.ssp(),
+                                fontWeight = FontWeight.Medium
+                            ),
+                            color = Color.Gray
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.sdp()))
+
+                    AsyncImage(
+                        model = news.image,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.sdp())
+                            .clip(RoundedCornerShape(15.sdp())),
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(id = R.drawable.iv_dummy_banner),
+                        error = painterResource(id = R.drawable.iv_dummy_banner)
+                    )
+
+                    Spacer(modifier = Modifier.height(20.sdp()))
+
+                    Text(
+                        text = news.description,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontSize = 14.ssp(),
+                            lineHeight = 22.ssp()
+                        ),
+                        color = Color(0xFF4A4A4A)
+                    )
+
+                    Spacer(modifier = Modifier.height(100.sdp()))
+                }
+            } else {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = stringResource(id = R.string.no_records_found),
+                        style = MaterialTheme.typography.bodyLarge
                     )
                 }
-
-                Spacer(modifier = Modifier.height(16.sdp()))
-
-                AsyncImage(
-                    model = news.image,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(180.sdp())
-                        .clip(RoundedCornerShape(15.sdp())),
-                    contentScale = ContentScale.Crop,
-                    placeholder = painterResource(id = R.drawable.iv_dummy_banner),
-                    error = painterResource(id = R.drawable.iv_dummy_banner)
-                )
-
-                Spacer(modifier = Modifier.height(20.sdp()))
-
-                Text(
-                    text = news.description,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        fontSize = 14.ssp(),
-                        lineHeight = 22.ssp()
-                    ),
-                    color = Color(0xFF4A4A4A)
-                )
-                
-                Spacer(modifier = Modifier.height(100.sdp()))
             }
-        }
     }
 }
 }

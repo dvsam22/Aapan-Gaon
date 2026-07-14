@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -85,7 +84,7 @@ class LanguageViewModel @Inject constructor(
                 }
             }
 
-            val selectedVillage = if (_state.value.selectedVillage == null && shouldAutoSelect) {
+            val selectedVillage = if (_state.value.selectedVillage == null && (shouldAutoSelect || savedVillageId != null)) {
                 villages.find { it.id == savedVillageId }
             } else _state.value.selectedVillage
 
@@ -113,61 +112,61 @@ class LanguageViewModel @Inject constructor(
             LanguageEvent.Continue -> {
                 viewModelScope.launch {
                     val currentState = _state.value
-                    val selectedVillage = currentState.selectedVillage
-                    val selectedLanguageId = currentState.selectedLanguageId
-                    val selectedLanguage = currentState.languages.find { it.id == selectedLanguageId }
+                    val selectedLanguage = currentState.languages.find { it.id == currentState.selectedLanguageId }
+                    
+                    // Use village from state, or fallback to saved village if we are just changing language
+                    val villageId = currentState.selectedVillage?.id ?: preferenceManager.villageId.firstOrNull()
+                    val villageName = currentState.selectedVillage?.villageName ?: preferenceManager.villageName.firstOrNull()
 
-                    if (selectedVillage != null && selectedLanguage != null) {
+                    if (villageId != null && selectedLanguage != null) {
                         _state.update { it.copy(isLoading = true) }
 
-                        // Detect if this is onboarding or settings change
-                        // If current destination is Route.Language, it's onboarding
-                        val isOnboarding = try {
-                            savedStateHandle.toRoute<Route.Language>()
-                            true
-                        } catch (e: Exception) {
-                            false
-                        }
-
-                        Log.d("LanguageVM", "isOnboarding: $isOnboarding")
-
-                        // Handle FCM Topic Subscription
+                        // 1. Unsubscribe from old topic if needed
                         try {
-                            val oldVillageId = preferenceManager.villageId.firstOrNull()
-                            if (oldVillageId != null && oldVillageId != selectedVillage.id) {
-                                val oldTopic = if (oldVillageId.startsWith("village_")) oldVillageId else "village_$oldVillageId"
+                            val currentSavedVillageId = preferenceManager.villageId.firstOrNull()
+                            if (currentSavedVillageId != null && currentSavedVillageId != villageId) {
+                                val oldTopic = "village_$currentSavedVillageId"
+                                Log.d("FCM_DEBUG", "Unsubscribing from old topic: $oldTopic")
                                 FirebaseMessaging.getInstance().unsubscribeFromTopic(oldTopic)
                                     .addOnCompleteListener { task ->
                                         if (task.isSuccessful) {
-                                            Log.d("FCM", "Successfully unsubscribed from: $oldTopic")
-                                        }
-                                    }
-                            }
-                            
-                            if (oldVillageId != selectedVillage.id) {
-                                val topicName = if (selectedVillage.id.startsWith("village_")) selectedVillage.id else "village_${selectedVillage.id}"
-                                FirebaseMessaging.getInstance().subscribeToTopic(topicName)
-                                    .addOnCompleteListener { task ->
-                                        if (task.isSuccessful) {
-                                            Log.d("FCM", "Successfully subscribed to: $topicName")
+                                            Log.d("FCM_DEBUG", "Successfully unsubscribed from: $oldTopic")
+                                        } else {
+                                            Log.e("FCM_DEBUG", "Failed to unsubscribe from: $oldTopic", task.exception)
                                         }
                                     }
                             }
                         } catch (e: Exception) {
-                            Log.e("FCM", "Error in FCM subscription: ${e.message}")
+                            Log.e("FCM_DEBUG", "FCM Unsubscribe logic error", e)
                         }
 
-                        saveVillageSelectionUseCase(selectedVillage.id, selectedVillage.villageName)
+                        // 2. Save everything and WAIT (Atomic)
+                        saveVillageSelectionUseCase(villageId, villageName ?: "")
                         saveLanguageUseCase(selectedLanguage.code)
-
-                        if (isOnboarding) {
-                            Log.d("LanguageVM", "Emitting NavigateToHome")
-                            _effect.emit(LanguageEffect.NavigateToHome)
-                        } else {
-                            Log.d("LanguageVM", "Applying Settings change")
-                            LocaleUtils.setLocale(selectedLanguage.code)
-                            _state.update { it.copy(isLoading = false) }
+                        
+                        // 3. Subscribe to new topic
+                        try {
+                            val newTopic = "village_$villageId"
+                            Log.d("FCM_DEBUG", "Subscribing to new topic: $newTopic")
+                            FirebaseMessaging.getInstance().subscribeToTopic(newTopic)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        Log.d("FCM_DEBUG", "Successfully subscribed to: $newTopic")
+                                    } else {
+                                        Log.e("FCM_DEBUG", "Failed to subscribe to: $newTopic", task.exception)
+                                    }
+                                }
+                        } catch (e: Exception) {
+                            Log.e("FCM_DEBUG", "FCM Subscribe logic error", e)
                         }
+
+                        // 4. Trigger recreation/navigation
+                        // Recreating the activity will cause Splash to restart and pick up the new village/language
+                        LocaleUtils.setLocale(selectedLanguage.code)
+                        
+                        // Fallback: If for some reason recreation is delayed, emit navigation
+                        _effect.emit(LanguageEffect.NavigateToHome)
+
                     } else if (selectedLanguage == null) {
                         _state.update { it.copy(error = UiText.StringResource(R.string.error_select_language)) }
                     } else {

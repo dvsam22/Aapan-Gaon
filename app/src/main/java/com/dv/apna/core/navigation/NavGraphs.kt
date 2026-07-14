@@ -1,6 +1,8 @@
 package com.dv.apna.core.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -59,6 +61,7 @@ import com.dv.apna.feature.settings.presentation.screen.TermsAndConditionsScreen
 import com.dv.apna.feature.notification.presentation.screen.NotificationScreen
 import com.dv.apna.feature.notification.presentation.screen.NotificationDetailsScreen
 import com.dv.apna.feature.notification.presentation.viewmodel.NotificationViewModel
+import com.dv.apna.feature.splash.presentation.effect.SplashEffect
 import com.dv.apna.feature.family.presentation.screen.FamilyFunctionScreen
 import com.dv.apna.feature.family.presentation.screen.FamilyFunctionDetailsScreen
 import com.dv.apna.feature.family.presentation.viewmodel.FamilyFunctionViewModel
@@ -67,7 +70,7 @@ import com.dv.apna.feature.family.presentation.effect.FamilyFunctionEffect
 @Composable
 fun RootNavGraph(
     navController: NavHostController,
-    startDestination: Route = Route.Splash
+    startDestination: Route = Route.Splash()
 ) {
     NavHost(
         navController = navController,
@@ -97,21 +100,43 @@ fun RootNavGraph(
             ) + fadeOut(animationSpec = tween(400))
         }
     ) {
-        composable<Route.Splash> {
+        composable<Route.Splash> { backStackEntry ->
+            val splashRoute: Route.Splash = backStackEntry.toRoute()
             val viewModel: SplashViewModel = hiltViewModel()
+            
+            // Sync the notification data from route to ViewModel
+            LaunchedEffect(splashRoute) {
+                if (splashRoute.notificationId != null) {
+                    Log.d("FCM_DEBUG", "Splash received route data: ${splashRoute.notificationId}")
+                }
+            }
+
             SplashScreen(
                 viewModel = viewModel,
                 onNavigateToHome = {
                     navController.navigate(Route.Home) {
-                        popUpTo(Route.Splash) { inclusive = true }
+                        popUpTo(Route.Splash()) { inclusive = true }
                     }
                 },
                 onNavigateToLanguage = {
                     navController.navigate(Route.Language) {
-                        popUpTo(Route.Splash) { inclusive = true }
+                        popUpTo(Route.Splash()) { inclusive = true }
                     }
                 }
             )
+
+            // Handle Deep Link / Notification navigation from Splash
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                viewModel.effect.collect { effect ->
+                    if (effect is SplashEffect.NavigateToNotificationDetails) {
+                        when (effect.type) {
+                            "news" -> navController.navigate(Route.NewsDetails(effect.id))
+                            "notice" -> navController.navigate(Route.NoticeDetails(effect.id))
+                            else -> navController.navigate(Route.NotificationDetails(effect.id))
+                        }
+                    }
+                }
+            }
         }
 
         composable<Route.Language> {

@@ -1,5 +1,6 @@
 package com.dv.apna.feature.news.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dv.apna.core.common.Resource
@@ -46,6 +47,7 @@ class NewsViewModel @Inject constructor(
                 preferenceManager.villageId.filterNotNull(),
                 preferenceManager.languageCode
             ) { villageId, _ ->
+                Log.d("FCM_DEBUG", "ViewModel fetching news for village: $villageId")
                 villageId
             }.flatMapLatest { villageId ->
                 getNewsDataUseCase(villageId)
@@ -53,11 +55,12 @@ class NewsViewModel @Inject constructor(
                 when (result) {
                     is Resource.Success -> {
                         val allNews = result.data ?: emptyList()
+                        Log.d("FCM_DEBUG", "Fetched ${allNews.size} items from Firestore")
                         _state.update {
                             it.copy(
                                 isLoading = false,
-                                news = allNews.filter { item -> item.category == "news" },
-                                notices = allNews.filter { item -> item.category == "notice" }
+                                news = allNews.filter { item -> !item.category.equals("notice", ignoreCase = true) },
+                                notices = allNews.filter { item -> item.category.equals("notice", ignoreCase = true) }
                             )
                         }
                     }

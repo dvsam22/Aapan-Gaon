@@ -18,6 +18,8 @@ class NewsDataSource @Inject constructor(
             .orderBy("date", Query.Direction.DESCENDING)
             .get()
             .await()
-            .toObjects(NewsDto::class.java)
+            .documents.mapNotNull { doc ->
+                doc.toObject(NewsDto::class.java)?.copy(id = doc.id)
+            }
     }
 }

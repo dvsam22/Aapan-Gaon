@@ -94,7 +94,7 @@ fun LocalNewsScreen(
                     end.linkTo(parent.end)
                 }
         ) {
-            NewsTopBar(title = stringResource(id = R.string.news_notices), onBackClick = { onEvent(NewsEvent.BackClick) })
+            NewsTopBar(title = stringResource(id = R.string.breaking_news), onBackClick = { onEvent(NewsEvent.BackClick) })
 
             if (state.isLoading) {
                 NewsSkeleton()
@@ -109,18 +109,6 @@ fun LocalNewsScreen(
                 ) {
                     // Breaking News Section
                     if (state.news.isNotEmpty()) {
-                        item {
-                            Text(
-                                text = stringResource(id = R.string.breaking_news),
-                                style = MaterialTheme.typography.titleLarge.copy(
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 16.ssp()
-                                ),
-                                modifier = Modifier.padding(horizontal = 16.sdp(), vertical = 12.sdp()),
-                                color = Color.Black
-                            )
-                        }
-
                         items(state.news) { news ->
                             NewsItemCard(
                                 news = news,
@@ -129,29 +117,7 @@ fun LocalNewsScreen(
                         }
                     }
 
-                    // Notices Section
-                    if (state.notices.isNotEmpty()) {
-                        item {
-                            Text(
-                                text = stringResource(id = R.string.official_notices),
-                                style = MaterialTheme.typography.titleLarge.copy(
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 16.ssp()
-                                ),
-                                modifier = Modifier.padding(horizontal = 16.sdp(), vertical = 12.sdp()),
-                                color = Color.Black
-                            )
-                        }
-
-                        items(state.notices) { notice ->
-                            NoticeItemCard(
-                                notice = notice,
-                                onClick = { onEvent(NewsEvent.NoticeClick(notice.id)) }
-                            )
-                        }
-                    }
-
-                    if (state.news.isEmpty() && state.notices.isEmpty() && !state.isLoading) {
+                    if (state.news.isEmpty() && !state.isLoading) {
                         item {
                             AapanGavEmptyData(
                                 modifier = Modifier.fillParentMaxSize(),

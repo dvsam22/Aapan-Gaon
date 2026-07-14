@@ -47,6 +47,7 @@ fun ChangeLanguageScreen(
         effect.collectLatest { effect ->
             when (effect) {
                 LanguageEffect.NavigateToHome -> onNavigateBack()
+                LanguageEffect.NavigateBack -> onNavigateBack()
             }
         }
     }

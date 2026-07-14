@@ -28,6 +28,8 @@
     <string name="about_us">About Us</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="terms_and_conditions">Terms &amp; Conditions</string>
+    <string name="share_app">Share App</string>
+    <string name="rate_us">Rate Us</string>
     <string name="version_format">Version %1$s</string>
 
     <!-- Services -->

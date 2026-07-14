@@ -42,15 +42,23 @@ class NotificationHelper @Inject constructor(
         Log.d("NotificationHelper", "Notification channel created")
     }
 
-    fun showNotification(title: String, message: String) {
-        Log.d("NotificationHelper", "Showing notification: $title - $message")
+    fun showNotification(title: String, message: String, notificationId: String? = null, type: String? = null) {
+        Log.d("NotificationHelper", "Showing notification: $title - $message, id: $notificationId, type: $type")
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            if (notificationId != null) {
+                putExtra("notification_id", notificationId)
+            }
+            if (type != null) {
+                putExtra("notification_type", type)
+            }
         }
         
         // FLAG_IMMUTABLE is mandatory for Android 12+ (API 31+)
+        // We use FLAG_MUTABLE here because we might want to update the intent with extras
+        // Actually for deep linking FLAG_IMMUTABLE is usually fine if we use FLAG_UPDATE_CURRENT
         val pendingIntent = PendingIntent.getActivity(
-            context, 0, intent,
+            context, System.currentTimeMillis().toInt(), intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 

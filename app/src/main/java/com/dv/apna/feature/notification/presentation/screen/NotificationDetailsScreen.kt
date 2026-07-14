@@ -3,6 +3,7 @@ package com.dv.apna.feature.notification.presentation.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -123,6 +124,13 @@ fun NotificationDetailsScreen(
                                 fontSize = 14.ssp(), lineHeight = 22.ssp()
                             ),
                             color = Color.DarkGray
+                        )
+                    }
+                } else {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "No records found", // Using literal for now as R.string.no_records_found might not be consistent here
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     }
                 }

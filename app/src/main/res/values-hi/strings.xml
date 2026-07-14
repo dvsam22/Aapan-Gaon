@@ -28,6 +28,8 @@
     <string name="about_us">हमारे बारे में</string>
     <string name="privacy_policy">गोपनीयता नीति</string>
     <string name="terms_and_conditions">नियम और शर्तें</string>
+    <string name="share_app">ऐप शेयर करें</string>
+    <string name="rate_us">हमें रेटिंग दें</string>
     <string name="version_format">वर्शन %1$s</string>
 
     <!-- Services -->

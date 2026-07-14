@@ -21,5 +21,9 @@ data class NotificationDto(
     
     @get:PropertyName("villageId")
     @set:PropertyName("villageId")
-    var villageId: String = ""
+    var villageId: String = "",
+
+    @get:PropertyName("type")
+    @set:PropertyName("type")
+    var type: String? = null
 )

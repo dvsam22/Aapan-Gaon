@@ -1,8 +1,12 @@
 package com.dv.apna.feature.splash.presentation.viewmodel
 
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.dv.apna.core.datastore.PreferenceManager
+import com.dv.apna.core.navigation.Route
 import com.dv.apna.feature.splash.presentation.effect.SplashEffect
 import com.dv.apna.feature.splash.presentation.state.SplashState
 import com.dv.apna.feature.splash.presentation.event.SplashEvent
@@ -18,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val preferenceManager: PreferenceManager
+    private val preferenceManager: PreferenceManager,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SplashState())
@@ -35,14 +40,32 @@ class SplashViewModel @Inject constructor(
         viewModelScope.launch {
             delay(800)
             val villageId = preferenceManager.villageId.first()
+            
+            // Extract from type-safe Route arguments
+            val splashRoute = try { 
+                savedStateHandle.toRoute<Route.Splash>() 
+            } catch (e: Exception) { 
+                null 
+            }
+            
+            val notificationId = splashRoute?.notificationId
+            val notificationType = splashRoute?.notificationType
+
+            Log.d("FCM_DEBUG", "Splash detected notification from Route: id=$notificationId, type=$notificationType")
+
             if (villageId != null) {
-                _effect.emit(SplashEffect.NavigateToHome)
+                if (!notificationId.isNullOrBlank()) {
+                    _effect.emit(SplashEffect.NavigateToHome)
+                    delay(100)
+                    _effect.emit(SplashEffect.NavigateToNotificationDetails(notificationId, notificationType))
+                } else {
+                    _effect.emit(SplashEffect.NavigateToHome)
+                }
             } else {
                 _effect.emit(SplashEffect.NavigateToLanguage)
             }
         }
     }
 
-    fun onEvent(event: SplashEvent) {
-    }
+    fun onEvent(event: SplashEvent) {}
 }

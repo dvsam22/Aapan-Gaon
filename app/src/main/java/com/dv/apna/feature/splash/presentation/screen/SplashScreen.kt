@@ -41,6 +41,7 @@ fun SplashScreen(
             when (effect) {
                 is SplashEffect.NavigateToHome -> onNavigateToHome()
                 is SplashEffect.NavigateToLanguage -> onNavigateToLanguage()
+                else -> {}
             }
         }
     }

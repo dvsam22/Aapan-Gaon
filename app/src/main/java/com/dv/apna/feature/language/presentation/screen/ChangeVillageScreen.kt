@@ -57,6 +57,7 @@ fun ChangeVillageScreen(
         effect.collectLatest { effect ->
             when (effect) {
                 LanguageEffect.NavigateToHome -> onNavigateBack()
+                LanguageEffect.NavigateBack -> onNavigateBack()
             }
         }
     }

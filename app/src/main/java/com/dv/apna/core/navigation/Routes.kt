@@ -4,7 +4,10 @@ import kotlinx.serialization.Serializable
 
 sealed interface Route {
     @Serializable
-    data object Splash : Route
+    data class Splash(
+        val notificationId: String? = null,
+        val notificationType: String? = null
+    ) : Route
 
     @Serializable
     data object Language : Route

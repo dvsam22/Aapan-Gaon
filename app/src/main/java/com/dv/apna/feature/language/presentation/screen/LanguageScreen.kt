@@ -47,6 +47,7 @@ fun LanguageScreen(
         effect.collectLatest { effect ->
             when (effect) {
                 LanguageEffect.NavigateToHome -> onNavigateToHome()
+                else -> {}
             }
         }
     }

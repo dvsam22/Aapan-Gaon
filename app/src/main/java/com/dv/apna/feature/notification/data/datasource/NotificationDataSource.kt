@@ -18,6 +18,8 @@ class NotificationDataSource @Inject constructor(
             .orderBy("date", Query.Direction.DESCENDING)
             .get()
             .await()
-            .toObjects(NotificationDto::class.java)
+            .documents.mapNotNull { doc ->
+                doc.toObject(NotificationDto::class.java)?.apply { id = doc.id }
+            }
     }
 }

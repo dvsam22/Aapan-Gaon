@@ -11,7 +11,7 @@ fun NewsDto.toDomain(languageCode: String): NewsModel {
         description = description.toLocalizedSafeString(languageCode),
         date = date ?: 0L,
         image = image ?: "",
-        category = category ?: "",
+        category = type ?: category ?: "",
         villageId = villageId ?: ""
     )
 }

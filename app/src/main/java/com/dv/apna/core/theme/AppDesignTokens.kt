@@ -3,6 +3,7 @@ package com.dv.apna.core.theme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -19,46 +20,59 @@ val Poppins = FontFamily(
     Font(R.font.poppins_extra_bold, FontWeight.ExtraBold)
 )
 
+val NotoSansHindi = FontFamily(
+    Font(R.font.noto_sans_light, FontWeight.Light),
+    Font(R.font.noto_sans_regular, FontWeight.Normal),
+    Font(R.font.noto_sans_medium, FontWeight.Medium),
+    Font(R.font.noto_sans_semi_bold, FontWeight.SemiBold),
+    Font(R.font.noto_sans_bold, FontWeight.Bold),
+    Font(R.font.noto_sans_extra_bold, FontWeight.ExtraBold)
+)
+
 private val defaultTypography = Typography()
 
 @Composable
 fun appTypography(): Typography {
+    val configuration = LocalConfiguration.current
+    val isHindi = configuration.locales[0].language == "hi"
+    val activeFontFamily = if (isHindi) NotoSansHindi else Poppins
+
     return Typography(
-        displayLarge = defaultTypography.displayLarge.copy(fontFamily = Poppins, fontSize = 57.ssp()),
-        displayMedium = defaultTypography.displayMedium.copy(fontFamily = Poppins, fontSize = 45.ssp()),
-        displaySmall = defaultTypography.displaySmall.copy(fontFamily = Poppins, fontSize = 36.ssp()),
+        displayLarge = defaultTypography.displayLarge.copy(fontFamily = activeFontFamily, fontSize = 57.ssp()),
+        displayMedium = defaultTypography.displayMedium.copy(fontFamily = activeFontFamily, fontSize = 45.ssp()),
+        displaySmall = defaultTypography.displaySmall.copy(fontFamily = activeFontFamily, fontSize = 36.ssp()),
         headlineLarge = defaultTypography.headlineLarge.copy(
-            fontFamily = Poppins,
+            fontFamily = activeFontFamily,
             fontWeight = FontWeight.Bold,
             fontSize = 32.ssp(),
             lineHeight = 40.ssp()
         ),
-        headlineMedium = defaultTypography.headlineMedium.copy(fontFamily = Poppins, fontSize = 28.ssp()),
-        headlineSmall = defaultTypography.headlineSmall.copy(fontFamily = Poppins, fontSize = 24.ssp()),
+        headlineMedium = defaultTypography.headlineMedium.copy(fontFamily = activeFontFamily, fontSize = 28.ssp()),
+        headlineSmall = defaultTypography.headlineSmall.copy(fontFamily = activeFontFamily, fontSize = 24.ssp()),
         titleLarge = defaultTypography.titleLarge.copy(
-            fontFamily = Poppins,
+            fontFamily = activeFontFamily,
             fontWeight = FontWeight.SemiBold,
             fontSize = 22.ssp(),
             lineHeight = 28.ssp()
         ),
-        titleMedium = defaultTypography.titleMedium.copy(fontFamily = Poppins, fontSize = 16.ssp()),
-        titleSmall = defaultTypography.titleSmall.copy(fontFamily = Poppins, fontSize = 14.ssp()),
+        titleMedium = defaultTypography.titleMedium.copy(fontFamily = activeFontFamily, fontSize = 16.ssp()),
+        titleSmall = defaultTypography.titleSmall.copy(fontFamily = activeFontFamily, fontSize = 14.ssp()),
         bodyLarge = defaultTypography.bodyLarge.copy(
-            fontFamily = Poppins,
+            fontFamily = activeFontFamily,
             fontWeight = FontWeight.Normal,
             fontSize = 16.ssp(),
             lineHeight = 24.ssp()
         ),
-        bodyMedium = defaultTypography.bodyMedium.copy(fontFamily = Poppins, fontSize = 14.ssp()),
-        bodySmall = defaultTypography.bodySmall.copy(fontFamily = Poppins, fontSize = 12.ssp()),
-        labelLarge = defaultTypography.labelLarge.copy(fontFamily = Poppins, fontSize = 14.ssp()),
+        bodyMedium = defaultTypography.bodyMedium.copy(fontFamily = activeFontFamily, fontSize = 14.ssp()),
+        bodySmall = defaultTypography.bodySmall.copy(fontFamily = activeFontFamily, fontSize = 12.ssp()),
+        labelLarge = defaultTypography.labelLarge.copy(fontFamily = activeFontFamily, fontSize = 14.ssp()),
         labelMedium = defaultTypography.labelMedium.copy(
-            fontFamily = Poppins,
+            fontFamily = activeFontFamily,
             fontWeight = FontWeight.Medium,
             fontSize = 12.ssp(),
             lineHeight = 16.ssp()
         ),
-        labelSmall = defaultTypography.labelSmall.copy(fontFamily = Poppins, fontSize = 11.ssp())
+        labelSmall = defaultTypography.labelSmall.copy(fontFamily = activeFontFamily, fontSize = 11.ssp())
     )
 }
 

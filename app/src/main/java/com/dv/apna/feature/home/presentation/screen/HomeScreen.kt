@@ -20,6 +20,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -34,6 +35,8 @@ import com.dv.apna.core.components.BannerSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
+import com.dv.apna.core.utils.shareApp
+import com.dv.apna.core.utils.rateApp
 import com.dv.apna.feature.home.presentation.state.HomeState
 import com.dv.apna.feature.home.presentation.event.HomeEvent
 import com.dv.apna.feature.home.domain.model.BannerModel
@@ -64,6 +67,7 @@ fun HomeScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -98,6 +102,8 @@ fun HomeScreen(
                             DrawerItem.AboutUs -> onNavigateToAboutUs()
                             DrawerItem.PrivacyPolicy -> onNavigateToPrivacyPolicy()
                             DrawerItem.Terms -> onNavigateToTerms()
+                            DrawerItem.Share -> context.shareApp()
+                            DrawerItem.RateUs -> context.rateApp()
                         }
                     }
                 )
@@ -238,6 +244,14 @@ fun HomeDrawer(
             title = stringResource(id = R.string.terms_and_conditions),
             onClick = { onItemClick(DrawerItem.Terms) }
         )
+        DrawerMenuItem(
+            title = stringResource(id = R.string.share_app),
+            onClick = { onItemClick(DrawerItem.Share) }
+        )
+        DrawerMenuItem(
+            title = stringResource(id = R.string.rate_us),
+            onClick = { onItemClick(DrawerItem.RateUs) }
+        )
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -296,7 +310,7 @@ fun DrawerMenuItem(
 }
 
 enum class DrawerItem {
-    Language, Village, AboutUs, PrivacyPolicy, Terms
+    Language, Village, AboutUs, PrivacyPolicy, Terms, Share, RateUs
 }
 
 @Composable
