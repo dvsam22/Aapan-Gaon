@@ -14,6 +14,7 @@ fun VillageDto.toDomain(languageCode: String): VillageModel {
         image = image ?: "",
         lat = lat ?: 0.0,
         lng = lng ?: 0.0,
-        sarpanchName = sarpanchName.toLocalizedSafeString(languageCode)
+        sarpanchName = sarpanchName.toLocalizedSafeString(languageCode),
+        sarpanchPhone = sarpanchPhone ?: ""
     )
 }

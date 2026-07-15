@@ -111,7 +111,10 @@ fun HealthHubScreen(
                                 val phone = state.ambulances.firstOrNull()?.phone ?: "108"
                                 onEvent(HealthEvent.CallAmbulance(phone)) 
                             },
-                            onCardClick = null,
+                            onCardClick = { 
+                               /* val phone = state.ambulances.firstOrNull()?.phone ?: "108"
+                                onEvent(HealthEvent.CallAmbulance(phone)) */
+                            },
                             modifier = Modifier.weight(1f)
                         )
                         EmergencyCard(
@@ -119,12 +122,34 @@ fun HealthHubScreen(
                             icon = R.drawable.police,
                             onClick = { 
                                 val phone = state.police.firstOrNull()?.phone ?: "100"
-                                onEvent(HealthEvent.CallPolice(phone)) 
+                                onEvent(HealthEvent.CallPolice(phone))
                             },
-                            onCardClick = null,
+                            onCardClick = { 
+                            /*    val phone = state.police.firstOrNull()?.phone ?: "100"
+                                onEvent(HealthEvent.CallPolice(phone)) */
+                            },
                             modifier = Modifier.weight(1f)
                         )
                     }
+                }
+
+                item {
+                    val sarpanchPhone = state.sarpanchPhone
+                    EmergencyCard(
+                        title = stringResource(id = R.string.gram_sarpanch) + if (state.sarpanchName.isNotEmpty()) " - ${state.sarpanchName}" else "",
+                        icon = R.drawable.person,
+                        onClick = {
+                            if (sarpanchPhone.isNotEmpty()) {
+                                onEvent(HealthEvent.CallSarpanch(sarpanchPhone))
+                            }
+                        },
+                        onCardClick = {
+                           /* if (sarpanchPhone.isNotEmpty()) {
+                                onEvent(HealthEvent.CallSarpanch(sarpanchPhone))
+                            }*/
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
 
                 // Service List
@@ -241,7 +266,7 @@ fun EmergencyCard(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.SemiBold,
+                        fontWeight = FontWeight.Medium,
                         fontSize = 14.ssp()
                     ),
                     color = Color.Black

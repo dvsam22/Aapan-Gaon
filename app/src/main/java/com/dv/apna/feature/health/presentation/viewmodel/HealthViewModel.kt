@@ -6,6 +6,7 @@ import com.dv.apna.core.common.Resource
 import com.dv.apna.core.common.UiText
 import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.feature.health.domain.usecase.*
+import com.dv.apna.feature.language.domain.usecase.GetVillagesUseCase
 import com.dv.apna.feature.health.presentation.effect.HealthEffect
 import com.dv.apna.feature.health.presentation.event.HealthEvent
 import com.dv.apna.feature.health.presentation.state.HealthState
@@ -33,6 +34,7 @@ class HealthViewModel @Inject constructor(
     private val getPharmaciesUseCase: GetPharmaciesUseCase,
     private val getAmbulancesUseCase: GetAmbulancesUseCase,
     private val getPoliceUseCase: GetPoliceUseCase,
+    private val getVillagesUseCase: GetVillagesUseCase,
     private val preferenceManager: PreferenceManager
 ) : ViewModel() {
 
@@ -59,8 +61,25 @@ class HealthViewModel @Inject constructor(
                 fetchPharmacies(villageId)
                 fetchAmbulances(villageId)
                 fetchPolice(villageId)
+                fetchVillageDetails(villageId)
             }.launchIn(viewModelScope)
         }
+    }
+
+    private fun fetchVillageDetails(villageId: String) {
+        getVillagesUseCase().onEach { result ->
+            if (result is Resource.Success) {
+                val village = result.data?.find { it.id == villageId }
+                village?.let { v ->
+                    _state.update {
+                        it.copy(
+                            sarpanchName = v.sarpanchName,
+                            sarpanchPhone = v.sarpanchPhone
+                        )
+                    }
+                }
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun fetchDoctors(villageId: String) {
@@ -152,6 +171,9 @@ class HealthViewModel @Inject constructor(
                 viewModelScope.launch { _effect.emit(HealthEffect.DialPhone(event.phone)) }
             }
             is HealthEvent.CallPolice -> {
+                viewModelScope.launch { _effect.emit(HealthEffect.DialPhone(event.phone)) }
+            }
+            is HealthEvent.CallSarpanch -> {
                 viewModelScope.launch { _effect.emit(HealthEffect.DialPhone(event.phone)) }
             }
             HealthEvent.DoctorsClick -> {

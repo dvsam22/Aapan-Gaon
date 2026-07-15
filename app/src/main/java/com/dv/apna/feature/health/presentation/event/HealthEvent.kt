@@ -8,6 +8,7 @@ sealed interface HealthEvent {
     data object BackClick : HealthEvent
     data class CallAmbulance(val phone: String) : HealthEvent
     data class CallPolice(val phone: String) : HealthEvent
+    data class CallSarpanch(val phone: String) : HealthEvent
     data object DoctorsClick : HealthEvent
     data object HospitalsClick : HealthEvent
     data object PharmacyClick : HealthEvent

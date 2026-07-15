@@ -15,3 +15,10 @@ fun NewsDto.toDomain(languageCode: String): NewsModel {
         villageId = villageId ?: ""
     )
 }
+
+/**
+ * Maps a list of [NewsDto] to a list of [NewsModel].
+ */
+fun List<NewsDto>.toDomain(languageCode: String): List<NewsModel> {
+    return this.map { it.toDomain(languageCode) }
+}

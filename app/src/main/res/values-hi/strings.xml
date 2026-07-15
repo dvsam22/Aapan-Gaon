@@ -68,6 +68,7 @@
     <!-- Health & Emergency -->
     <string name="ambulance">एम्बुलेंस</string>
     <string name="police">पुलिस</string>
+    <string name="gram_sarpanch">ग्राम सरपंच</string>
     <string name="doctors">डॉक्टर</string>
     <string name="hospitals">अस्पताल</string>
     <string name="pharmacy">फार्मेसी</string>

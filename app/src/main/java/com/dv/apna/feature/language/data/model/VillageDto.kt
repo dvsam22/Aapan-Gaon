@@ -12,6 +12,7 @@ data class VillageDto(
     val lat: Double? = null,
     val lng: Double? = null,
     val sarpanchName: Any? = null,
+    val sarpanchPhone: String? = null,
     @get:PropertyName("active")
     @set:PropertyName("active")
     var active: Boolean? = null

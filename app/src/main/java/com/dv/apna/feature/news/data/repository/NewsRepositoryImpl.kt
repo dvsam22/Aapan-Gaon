@@ -19,7 +19,7 @@ class NewsRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
         try {
             val languageCode = preferenceManager.languageCode.firstOrNull() ?: "en"
-            val news = dataSource.getNews(villageId).map { it.toDomain(languageCode) }
+            val news = dataSource.getNews(villageId).toDomain(languageCode)
             emit(Resource.Success(news))
         } catch (e: Exception) {
             emit(Resource.Error(e.localizedMessage ?: "An error occurred"))

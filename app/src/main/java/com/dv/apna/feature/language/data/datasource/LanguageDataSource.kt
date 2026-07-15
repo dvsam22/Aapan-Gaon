@@ -11,9 +11,11 @@ class LanguageDataSource @Inject constructor(
 ) : FirestoreDataSource(firestore) {
 
     suspend fun getVillages(): List<VillageDto> {
-        return getCollection("villages")
+        val snapshot = getCollection("villages")
             .get()
             .await()
-            .toObjects(VillageDto::class.java)
+        return snapshot.documents.mapNotNull { doc ->
+            doc.toObject(VillageDto::class.java)?.copy(id = doc.id)
+        }
     }
 }

@@ -9,5 +9,6 @@ data class VillageModel(
     val image: String,
     val lat: Double,
     val lng: Double,
-    val sarpanchName: String
+    val sarpanchName: String,
+    val sarpanchPhone: String
 )

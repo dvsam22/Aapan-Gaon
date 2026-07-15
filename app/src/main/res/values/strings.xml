@@ -68,6 +68,7 @@
     <!-- Health & Emergency -->
     <string name="ambulance">Ambulance</string>
     <string name="police">Police</string>
+    <string name="gram_sarpanch">Gram Sarpanch</string>
     <string name="doctors">Doctors</string>
     <string name="hospitals">Hospitals</string>
     <string name="pharmacy">Pharmacy</string>

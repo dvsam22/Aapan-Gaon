@@ -12,5 +12,7 @@ data class HealthState(
     val pharmacies: List<PharmacyModel> = emptyList(),
     val ambulances: List<DoctorModel> = emptyList(),
     val police: List<DoctorModel> = emptyList(),
+    val sarpanchName: String = "",
+    val sarpanchPhone: String = "",
     val error: UiText? = null
 )
