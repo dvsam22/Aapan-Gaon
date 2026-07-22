@@ -22,7 +22,7 @@ fun HealthDto.toHospitalModel(languageCode: String): HospitalModel {
         id = id,
         name = name.toLocalizedSafeString(languageCode),
         address = address.toLocalizedSafeString(languageCode),
-        type = type, // Usually internal ID
+        type = type.toLocalizedSafeString(languageCode), // Usually internal ID
         facilities = facilities.toLocalizedSafeString(languageCode),
         openStatus = availability.toLocalizedSafeString(languageCode),
         phone = contact
@@ -45,7 +45,7 @@ fun HealthDto.toGenericModel(languageCode: String): DoctorModel { // For ambulan
         id = id,
         name = name.toLocalizedSafeString(languageCode),
         address = address.toLocalizedSafeString(languageCode),
-        specialization = type,
+        specialization = type.toLocalizedSafeString(languageCode),
         availability = availability.toLocalizedSafeString(languageCode),
         phone = contact
     )

@@ -16,6 +16,6 @@ data class HealthDto(
     val name: Any? = null,
     val services: Any? = null,
     val specialisation: Any? = null,
-    val type: String = "",
+    val type: Any? = null,
     val villageId: String = ""
 )
