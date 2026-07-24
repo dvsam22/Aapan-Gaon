@@ -122,21 +122,18 @@ fun RootNavGraph(
                     navController.navigate(Route.Language) {
                         popUpTo(Route.Splash()) { inclusive = true }
                     }
-                }
-            )
-
-            // Handle Deep Link / Notification navigation from Splash
-            androidx.compose.runtime.LaunchedEffect(Unit) {
-                viewModel.effect.collect { effect ->
-                    if (effect is SplashEffect.NavigateToNotificationDetails) {
-                        when (effect.type) {
-                            "news" -> navController.navigate(Route.NewsDetails(effect.id))
-                            "notice" -> navController.navigate(Route.NoticeDetails(effect.id))
-                            else -> navController.navigate(Route.NotificationDetails(effect.id))
-                        }
+                },
+                onNavigateToDetails = { id, type ->
+                    navController.navigate(Route.Home) {
+                        popUpTo(Route.Splash()) { inclusive = true }
+                    }
+                    when (type?.lowercase()) {
+                        "news" -> navController.navigate(Route.NewsDetails(id))
+                        "notice" -> navController.navigate(Route.NoticeDetails(id))
+                        else -> navController.navigate(Route.NotificationDetails(id))
                     }
                 }
-            }
+            )
         }
 
         composable<Route.Language> {

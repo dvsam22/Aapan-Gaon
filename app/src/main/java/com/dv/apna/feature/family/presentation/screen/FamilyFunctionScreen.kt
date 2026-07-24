@@ -34,7 +34,7 @@ fun FamilyFunctionScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -73,35 +73,35 @@ fun FamilyFunctionScreen(
                 item {
                     FamilyFunctionOptionCard(
                         title = stringResource(id = R.string.tent_pandal_decor),
-                        icon = painterResource(id = R.drawable.mandi), // TODO: Replace with actual icon
+                        icon = painterResource(id = R.drawable.ic_decor),
                         onClick = { onNavigateToDetails("tent") }
                     )
                 }
                 item {
                     FamilyFunctionOptionCard(
                         title = stringResource(id = R.string.catering_halwai),
-                        icon = painterResource(id = R.drawable.mandi), // TODO: Replace with actual icon
+                        icon = painterResource(id = R.drawable.ic_catering),
                         onClick = { onNavigateToDetails("catering") }
                     )
                 }
                 item {
                     FamilyFunctionOptionCard(
                         title = stringResource(id = R.string.photo_videography),
-                        icon = painterResource(id = R.drawable.mandi), // TODO: Replace with actual icon
+                        icon = painterResource(id = R.drawable.ic_camera),
                         onClick = { onNavigateToDetails("photo") }
                     )
                 }
                 item {
                     FamilyFunctionOptionCard(
                         title = stringResource(id = R.string.dj_sound_band),
-                        icon = painterResource(id = R.drawable.mandi), // TODO: Replace with actual icon
+                        icon = painterResource(id = R.drawable.ic_music),
                         onClick = { onNavigateToDetails("dj") }
                     )
                 }
                 item {
                     FamilyFunctionOptionCard(
                         title = stringResource(id = R.string.marriage_halls_lawns),
-                        icon = painterResource(id = R.drawable.mandi), // TODO: Replace with actual icon
+                        icon = painterResource(id = R.drawable.ic_marriage_hall),
                         onClick = { onNavigateToDetails("marriage_halls") }
                     )
                 }

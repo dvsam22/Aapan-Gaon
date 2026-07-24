@@ -49,8 +49,8 @@ class TransportViewModel @Inject constructor(
                 TransportService(UiText.StringResource(R.string.tractor), R.drawable.transport, "tractor"),
                 TransportService(UiText.StringResource(R.string.car), R.drawable.iv_car, "car"),
                 TransportService(UiText.StringResource(R.string.pickup), R.drawable.pickup, "pickup"),
-                TransportService(UiText.StringResource(R.string.loader), R.drawable.transport, "loader"),
-                TransportService(UiText.StringResource(R.string.jcb), R.drawable.transport, "jcb")
+                TransportService(UiText.StringResource(R.string.loader), R.drawable.ic_loader, "loader"),
+                TransportService(UiText.StringResource(R.string.jcb), R.drawable.ic_jcb, "jcb")
             )
             val service = services.find { it.categoryId == categoryId }
             _state.update { it.copy(
@@ -66,8 +66,8 @@ class TransportViewModel @Inject constructor(
             TransportService(UiText.StringResource(R.string.tractor), R.drawable.transport, "tractor"),
             TransportService(UiText.StringResource(R.string.car), R.drawable.iv_car, "car"),
             TransportService(UiText.StringResource(R.string.pickup), R.drawable.pickup, "pickup"),
-            TransportService(UiText.StringResource(R.string.loader), R.drawable.transport, "loader"),
-            TransportService(UiText.StringResource(R.string.jcb), R.drawable.transport, "jcb")
+            TransportService(UiText.StringResource(R.string.loader), R.drawable.ic_loader, "loader"),
+            TransportService(UiText.StringResource(R.string.jcb), R.drawable.ic_jcb, "jcb")
         )
         _state.update { it.copy(services = services) }
     }

@@ -69,19 +69,6 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted ->
-            // Handle result if needed
-        }
-    )
-
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-    }
-
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
@@ -114,7 +101,7 @@ fun HomeScreen(
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
         ) {
             val (bottomImage, mainContent) = createRefs()
 
@@ -185,25 +172,24 @@ fun HomeDrawer(
             .statusBarsPadding()
     ) {
         // Header
-        Box(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(24.sdp()),
-            contentAlignment = Alignment.CenterStart
+                .padding(start = 20.sdp(), end = 20.sdp(), top = 12.sdp()),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             // App Logo
             Image(
-                painter = painterResource(id = R.drawable.iv_splash_logo),
+                painter = painterResource(id = R.drawable.remove_bg_logo),
                 contentDescription = "App Logo",
                 modifier = Modifier
-                    .size(65.sdp())
-                    .clip(CircleShape),
+                    .size(120.sdp()),
                 contentScale = ContentScale.Fit
             )
 
             Surface(
                 modifier = Modifier
-                    .align(Alignment.CenterEnd)
                     .size(28.sdp())
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
@@ -282,7 +268,7 @@ fun DrawerMenuItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.sdp(), vertical = 12.sdp()),
+                .padding(horizontal = 24.sdp(), vertical = 8.sdp()),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -331,12 +317,12 @@ fun HomeTopBar(
             horizontalArrangement = Arrangement.spacedBy(8.sdp())
         ) {
             Icon(
-                painter = painterResource(R.drawable.left),
+                painter = painterResource(R.drawable.iv_drawer),
                 contentDescription = "Menu",
                 modifier = Modifier
-                    .size(24.sdp())
+                    .size(26.sdp())
                     .clickable { onMenuClick() },
-                tint = Color.Black
+                tint = Color.Unspecified
             )
 
             if (villageName != null) {
@@ -347,7 +333,7 @@ fun HomeTopBar(
                     Image(
                         painter = painterResource(id = R.drawable.location_pin),
                         contentDescription = null,
-                        modifier = Modifier.size(20.sdp())
+                        modifier = Modifier.size(18.sdp())
                     )
                     Text(
                         text = villageName,
@@ -434,11 +420,12 @@ fun BannerCarousel(banners: List<BannerModel>) {
     if (banners.isEmpty()) return
 
     val realSize = banners.size
-    // Starting from a large number for infinite scroll
-    val initialPage = 500 * realSize
+    val pageCountValue = if (realSize > 1) 10000 else 1
+    val initialPage = if (realSize > 1) (5000 / realSize) * realSize else 0
+
     val pagerState = rememberPagerState(
         initialPage = initialPage,
-        pageCount = { if (realSize > 1) Int.MAX_VALUE else 1 }
+        pageCount = { pageCountValue }
     )
 
     Column {

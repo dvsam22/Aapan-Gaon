@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <!-- Camera Body with rounded corners -->
+  <path
+      android:pathData="M29,9 C29,8 28.2,7 27,7 L23,7 L21.5,4.5 C21.2,4.1 20.7,4 20.2,4 L11.8,4 C11.3,4 10.8,4.1 10.5,4.5 L9,7 L5,7 C3.8,7 3,8 3,9 L3,26 C3,27.2 3.8,28 5,28 L27,28 C28.2,28 29,27.2 29,26 Z"
+      android:fillColor="#2CA074"/>
+  <!-- Flash mount/Viewfinder detailing -->
+  <path
+      android:pathData="M13,4 L19,4 L19,6 L13,6 Z"
+      android:fillColor="#FFFFFF"/>
+  <!-- Red Dot / Indicator on front body -->
+  <path
+      android:pathData="M25,11 A1.5,1.5 0 1,0 25,14 A1.5,1.5 0 1,0 25,11 Z"
+      android:fillColor="#FFFFFF"/>
+  <!-- Outer Lens Rim -->
+  <path
+      android:pathData="M16,24 C20.4,24 24,20.4 24,16 C24,11.6 20.4,8 16,8 C11.6,8 8,11.6 8,16 C8,20.4 11.6,24 16,24 Z"
+      android:fillColor="#FFFFFF"/>
+  <!-- Inner Lens Glass -->
+  <path
+      android:pathData="M16,22 C19.3,22 22,19.3 22,16 C22,12.7 19.3,10 16,10 C12.7,10 10,12.7 10,16 C10,19.3 12.7,22 16,22 Z"
+      android:fillColor="#2CA074"/>
+  <!-- Lens Reflection Highlight -->
+  <path
+      android:pathData="M19,13 C19.5,13.5 19.5,14.5 19,15 C18.5,15.5 17.5,15.5 17,15"
+      android:strokeWidth="1.2"
+      android:strokeColor="#FFFFFF"/>
+</vector>

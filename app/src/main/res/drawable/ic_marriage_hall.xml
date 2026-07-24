@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <!-- Main Building Base and Roof -->
+  <path
+      android:pathData="M2,28 L30,28 L30,12 L2,12 Z"
+      android:fillColor="#2CA074"/>
+  <!-- Roof Dome/Peak in Center -->
+  <path
+      android:pathData="M16,4 C22,4 25,12 25,12 L7,12 C7,12 10,4 16,4 Z"
+      android:fillColor="#2CA074"/>
+  <!-- Flag on Top of Dome -->
+  <path
+      android:pathData="M16,4 L16,1 M16,1 L20,2.5 L16,4"
+      android:strokeWidth="0.8"
+      android:strokeColor="#2CA074"/>
+  <!-- Symmetrical arched windows (white) -->
+  <path
+      android:pathData="M6,15 L6,20 C6,21 7,22 8,22 C9,22 10,21 10,20 L10,15 Z"
+      android:fillColor="#FFFFFF"/>
+  <path
+      android:pathData="M22,15 L22,20 C22,21 23,22 24,22 C25,22 26,21 26,20 L26,15 Z"
+      android:fillColor="#FFFFFF"/>
+  <!-- Grand arched double doorway in the center (white) -->
+  <path
+      android:pathData="M13,28 L13,20 C13,18 14,17 16,17 C18,17 19,18 19,20 L19,28 Z"
+      android:fillColor="#FFFFFF"/>
+  <!-- Steps leading up to the door -->
+  <path
+      android:pathData="M11,30 L21,30 M9,32 L23,32"
+      android:strokeWidth="1.2"
+      android:strokeColor="#2CA074"/>
+</vector>

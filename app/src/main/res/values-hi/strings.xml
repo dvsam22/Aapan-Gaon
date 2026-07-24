@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">आपन गांव</string>
+    <string name="app_name">अपना गांव</string>
     <string name="notification">सूचनाएं</string>
     <string name="back">पीछे</string>
     <string name="select_language">भाषा चुनें</string>
@@ -91,8 +91,8 @@
     <string name="no_news_available">कोई समाचार या सूचना उपलब्ध नहीं है</string>
     <string name="discount_label">छूट </string>
     <!-- Splash Screen -->
-    <string name="splash_text_part1">हर काम का साथी, </string>
-    <string name="splash_text_part2">अपना गाँव</string>
+    <string name="splash_text_part1">अपने गांव का अपना ऐप</string>
+    <string name="splash_text_part2">अपना गांव</string>
 
     <!-- Errors -->
     <string name="error_select_language">कृपया भाषा चुनें</string>

@@ -167,6 +167,8 @@ fun Int.sdp(): Dp {
         150 -> com.intuit.sdp.R.dimen._150sdp
         180 -> com.intuit.sdp.R.dimen._180sdp
         200 -> com.intuit.sdp.R.dimen._200sdp
+        220 -> com.intuit.sdp.R.dimen._220sdp
+        250 -> com.intuit.sdp.R.dimen._250sdp
         else -> com.intuit.sdp.R.dimen._10sdp
     }
     return dimensionResource(id = id)

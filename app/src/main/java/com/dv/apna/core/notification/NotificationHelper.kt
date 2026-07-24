@@ -45,25 +45,25 @@ class NotificationHelper @Inject constructor(
     fun showNotification(title: String, message: String, notificationId: String? = null, type: String? = null) {
         Log.d("NotificationHelper", "Showing notification: $title - $message, id: $notificationId, type: $type")
         val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            if (notificationId != null) {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            if (!notificationId.isNullOrEmpty()) {
+                putExtra("id", notificationId)
                 putExtra("notification_id", notificationId)
             }
-            if (type != null) {
+            if (!type.isNullOrEmpty()) {
+                putExtra("type", type)
                 putExtra("notification_type", type)
             }
         }
         
-        // FLAG_IMMUTABLE is mandatory for Android 12+ (API 31+)
-        // We use FLAG_MUTABLE here because we might want to update the intent with extras
-        // Actually for deep linking FLAG_IMMUTABLE is usually fine if we use FLAG_UPDATE_CURRENT
+        val requestCode = (System.currentTimeMillis() and 0xfffffff).toInt()
         val pendingIntent = PendingIntent.getActivity(
-            context, System.currentTimeMillis().toInt(), intent,
+            context, requestCode, intent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.iv_splash_logo) // Using app logo
+            .setSmallIcon(R.drawable.iv_splash_logo)
             .setContentTitle(title)
             .setContentText(message)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -71,7 +71,7 @@ class NotificationHelper @Inject constructor(
             .setContentIntent(pendingIntent)
             .build()
 
-        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
-        Log.d("NotificationHelper", "notificationManager.notify() called")
+        notificationManager.notify(requestCode, notification)
+        Log.d("NotificationHelper", "notificationManager.notify() called with requestCode=$requestCode")
     }
 }

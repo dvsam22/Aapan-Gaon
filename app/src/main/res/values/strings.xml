@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Aapan Gav</string>
+    <string name="app_name">Apna Gaon</string>
     <string name="notification">Notification</string>
     <string name="back">Back</string>
     <string name="select_language">Select Language</string>
@@ -91,8 +91,8 @@
     <string name="no_news_available">No news or notices available</string>
     <string name="discount_label">Disc. </string>
     <!-- Splash Screen -->
-    <string name="splash_text_part1">Your partner for every task, </string>
-    <string name="splash_text_part2">Aapan Gav</string>
+    <string name="splash_text_part1">अपने गाँव का अपना ऐप</string>
+    <string name="splash_text_part2">अपना गाँव</string>
 
     <!-- Errors -->
     <string name="error_select_language">Please select a language</string>

@@ -37,7 +37,9 @@ class LanguageRepositoryImpl @Inject constructor(
                 Log.d("LanguageRepo", "Fetching villages for language: $currentLang")
                 val villagesDto = dataSource.getVillages()
                 Log.d("LanguageRepo", "Fetched ${villagesDto.size} villages from DataSource")
-                val villages = villagesDto.map { it.toDomain(currentLang) }
+                val activeVillages = villagesDto.filter { it.isCurrentlyActive }
+                Log.d("LanguageRepo", "Filtered ${activeVillages.size} active villages")
+                val villages = activeVillages.map { it.toDomain(currentLang) }
                 emit(Resource.Success(villages))
             } catch (e: Exception) {
                 Log.e("LanguageRepo", "Error fetching villages: ${e.message}", e)

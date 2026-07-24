@@ -20,8 +20,10 @@ intuit = "1.1.1"
 constraintlayoutCompose = "1.1.1"
 appcompat = "1.7.0"
 lottie = "6.7.1"
+core-splashscreen = "1.0.1"
 
 [libraries]
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 sdp-android = { group = "com.intuit.sdp", name = "sdp-android", version.ref = "intuit" }

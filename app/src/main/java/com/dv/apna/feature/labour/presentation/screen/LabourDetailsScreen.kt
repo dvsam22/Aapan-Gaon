@@ -37,6 +37,8 @@ import com.dv.apna.feature.labour.presentation.event.LabourEvent
 import com.dv.apna.feature.labour.presentation.state.LabourState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.ui.platform.LocalContext
+import com.dv.apna.core.utils.dial
 
 @Composable
 fun LabourDetailsScreen(
@@ -45,6 +47,7 @@ fun LabourDetailsScreen(
     effect: Flow<LabourEffect>,
     onNavigateBack: () -> Unit
 ) {
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         effect.collectLatest { effect ->
             when (effect) {
@@ -57,7 +60,7 @@ fun LabourDetailsScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -110,7 +113,7 @@ fun LabourDetailsScreen(
                         items(state.labourDetails) { labour ->
                             LabourWorkerCard(
                                 labour = labour,
-                                onCallClick = { /* TODO: Trigger Dial Intent */ }
+                                onCallClick = { context.dial(labour.contact) }
                             )
                         }
                     }

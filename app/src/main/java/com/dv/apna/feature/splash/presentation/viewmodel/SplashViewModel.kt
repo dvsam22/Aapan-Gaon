@@ -38,7 +38,8 @@ class SplashViewModel @Inject constructor(
 
     private fun checkNavigation() {
         viewModelScope.launch {
-            delay(800)
+            // Wait for animations to complete (1200ms) + 1 second additional delay
+            delay(2200)
             val villageId = preferenceManager.villageId.first()
             
             // Extract from type-safe Route arguments
@@ -55,8 +56,6 @@ class SplashViewModel @Inject constructor(
 
             if (villageId != null) {
                 if (!notificationId.isNullOrBlank()) {
-                    _effect.emit(SplashEffect.NavigateToHome)
-                    delay(100)
                     _effect.emit(SplashEffect.NavigateToNotificationDetails(notificationId, notificationType))
                 } else {
                     _effect.emit(SplashEffect.NavigateToHome)

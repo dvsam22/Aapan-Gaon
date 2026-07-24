@@ -14,6 +14,11 @@ data class VillageDto(
     val sarpanchName: Any? = null,
     val sarpanchPhone: String? = null,
     @get:PropertyName("active")
-    @set:PropertyName("active")
-    var active: Boolean? = null
-)
+    val active: Boolean? = null,
+    @get:PropertyName("isActive")
+    val isVillageActive: Boolean? = null
+) {
+    val isCurrentlyActive: Boolean
+        get() = active == true || isVillageActive == true
+}
+

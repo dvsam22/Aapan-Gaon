@@ -2,6 +2,7 @@ package com.dv.apna
 
 import android.app.Application
 import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import dagger.hilt.android.HiltAndroidApp
@@ -10,6 +11,8 @@ import dagger.hilt.android.HiltAndroidApp
 class AapanGavApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        // Force Light Mode globally to prevent dark window background flashing on recreation
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         try {
             if (FirebaseApp.getApps(this).isEmpty()) {
                 FirebaseApp.initializeApp(this)

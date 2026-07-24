@@ -17,7 +17,6 @@ import com.dv.apna.feature.language.presentation.event.LanguageEvent
 import com.dv.apna.feature.language.presentation.state.LanguageState
 import android.util.Log
 import com.dv.apna.R
-import com.dv.apna.core.utils.LocaleUtils
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -28,6 +27,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -160,11 +160,7 @@ class LanguageViewModel @Inject constructor(
                             Log.e("FCM_DEBUG", "FCM Subscribe logic error", e)
                         }
 
-                        // 4. Trigger recreation/navigation
-                        // Recreating the activity will cause Splash to restart and pick up the new village/language
-                        LocaleUtils.setLocale(selectedLanguage.code)
-                        
-                        // Fallback: If for some reason recreation is delayed, emit navigation
+                        // 4. Trigger navigation and let CompositionLocalProvider update the language dynamically (no recreation).
                         _effect.emit(LanguageEffect.NavigateToHome)
 
                     } else if (selectedLanguage == null) {

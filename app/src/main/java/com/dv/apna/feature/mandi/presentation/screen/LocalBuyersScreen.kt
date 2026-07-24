@@ -38,6 +38,8 @@ import com.dv.apna.feature.mandi.presentation.event.MandiEvent
 import com.dv.apna.feature.mandi.presentation.state.MandiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.ui.platform.LocalContext
+import com.dv.apna.core.utils.dial
 
 @Composable
 fun LocalBuyersScreen(
@@ -46,13 +48,13 @@ fun LocalBuyersScreen(
     effect: Flow<MandiEffect>,
     onNavigateBack: () -> Unit
 ) {
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         effect.collectLatest { effect ->
             when (effect) {
                 MandiEffect.NavigateBack -> onNavigateBack()
                 is MandiEffect.DialPhone -> {
-                    // This is usually handled in the NavGraph or via a context-aware function
-                    // For now, it emits the effect which the parent can handle
+                    context.dial(effect.phone)
                 }
                 else -> {}
             }
@@ -62,7 +64,7 @@ fun LocalBuyersScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 

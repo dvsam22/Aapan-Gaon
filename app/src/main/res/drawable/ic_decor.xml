@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <!-- Bunting/flags garland at the top -->
+  <path
+      android:pathData="M2,2 L5,6 L8,2 L11,6 L14,2 L17,6 L20,2 L23,6 L26,2 L29,6 L32,2"
+      android:strokeWidth="1"
+      android:strokeColor="#2CA074"/>
+  <!-- Outer Canopy Roof structure -->
+  <path
+      android:pathData="M16,5 L2,12 L30,12 Z"
+      android:fillColor="#2CA074"/>
+  <!-- Inner stripes to give texture to the roof -->
+  <path
+      android:pathData="M16,5 L9,12 M16,5 L23,12 M16,5 L16,12"
+      android:strokeWidth="1"
+      android:strokeColor="#FFFFFF"/>
+  <!-- Pillars/Poles with decorative elements -->
+  <path
+      android:pathData="M5,12 L5,30 M27,12 L27,30"
+      android:strokeWidth="1.5"
+      android:strokeColor="#2CA074"/>
+  <!-- Curtains on the side, elegantly draped -->
+  <path
+      android:pathData="M5,12 C8,15 8,20 6,26 C9,22 10,16 10,12"
+      android:fillColor="#2CA074"/>
+  <path
+      android:pathData="M27,12 C24,15 24,20 26,26 C23,22 22,16 22,12"
+      android:fillColor="#2CA074"/>
+  <!-- Hanging lantern in the center -->
+  <path
+      android:pathData="M16,12 L16,15 M14,15 L18,15 L17,20 L15,20 Z"
+      android:strokeWidth="1"
+      android:strokeColor="#2CA074"
+      android:fillColor="#2CA074"/>
+</vector>

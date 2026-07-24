@@ -38,6 +38,8 @@ import com.dv.apna.feature.construction.presentation.event.HardwareShopsEvent
 import com.dv.apna.feature.construction.presentation.state.HardwareShopsState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.ui.platform.LocalContext
+import com.dv.apna.core.utils.dial
 
 @Composable
 fun HardwareShopsScreen(
@@ -46,12 +48,13 @@ fun HardwareShopsScreen(
     effect: Flow<HardwareShopsEffect>,
     onNavigateBack: () -> Unit
 ) {
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         effect.collectLatest { effect ->
             when (effect) {
                 is HardwareShopsEffect.NavigateBack -> onNavigateBack()
                 is HardwareShopsEffect.DialPhone -> {
-                    // Handled in NavGraph
+                    context.dial(effect.phone)
                 }
             }
         }
@@ -61,7 +64,7 @@ fun HardwareShopsScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
     ) {
         val (bottomImage, mainContent, loading, error) = createRefs()
 

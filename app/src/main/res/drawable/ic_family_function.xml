@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <!-- Garland bunting hanging arch at the top -->
+  <path
+      android:pathData="M6,6 C11,10 21,10 26,6"
+      android:strokeWidth="1.2"
+      android:strokeColor="#2CA074"
+      android:strokeLineCap="round"/>
+  <!-- Hanging triangles (bunting flags) -->
+  <path
+      android:pathData="M8,7.5 L10,11 L12,8 M14,8.5 L16,12 L18,9 M20,9 L22,12 L24,7.5"
+      android:strokeWidth="1"
+      android:strokeColor="#2CA074"
+      android:fillColor="#2CA074"/>
+  <!-- Outer Archway Pillars -->
+  <path
+      android:pathData="M4,12 L4,28 M28,12 L28,28"
+      android:strokeWidth="2.5"
+      android:strokeColor="#2CA074"
+      android:strokeLineCap="round"/>
+  <!-- Decorative Arch top curve -->
+  <path
+      android:pathData="M2,12 C2,6 8,2 16,2 C24,2 30,6 30,12"
+      android:strokeWidth="2.5"
+      android:strokeColor="#2CA074"
+      android:strokeLineCap="round"/>
+  <!-- White highlight inside the arch top for detail -->
+  <path
+      android:pathData="M6,10 C6,7 10,4 16,4 C22,4 26,7 26,10"
+      android:strokeWidth="1"
+      android:strokeColor="#FFFFFF"/>
+  <!-- Symmetrical side curtains/drapes -->
+  <path
+      android:pathData="M4,12 C8,15 8,20 6,28 C9,24 10,18 10,12 Z"
+      android:fillColor="#2CA074"/>
+  <path
+      android:pathData="M28,12 C24,15 24,20 26,28 C23,24 22,18 22,12 Z"
+      android:fillColor="#2CA074"/>
+  <!-- Symmetrical flower/decorative patterns at the top corners -->
+  <path
+      android:pathData="M5,7 A2,2 0 1,0 5,11 A2,2 0 1,0 5,7 Z"
+      android:fillColor="#2CA074"/>
+  <path
+      android:pathData="M27,7 A2,2 0 1,0 27,11 A2,2 0 1,0 27,7 Z"
+      android:fillColor="#2CA074"/>
+  <!-- Grand hanging lantern/chandelier in the center -->
+  <path
+      android:pathData="M16,10 L16,15 M13,15 L19,15 L18,22 L14,22 Z"
+      android:strokeWidth="1.2"
+      android:strokeColor="#2CA074"
+      android:fillColor="#2CA074"/>
+  <path
+      android:pathData="M15,17 L17,17 L17,20 L15,20 Z"
+      android:fillColor="#FFFFFF"/>
+  <!-- Ground line -->
+  <path
+      android:pathData="M1,28 L31,28"
+      android:strokeWidth="1.5"
+      android:strokeColor="#2CA074"/>
+</vector>
