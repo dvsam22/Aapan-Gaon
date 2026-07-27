@@ -8,4 +8,5 @@ interface ConstructionRepository {
     fun getBricksSuppliers(villageId: String): Flow<Resource<List<BricksSupplierModel>>>
     fun getMaterialShops(villageId: String): Flow<Resource<List<MaterialShopModel>>>
     fun getHardwareShops(villageId: String): Flow<Resource<List<HardwareShopModel>>>
+    fun getConstructionItems(villageId: String, categoryId: String): Flow<Resource<List<ConstructionItemModel>>>
 }

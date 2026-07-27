@@ -136,7 +136,7 @@ fun SplashContent() {
             val topGuideline = createGuidelineFromTop(0.20f)
 
             Image(
-                painter = painterResource(id = R.drawable.remove_bg_logo),
+                painter = painterResource(id = R.drawable.trasparent_logo),
                 contentDescription = "Splash Logo",
                 modifier = Modifier
                     .size(logoSize)

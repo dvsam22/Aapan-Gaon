@@ -52,3 +52,20 @@ fun ProductDto.toHardwareItemPrice(languageCode: String) = HardwareItemPrice(
     price = price ?: "",
     unit = unit.toLocalizedSafeString(languageCode)
 )
+
+fun ConstructionDto.toConstructionItem(languageCode: String): ConstructionItemModel {
+    return ConstructionItemModel(
+        id = id ?: "",
+        name = shopName.toLocalizedSafeString(languageCode),
+        address = address.toLocalizedSafeString(languageCode),
+        phone = contact ?: "",
+        image = image ?: "",
+        products = products?.map { it.toConstructionProduct(languageCode) } ?: emptyList()
+    )
+}
+
+fun ProductDto.toConstructionProduct(languageCode: String) = ConstructionProductModel(
+    name = name.toLocalizedSafeString(languageCode),
+    price = price ?: "",
+    unit = unit.toLocalizedSafeString(languageCode)
+)

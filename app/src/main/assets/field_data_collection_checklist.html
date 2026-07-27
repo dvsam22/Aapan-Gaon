@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apna Gaon - Village Field Data Collection Master List</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f9f6; color: #1c2a24; padding: 20px; line-height: 1.6; }
+        .header { background: linear-gradient(135deg, #165D47, #2CA074); color: white; padding: 25px; border-radius: 16px; text-align: center; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(22,93,71,0.2); }
+        .header h1 { margin: 0; font-size: 26px; }
+        .header p { margin-top: 8px; font-size: 15px; opacity: 0.9; }
+        .category-card { background: white; border-radius: 14px; padding: 20px; margin-bottom: 20px; border: 1px solid #d1efe2; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+        .category-title { font-size: 20px; color: #165D47; margin-bottom: 12px; border-bottom: 2px solid #2CA074; padding-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+        .sub-list { list-style-type: none; padding-left: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+        .sub-item { background: #f9fdfb; border: 1px solid #e8f6f0; border-radius: 10px; padding: 12px; font-size: 14.5px; }
+        .sub-item strong { color: #2CA074; display: block; margin-bottom: 4px; font-size: 15px; }
+        .data-points { font-size: 12.5px; color: #5a6e65; }
+        .print-btn { background: #2CA074; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; float: right; margin-bottom: 15px; }
+        @media print { .print-btn { display: none; } body { background: white; padding: 0; } }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn" onclick="window.print()">🖨️ प्रिंट / PDF सेव करें</button>
+
+    <div class="header">
+        <h1>📱 APNA GAON (अपना गाँव)</h1>
+        <p>गांव-गांव डेटा संग्रहण हेतु मास्टर कैटेगरी लिस्ट (Field Worker Data Collection Checklist)</p>
+    </div>
+
+    <!-- 1. Construction Hub -->
+    <div class="category-card">
+        <div class="category-title">🏗️ 1. निर्माण हब (Construction Hub)</div>
+        <ul class="sub-list">
+            <li class="sub-item">
+                <strong>🧱 ईंट सप्लायर्स / भट्ठा (Bricks Suppliers)</strong>
+                <div class="data-points">संग्रह करें: भट्ठा नाम, मालिक/सप्लायर नाम, मोबाइल नंबर, ईंट के प्रकार (नंबर 1, 2, अव्वल), रेट प्रति हजार।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🏢 बिल्डिंग मटेरियल शॉप्स (Building Material Shops)</strong>
+                <div class="data-points">संग्रह करें: दुकान का नाम, प्रोप्राइटर नाम, मोबाइल नंबर, सीमेंट ब्रांड, मोरंग, गिट्टी, बालू, सरिया उपलब्ध।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🔩 हार्डवेयर एवं इलेक्ट्रॉनिक दुकानें (Hardware Shops)</strong>
+                <div class="data-points">संग्रह करें: दुकान नाम, मोबाइल नंबर, सेनेटरी, प्लंबिंग पाइप, बिजली का सामान, हार्डवेयर उपकरण।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🚜 लेंटर एवं कंक्रीट मिक्सर मशीन (Linter Machine)</strong>
+                <div class="data-points">संग्रह करें: मशीन मालिक का नाम, मोबाइल नंबर, प्रति लेंटर/प्रति घंटा भाड़ा रेट।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🏗️ शटरिंग एवं बल्ली-पटरा (Shuttering Material)</strong>
+                <div class="data-points">संग्रह करें: शटरिंग ठेकेदार का नाम, मोबाइल नंबर, लोहे की प्लेट/बल्ली पटरा उपलब्धता।</div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 2. Labour Board -->
+    <div class="category-card">
+        <div class="category-title">👷 2. लेबर एवं कारीगर बोर्ड (Labour Board)</div>
+        <ul class="sub-list">
+            <li class="sub-item">
+                <strong>🧱 राजमिस्त्री (Rajmistri / Mason)</strong>
+                <div class="data-points">संग्रह करें: मिस्त्री का नाम, मोबाइल नंबर, अनुभव, दैनिक दिहाड़ी (रू), विशेषज्ञता (मकान, प्लस्तर, टाइल्स)।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🔨 मज़दूर / लेबर (Unskilled Labour / Helpers)</strong>
+                <div class="data-points">संग्रह करें: मजदूर का नाम, मोबाइल नंबर, गाँव का नाम, दैनिक मजदूरी (रू)।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🚰 प्लंबर (Plumber)</strong>
+                <div class="data-points">संग्रह करें: नाम, मोबाइल नंबर, समरसेबल/पाइप फिटिंग अनुभव, चार्ज।</div>
+            </li>
+            <li class="sub-item">
+                <strong>⚡ इलेक्ट्रिशियन (Electrician)</strong>
+                <div class="data-points">संग्रह करें: नाम, मोबाइल नंबर, हाउस वायरिंग, मोटर मरम्मत अनुभव, चार्ज।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🪚 बढ़ई / कारपेंटर (Carpenter)</strong>
+                <div class="data-points">संग्रह करें: नाम, मोबाइल नंबर, दरवाजा-खिड़की, फर्नीचर मिस्त्री, चार्ज।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🧵 दर्जी / टेलर (Tailor)</strong>
+                <div class="data-points">संग्रह करें: टेलर/दुकान नाम, मोबाइल नंबर, जेंट्स/लेडीज कपड़े सिलने की दरें।</div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 3. Transport & Rentals -->
+    <div class="category-card">
+        <div class="category-title">🚜 3. ट्रांसपोर्ट एवं गाड़ियाँ (Transport & Rentals)</div>
+        <ul class="sub-list">
+            <li class="sub-item">
+                <strong>🚜 ट्रैक्टर एवं जुताई (Tractor Rentals)</strong>
+                <div class="data-points">संग्रह करें: मालिक नाम, मोबाइल नंबर, ट्रैक्टर मॉडल, उपकरण (कल्टीवेटर, रोटावेटर, थ्रेशर, ट्राली)।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🚚 पिकअप एवं लोडर (Pickup & Loader)</strong>
+                <div class="data-points">संग्रह करें: वाहन मालिक/चालक नाम, मोबाइल नंबर, गाड़ी का प्रकार (टाटा एस, पिकअप 1.3T, 407)।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🚖 कार एवं टैक्सी (Car & Taxi Rental)</strong>
+                <div class="data-points">संग्रह करें: ड्राइवर नाम, मोबाइल नंबर, गाड़ी (अर्टिगा, बोलेरो, स्विफ्ट), भाड़ा रेट (प्रति किमी/दिन)।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🏗️ जेसीबी मशीन (JCB Excavator)</strong>
+                <div class="data-points">संग्रह करें: जेसीबी मालिक नाम, मोबाइल नंबर, प्रति घंटा भाड़ा रेट।</div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 4. Family Functions -->
+    <div class="category-card">
+        <div class="category-title">🎪 4. फैमिली फंक्शन एवं शादी-विवाह (Family Functions)</div>
+        <ul class="sub-list">
+            <li class="sub-item">
+                <strong>🎪 टेंट, पंडाल एवं डेकोरेशन (Tent & Pandal)</strong>
+                <div class="data-points">संग्रह करें: टेंट हाउस नाम, मालिक नाम, मोबाइल नंबर, क्षमता (कुर्सी, मेज, वाटरप्रूफ पंडाल), पैकेज रेट।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🍲 हलवाई एवं कैटरिंग (Catering & Halwai)</strong>
+                <div class="data-points">संग्रह करें: मुख्य हलवाई नाम, मोबाइल नंबर, कैटरिंग टीम साइज़, विशेषताएँ (वेज/शाकाहारी भोजन)।</div>
+            </li>
+            <li class="sub-item">
+                <strong>📸 फोटो एवं वीडियोग्राफी (Photo & Videography)</strong>
+                <div class="data-points">संग्रह करें: स्टूडियो नाम, फोटोग्राफर नाम, मोबाइल नंबर, कैमरा/ड्रोन शूटर सुविधा, पैकेज रेट।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🎵 डीजे, साउंड एवं ब्रास बैंड (DJ & Sound System)</strong>
+                <div class="data-points">संग्रह करें: डीजे नाम, मालिक नाम, मोबाइल नंबर, साउंड सेटअप, बैंड बुकिंग दरें।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🏰 मैरिज हॉल एवं बारात घर (Marriage Halls / Lawns)</strong>
+                <div class="data-points">संग्रह करें: मैरिज हॉल नाम, मैनेजर/मालिक नाम, मोबाइल नंबर, लॉन क्षमता, बुकिंग रेट।</div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 5. Health & Emergency -->
+    <div class="category-card">
+        <div class="category-title">🏥 5. स्वास्थ्य एवं आपातकालीन सेवाएँ (Health & Emergency)</div>
+        <ul class="sub-list">
+            <li class="sub-item">
+                <strong>🩺 डॉक्टर्स एवं क्लिनिक (Doctors & Clinics)</strong>
+                <div class="data-points">संग्रह करें: डॉक्टर नाम, डिग्री/विशेषज्ञता, क्लिनिक पता, मोबाइल नंबर, क्लिनिक समय।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🏥 अस्पताल एवं नर्सिंग होम (Hospitals)</strong>
+                <div class="data-points">संग्रह करें: अस्पताल नाम, पता, आपातकालीन संपर्क नंबर, उपलब्ध सुविधाएँ (आईसीयू, पैथोलॉजी)।</div>
+            </li>
+            <li class="sub-item">
+                <strong>💊 मेडिकल स्टोर / फार्मेसी (Pharmacy)</strong>
+                <div class="data-points">संग्रह करें: दवा दुकान नाम, प्रोप्राइटर नाम, मोबाइल नंबर, 24 घंटे उपलब्धता।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🚑 एंबुलेंस सेवा (Ambulance Service)</strong>
+                <div class="data-points">संग्रह करें: एंबुलेंस चालक का नाम, मोबाइल नंबर, वाहन प्रकार (ऑक्सीजन/सामान्य)।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🏛️ ग्राम प्रधान एवं प्रतिनिधि (Gram Pradhan / Officials)</strong>
+                <div class="data-points">संग्रह करें: प्रधान का नाम, गाँव का नाम, मोबाइल नंबर, कोटेदार/सचिव का नंबर।</div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 6. Mandi Hub -->
+    <div class="category-card">
+        <div class="category-title">🌾 6. मंडी भाव एवं व्यापारी (Mandi Hub)</div>
+        <ul class="sub-list">
+            <li class="sub-item">
+                <strong>🌾 गल्ला / फसल व्यापारी (Grain Buyers / Arhatiya)</strong>
+                <div class="data-points">संग्रह करें: व्यापारी का नाम, मोबाइल नंबर, खरीदी जाने वाली फसलें (गेहूँ, धान, मक्का, सरसों)।</div>
+            </li>
+            <li class="sub-item">
+                <strong>🥦 सब्जी मंडी व्यापारी (Vegetable Traders)</strong>
+                <div class="data-points">संग्रह करें: थोक विक्रेता का नाम, मोबाइल नंबर, मुख्य उपज।</div>
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>

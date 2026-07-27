@@ -4,9 +4,11 @@ import com.dv.apna.core.common.Resource
 import com.dv.apna.core.datastore.PreferenceManager
 import com.dv.apna.feature.construction.data.datasource.ConstructionDataSource
 import com.dv.apna.feature.construction.data.mapper.toBricksSupplier
+import com.dv.apna.feature.construction.data.mapper.toConstructionItem
 import com.dv.apna.feature.construction.data.mapper.toHardwareShop
 import com.dv.apna.feature.construction.data.mapper.toMaterialShop
 import com.dv.apna.feature.construction.domain.model.BricksSupplierModel
+import com.dv.apna.feature.construction.domain.model.ConstructionItemModel
 import com.dv.apna.feature.construction.domain.model.HardwareShopModel
 import com.dv.apna.feature.construction.domain.model.MaterialShopModel
 import com.dv.apna.feature.construction.domain.repository.ConstructionRepository
@@ -50,6 +52,21 @@ class ConstructionRepositoryImpl @Inject constructor(
             val languageCode = preferenceManager.languageCode.firstOrNull() ?: "en"
             val data = dataSource.getConstructionData(villageId, "hardware_shops")
                 .map { it.toHardwareShop(languageCode) }
+            emit(Resource.Success(data))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Unknown error"))
+        }
+    }
+
+    override fun getConstructionItems(
+        villageId: String,
+        categoryId: String
+    ): Flow<Resource<List<ConstructionItemModel>>> = flow {
+        emit(Resource.Loading())
+        try {
+            val languageCode = preferenceManager.languageCode.firstOrNull() ?: "en"
+            val data = dataSource.getConstructionData(villageId, categoryId)
+                .map { it.toConstructionItem(languageCode) }
             emit(Resource.Success(data))
         } catch (e: Exception) {
             emit(Resource.Error(e.message ?: "Unknown error"))

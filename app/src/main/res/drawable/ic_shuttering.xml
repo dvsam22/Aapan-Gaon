@@ -1,0 +1,41 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <!-- Top Shuttering Slab Plate -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M3,4 L29,4 C29.6,4 30,4.4 30,5 L30,7 C30,7.6 29.6,8 29,8 L3,8 C2.4,8 2,7.6 2,7 L2,5 C2,4.4 2.4,4 3,4 Z"/>
+  <!-- Scaffolding Pillars -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M5,8 L7,8 L7,26 L5,26 Z"/>
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M25,8 L27,8 L27,26 L25,26 Z"/>
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M15,8 L17,8 L17,26 L15,26 Z"/>
+  <!-- Horizontal Tie Beams -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M5,15 L27,15 L27,17 L5,17 Z"/>
+  <!-- Diagonal X-Braces -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M6.2,9.2 L15.8,24.8 L14.2,25.8 L4.6,10.2 Z"/>
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M14.2,9.2 L4.6,24.8 L6.2,25.8 L15.8,10.2 Z"/>
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M16.2,9.2 L25.8,24.8 L24.2,25.8 L14.6,10.2 Z"/>
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M24.2,9.2 L14.6,24.8 L16.2,25.8 L25.8,10.2 Z"/>
+  <!-- Base Support Plates -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M3,26 L9,26 L9,28 L3,28 Z M13,26 L19,26 L19,28 L13,28 Z M23,26 L29,26 L29,28 L23,28 Z"/>
+</vector>

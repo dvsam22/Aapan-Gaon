@@ -59,7 +59,9 @@ fun ConstructionHubScreen(
     onNavigateBack: () -> Unit,
     onNavigateToBricks: () -> Unit,
     onNavigateToMaterialShops: () -> Unit,
-    onNavigateToHardwareShops: () -> Unit
+    onNavigateToHardwareShops: () -> Unit,
+    onNavigateToLinterMachine: () -> Unit,
+    onNavigateToShuttering: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         effect.collectLatest { effect ->
@@ -68,6 +70,8 @@ fun ConstructionHubScreen(
                 ConstructionEffect.NavigateToBricks -> onNavigateToBricks()
                 ConstructionEffect.NavigateToMaterialShops -> onNavigateToMaterialShops()
                 ConstructionEffect.NavigateToHardwareShops -> onNavigateToHardwareShops()
+                ConstructionEffect.NavigateToLinterMachine -> onNavigateToLinterMachine()
+                ConstructionEffect.NavigateToShuttering -> onNavigateToShuttering()
             }
         }
     }
@@ -130,6 +134,20 @@ fun ConstructionHubScreen(
                         title = stringResource(id = R.string.hardware_shops),
                         icon = painterResource(id = R.drawable.hardware_shops),
                         onClick = { onEvent(ConstructionEvent.HardwareShopsClick) }
+                    )
+                }
+                item {
+                    ConstructionOptionCard(
+                        title = stringResource(id = R.string.linter_machine),
+                        icon = painterResource(id = R.drawable.ic_linter_machine),
+                        onClick = { onEvent(ConstructionEvent.LinterMachineClick) }
+                    )
+                }
+                item {
+                    ConstructionOptionCard(
+                        title = stringResource(id = R.string.shuttering),
+                        icon = painterResource(id = R.drawable.ic_shuttering),
+                        onClick = { onEvent(ConstructionEvent.ShutteringClick) }
                     )
                 }
             }
@@ -260,7 +278,9 @@ fun ConstructionHubScreenPreview() {
             onNavigateBack = {},
             onNavigateToBricks = {},
             onNavigateToMaterialShops = {},
-            onNavigateToHardwareShops = {}
+            onNavigateToHardwareShops = {},
+            onNavigateToLinterMachine = {},
+            onNavigateToShuttering = {}
         )
     }
 }

@@ -5,4 +5,6 @@ sealed interface ConstructionEffect {
     data object NavigateToBricks : ConstructionEffect
     data object NavigateToMaterialShops : ConstructionEffect
     data object NavigateToHardwareShops : ConstructionEffect
+    data object NavigateToLinterMachine : ConstructionEffect
+    data object NavigateToShuttering : ConstructionEffect
 }

@@ -61,6 +61,8 @@
     <string name="bricks">Bricks</string>
     <string name="material_shops">Material Shops</string>
     <string name="hardware_shops">Hardware Shops</string>
+    <string name="linter_machine">Linter Machine</string>
+    <string name="shuttering">Shuttering</string>
     <string name="no_shops_found">No shops found</string>
     <string name="items_available">Items Available:</string>
     <string name="materials_available">Materials Available:</string>

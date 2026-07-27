@@ -181,7 +181,7 @@ fun HomeDrawer(
         ) {
             // App Logo
             Image(
-                painter = painterResource(id = R.drawable.remove_bg_logo),
+                painter = painterResource(id = R.drawable.trasparent_logo),
                 contentDescription = "App Logo",
                 modifier = Modifier
                     .size(120.sdp()),
@@ -209,6 +209,12 @@ fun HomeDrawer(
                 }
             }
         }
+
+        HorizontalDivider(
+            modifier = Modifier.padding(start = 20.sdp(), end = 20.sdp(), top = 8.sdp(), bottom = 12.sdp()),
+            thickness = 1.sdp(),
+            color = Color(0xFFF1F4F7)
+        )
 
         DrawerMenuItem(
             title = stringResource(id = R.string.change_language),

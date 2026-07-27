@@ -61,6 +61,8 @@
     <string name="bricks">ईंटें</string>
     <string name="material_shops">सामग्री की दुकानें</string>
     <string name="hardware_shops">हार्डवेयर की दुकानें</string>
+    <string name="linter_machine">लिन्टर मशीन</string>
+    <string name="shuttering">शटरिंग</string>
     <string name="no_shops_found">कोई दुकान नहीं मिली</string>
     <string name="items_available">उपलब्ध वस्तुएं:</string>
     <string name="materials_available">उपलब्ध सामग्री:</string>

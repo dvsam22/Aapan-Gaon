@@ -44,6 +44,16 @@ class ConstructionViewModel @Inject constructor() : ViewModel() {
                     _effect.emit(ConstructionEffect.NavigateToHardwareShops)
                 }
             }
+            is ConstructionEvent.LinterMachineClick -> {
+                viewModelScope.launch {
+                    _effect.emit(ConstructionEffect.NavigateToLinterMachine)
+                }
+            }
+            is ConstructionEvent.ShutteringClick -> {
+                viewModelScope.launch {
+                    _effect.emit(ConstructionEffect.NavigateToShuttering)
+                }
+            }
         }
     }
 }

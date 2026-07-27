@@ -13,6 +13,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.dv.apna.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.dv.apna.core.utils.dial
@@ -33,10 +35,13 @@ import com.dv.apna.feature.construction.presentation.screen.ConstructionHubScree
 import com.dv.apna.feature.construction.presentation.screen.BricksSuppliersScreen
 import com.dv.apna.feature.construction.presentation.screen.MaterialShopsScreen
 import com.dv.apna.feature.construction.presentation.screen.HardwareShopsScreen
+import com.dv.apna.feature.construction.presentation.screen.ConstructionDetailScreen
 import com.dv.apna.feature.construction.presentation.viewmodel.ConstructionViewModel
 import com.dv.apna.feature.construction.presentation.viewmodel.BricksViewModel
 import com.dv.apna.feature.construction.presentation.viewmodel.MaterialShopsViewModel
 import com.dv.apna.feature.construction.presentation.viewmodel.HardwareShopsViewModel
+import com.dv.apna.feature.construction.presentation.viewmodel.ConstructionDetailViewModel
+import com.dv.apna.feature.construction.presentation.event.ConstructionDetailEvent
 import com.dv.apna.feature.labour.presentation.screen.LabourBoardScreen
 import com.dv.apna.feature.labour.presentation.screen.LabourDetailsScreen
 import com.dv.apna.feature.labour.presentation.viewmodel.LabourViewModel
@@ -338,6 +343,9 @@ fun RootNavGraph(
         composable<Route.Construction> {
             val viewModel: ConstructionViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val linterTitle = stringResource(id = R.string.linter_machine)
+            val shutteringTitle = stringResource(id = R.string.shuttering)
+
             ConstructionHubScreen(
                 state = state,
                 onEvent = viewModel::onEvent,
@@ -345,7 +353,31 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToBricks = { navController.navigate(Route.BricksSuppliers) },
                 onNavigateToMaterialShops = { navController.navigate(Route.MaterialShops) },
-                onNavigateToHardwareShops = { navController.navigate(Route.HardwareShops) }
+                onNavigateToHardwareShops = { navController.navigate(Route.HardwareShops) },
+                onNavigateToLinterMachine = { 
+                    navController.navigate(Route.ConstructionDetail("linter_machine", linterTitle)) 
+                },
+                onNavigateToShuttering = { 
+                    navController.navigate(Route.ConstructionDetail("shuttering", shutteringTitle)) 
+                }
+            )
+        }
+
+        composable<Route.ConstructionDetail> { backStackEntry ->
+            val route: Route.ConstructionDetail = backStackEntry.toRoute()
+            val viewModel: ConstructionDetailViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            LaunchedEffect(route.categoryId) {
+                viewModel.onEvent(ConstructionDetailEvent.LoadItems(route.categoryId))
+            }
+
+            ConstructionDetailScreen(
+                title = route.title,
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
 

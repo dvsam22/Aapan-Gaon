@@ -70,6 +70,9 @@ sealed interface Route {
     data object HardwareShops : Route
 
     @Serializable
+    data class ConstructionDetail(val categoryId: String, val title: String) : Route
+
+    @Serializable
     data object LabourBoard : Route
 
     @Serializable
