@@ -41,6 +41,7 @@ fun ChangeLanguageScreen(
     state: LanguageState,
     onEvent: (LanguageEvent) -> Unit,
     effect: Flow<LanguageEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit,
 ) {
     LaunchedEffect(Unit) {
@@ -111,6 +112,8 @@ fun ChangeLanguageScreen(
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(24.sdp()))
+                    com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                 }
             }
         }
@@ -179,6 +182,7 @@ fun ChangeLanguageScreenPreview() {
             state = LanguageState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

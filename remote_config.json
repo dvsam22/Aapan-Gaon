@@ -1,0 +1,70 @@
+{
+  "parameters": {
+    "ads_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "Global master toggle to enable or disable all ads in the app"
+    },
+    "app_open_ads_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "Toggle App Open Ads on startup and background resume"
+    },
+    "banner_ads_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "Toggle Banner Ads inside all service list screens"
+    },
+    "interstitial_ads_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "Toggle Interstitial Ads on opening Notification or News section"
+    },
+    "rewarded_ads_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "Toggle Rewarded Ads on opening sub-services / vendor details"
+    },
+    "ad_show_probability": {
+      "defaultValue": {
+        "value": "1.0"
+      },
+      "description": "Probability threshold for showing ads (1.0 = 100%, 0.5 = 50%, 0.0 = 0%)"
+    },
+    "app_open_ad_unit_id": {
+      "defaultValue": {
+        "value": "ca-app-pub-3940256099942544/9257395921"
+      },
+      "description": "AdMob App Open Ad Unit ID"
+    },
+    "banner_ad_unit_id": {
+      "defaultValue": {
+        "value": "ca-app-pub-3940256099942544/6300978111"
+      },
+      "description": "AdMob Banner Ad Unit ID"
+    },
+    "interstitial_ad_unit_id": {
+      "defaultValue": {
+        "value": "ca-app-pub-3940256099942544/1033173712"
+      },
+      "description": "AdMob Interstitial Ad Unit ID"
+    },
+    "rewarded_ad_unit_id": {
+      "defaultValue": {
+        "value": "ca-app-pub-3940256099942544/5224354917"
+      },
+      "description": "AdMob Rewarded Ad Unit ID"
+    },
+    "module_notifications_config": {
+      "defaultValue": {
+        "value": "{\n  \"construction\": true,\n  \"labour\": true,\n  \"transport\": true,\n  \"mandi\": true,\n  \"health\": true,\n  \"family\": true,\n  \"news\": true,\n  \"probability\": 1.0\n}"
+      },
+      "description": "JSON map controlling which module notifications can be displayed and their probability"
+    }
+  }
+}

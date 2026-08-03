@@ -46,6 +46,7 @@ fun HardwareShopsScreen(
     state: HardwareShopsState,
     onEvent: (HardwareShopsEvent) -> Unit,
     effect: Flow<HardwareShopsEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -114,6 +115,9 @@ fun HardwareShopsScreen(
                                 shop = shop,
                                 onCallClick = { onEvent(HardwareShopsEvent.CallClick(shop.phone)) }
                             )
+                        }
+                        item {
+                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -332,6 +336,7 @@ fun HardwareShopsScreenPreview() {
             state = HardwareShopsState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {})
     }
 }

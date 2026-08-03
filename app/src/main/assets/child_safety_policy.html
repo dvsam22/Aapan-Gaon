@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Safety Standards & CSAE Prevention Policy - Apna Gaon</title>
+    <meta name="description" content="Official Child Safety Standards and CSAE/CSAM Prevention Policy for Apna Gaon application.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2CA074;
+            --primary-dark: #165D47;
+            --accent: #EBF8F3;
+            --bg: #F4FAF7;
+            --card-bg: #FFFFFF;
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+            --danger-bg: #FEF2F2;
+            --danger-border: #FCA5A5;
+            --danger-text: #991B1B;
+            --shadow: 0 10px 30px -5px rgba(44, 160, 116, 0.08);
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-dark);
+            line-height: 1.65;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: #FFFFFF;
+            padding: 40px 30px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .app-brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1.25;
+            margin-bottom: 12px;
+        }
+
+        .meta-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .alert-card {
+            background-color: var(--danger-bg);
+            border-left: 5px solid var(--danger-text);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            color: var(--danger-text);
+        }
+
+        .alert-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(44, 160, 116, 0.1);
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.35rem;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 8px;
+        }
+
+        p {
+            color: var(--text-dark);
+            margin-bottom: 14px;
+            font-size: 0.98rem;
+        }
+
+        ul {
+            list-style: none;
+            margin-bottom: 16px;
+        }
+
+        li {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .contact-box {
+            background: linear-gradient(135deg, #EBF8F3, #FFFFFF);
+            border: 2px dashed var(--primary);
+            padding: 24px;
+            border-radius: 14px;
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .contact-email {
+            display: inline-block;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-decoration: none;
+            margin-top: 8px;
+            padding: 8px 20px;
+            background-color: #FFFFFF;
+            border-radius: 30px;
+            box-shadow: 0 4px 12px rgba(44, 160, 116, 0.15);
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            padding: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+            header {
+                padding: 25px 20px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .section-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="app-brand">
+                <span>🏡</span> Apna Gaon (अपना गाँव)
+            </div>
+            <h1>Child Safety Standards & CSAE Prevention Policy</h1>
+            <div class="meta-tag">Effective Date: July 2026</div>
+        </header>
+
+        <div class="alert-card">
+            <h3>🚫 Zero Tolerance Policy</h3>
+            <p>Apna Gaon has a strict <strong>Zero Tolerance Policy</strong> against Child Sexual Abuse Material (CSAM), Child Sexual Exploitation and Abuse (CSAE), and any form of child endangerment. We are fully committed to protecting children across all digital interactions and services.</p>
+        </div>
+
+        <div class="section-card">
+            <h2>🛡️ 1. Commitment to Child Protection</h2>
+            <p>At <strong>Apna Gaon</strong>, our mission is to connect local rural communities safely. We enforce strict guidelines to ensure children are protected from sexual exploitation, abuse, human trafficking, or inappropriate contact.</p>
+            <p>We strictly comply with national and international child safety laws, including the <em>Protection of Children from Sexual Offences (POCSO) Act</em> and global <em>Child Sexual Abuse Material (CSAM) / Child Sexual Exploitation and Abuse (CSAE)</em> compliance frameworks.</p>
+        </div>
+
+        <div class="section-card">
+            <h2>📜 2. Safety Standards & Prohibited Conduct</h2>
+            <p>Users, service providers, and vendors on Apna Gaon are strictly prohibited from:</p>
+            <ul>
+                <li>Creating, uploading, sharing, or transmitting any Child Sexual Abuse Material (CSAM) or Child Sexual Exploitation and Abuse (CSAE) content.</li>
+                <li>Engaging in grooming, solicitation, or inappropriate communication directed towards minors.</li>
+                <li>Depicting minors in any sexually suggestive, harmful, or exploitative context.</li>
+                <li>Promoting or facilitating child labor, trafficking, or child abuse in any form.</li>
+            </ul>
+        </div>
+
+        <div class="section-card">
+            <h2>🚨 3. In-App Reporting & Moderation</h2>
+            <p>We provide robust mechanisms to report and moderate any suspicious activity or content immediately:</p>
+            <ul>
+                <li><strong>In-App Reporting:</strong> Users can flag any listing, user profile, or service request directly within the app using the 1-click Report button.</li>
+                <li><strong>Proactive Review:</strong> Content flagged for child safety concerns is prioritized for immediate administrative review within 1 hour.</li>
+                <li><strong>Account Termination:</strong> Any user or service provider found violating child safety policies will face permanent account suspension and device ban without prior warning.</li>
+            </ul>
+        </div>
+
+        <div class="section-card">
+            <h2>⚖️ 4. Law Enforcement Cooperation</h2>
+            <p>Upon detecting any CSAM/CSAE material or illegal child endangerment activities, Apna Gaon takes immediate law enforcement action:</p>
+            <ul>
+                <li>We report CSAM content directly to relevant national and international cybercrime reporting authorities, including the <strong>National Cyber Crime Reporting Portal (cybercrime.gov.in)</strong> and the <strong>National Center for Missing & Exploited Children (NCMEC)</strong>.</li>
+                <li>We fully preserve forensic evidence and cooperate with law enforcement investigations to bring offenders to justice.</li>
+            </ul>
+        </div>
+
+        <div class="section-card">
+            <h2>📧 5. Designated Point of Contact for Child Safety</h2>
+            <p>If you suspect, discover, or wish to report any child safety concerns, CSAM/CSAE material, or policy violations on Apna Gaon, please contact our designated Child Safety Officer immediately:</p>
+            
+            <div class="contact-box">
+                <p style="font-weight: 600; color: var(--primary-dark);">Designated Child Safety Contact Email:</p>
+                <a href="mailto:developersm22@gmail.com" class="contact-email">developersm22@gmail.com</a>
+                <p style="margin-top: 12px; font-size: 0.85rem; color: var(--text-muted);">Urgent reports regarding child safety are reviewed continuously 24 hours a day, 7 days a week.</p>
+            </div>
+        </div>
+
+        <footer>
+            &copy; 2026 Apna Gaon (अपना गाँव). All Rights Reserved.<br>
+            Official Child Safety Standards & CSAE/CSAM Prevention Compliance Document.
+        </footer>
+    </div>
+</body>
+</html>

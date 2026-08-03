@@ -46,6 +46,7 @@ fun TransportDetailsScreen(
     state: TransportState,
     onEvent: (TransportEvent) -> Unit,
     effect: Flow<TransportEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit
 ) {
     LaunchedEffect(Unit) {
@@ -119,6 +120,9 @@ fun TransportDetailsScreen(
                                 transport = transport,
                                 onCallClick = { onEvent(TransportEvent.CallClick(transport.contact)) }
                             )
+                        }
+                        item {
+                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -340,6 +344,7 @@ fun TransportDetailsScreenPreview() {
             ),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

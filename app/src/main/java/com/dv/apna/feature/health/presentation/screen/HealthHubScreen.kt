@@ -37,6 +37,7 @@ fun HealthHubScreen(
     state: HealthState,
     onEvent: (HealthEvent) -> Unit,
     effect: Flow<HealthEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onNavigateToDoctors: () -> Unit,
     onNavigateToHospitals: () -> Unit,
@@ -174,6 +175,9 @@ fun HealthHubScreen(
                         icon = painterResource(id = R.drawable.pharmecy),
                         onClick = { onEvent(HealthEvent.PharmacyClick) }
                     )
+                }
+                item {
+                    com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                 }
             }
         }
@@ -394,6 +398,7 @@ fun HealthHubScreenPreview() {
             state = HealthState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {},
             onNavigateToDoctors = {},
             onNavigateToHospitals = {},

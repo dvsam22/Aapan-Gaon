@@ -72,11 +72,33 @@ import com.dv.apna.feature.family.presentation.screen.FamilyFunctionDetailsScree
 import com.dv.apna.feature.family.presentation.viewmodel.FamilyFunctionViewModel
 import com.dv.apna.feature.family.presentation.effect.FamilyFunctionEffect
 
+private fun android.content.Context.findActivity(): android.app.Activity? {
+    var ctx = this
+    while (ctx is android.content.ContextWrapper) {
+        if (ctx is android.app.Activity) {
+            return ctx
+        }
+        ctx = ctx.baseContext
+    }
+    return null
+}
+
 @Composable
 fun RootNavGraph(
     navController: NavHostController,
     startDestination: Route = Route.Splash()
 ) {
+    val context = LocalContext.current
+    val activity = androidx.compose.runtime.remember(context) { context.findActivity() }
+    val entryPoint = androidx.compose.runtime.remember {
+        dagger.hilt.android.EntryPointAccessors.fromApplication(
+            context.applicationContext,
+            NavGraphEntryPoint::class.java
+        )
+    }
+    val remoteConfigManager = entryPoint.remoteConfigManager()
+    val adManager = entryPoint.adManager()
+
     NavHost(
         navController = navController,
         startDestination = startDestination,
@@ -163,6 +185,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = {
                     navController.popBackStack()
                 }
@@ -176,6 +199,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = {
                     navController.popBackStack()
                 }
@@ -188,16 +212,48 @@ fun RootNavGraph(
             HomeScreen(
                 state = state,
                 onEvent = viewModel::onEvent,
-                onNavigateToNotifications = { navController.navigate(Route.Notifications) },
+                onNavigateToNotifications = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity) {
+                            navController.navigate(Route.Notifications)
+                        }
+                    } else {
+                        navController.navigate(Route.Notifications)
+                    }
+                },
                 onNavigateToConstruction = { navController.navigate(Route.Construction) },
                 onNavigateToLabour = { navController.navigate(Route.LabourBoard) },
                 onNavigateToTransport = { navController.navigate(Route.Transport) },
                 onNavigateToMandi = { navController.navigate(Route.Mandi) },
-                onNavigateToNews = { navController.navigate(Route.News) },
+                onNavigateToNews = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity) {
+                            navController.navigate(Route.News)
+                        }
+                    } else {
+                        navController.navigate(Route.News)
+                    }
+                },
                 onNavigateToHealth = { navController.navigate(Route.Health) },
                 onNavigateToFamilyFunction = { navController.navigate(Route.FamilyFunction) },
-                onNavigateToLanguage = { navController.navigate(Route.ChangeLanguage) },
-                onNavigateToChangeVillage = { navController.navigate(Route.ChangeVillage) },
+                onNavigateToLanguage = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity) {
+                            navController.navigate(Route.ChangeLanguage)
+                        }
+                    } else {
+                        navController.navigate(Route.ChangeLanguage)
+                    }
+                },
+                onNavigateToChangeVillage = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity) {
+                            navController.navigate(Route.ChangeVillage)
+                        }
+                    } else {
+                        navController.navigate(Route.ChangeVillage)
+                    }
+                },
                 onNavigateToAboutUs = { navController.navigate(Route.AboutUs) },
                 onNavigateToPrivacyPolicy = { navController.navigate(Route.PrivacyPolicy) },
                 onNavigateToTerms = { navController.navigate(Route.TermsAndConditions) }
@@ -213,6 +269,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToDoctors = { navController.navigate(Route.Doctors) },
                 onNavigateToHospitals = { navController.navigate(Route.Hospitals) },
@@ -230,6 +287,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
                 onDialPhone = { phone -> context.dial(phone) }
             )
@@ -242,6 +300,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
                 onDialPhone = { phone -> context.dial(phone) }
             )
@@ -254,6 +313,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
                 onDialPhone = { phone -> context.dial(phone) }
             )
@@ -269,6 +329,7 @@ fun RootNavGraph(
                 error = state.error,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
                 onDialPhone = { phone -> context.dial(phone) }
             )
@@ -284,6 +345,7 @@ fun RootNavGraph(
                 error = state.error,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
                 onDialPhone = { phone -> context.dial(phone) }
             )
@@ -295,6 +357,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToCropPrices = { navController.navigate(Route.CropPrices) },
                 onNavigateToTodayMarket = { navController.navigate(Route.TodayMarket) },
@@ -308,6 +371,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -318,6 +382,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -328,6 +393,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -350,15 +416,42 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToBricks = { navController.navigate(Route.BricksSuppliers) },
-                onNavigateToMaterialShops = { navController.navigate(Route.MaterialShops) },
-                onNavigateToHardwareShops = { navController.navigate(Route.HardwareShops) },
+                onNavigateToBricks = {
+                    if (activity != null) {
+                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.BricksSuppliers) })
+                    } else {
+                        navController.navigate(Route.BricksSuppliers)
+                    }
+                },
+                onNavigateToMaterialShops = {
+                    if (activity != null) {
+                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.MaterialShops) })
+                    } else {
+                        navController.navigate(Route.MaterialShops)
+                    }
+                },
+                onNavigateToHardwareShops = {
+                    if (activity != null) {
+                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.HardwareShops) })
+                    } else {
+                        navController.navigate(Route.HardwareShops)
+                    }
+                },
                 onNavigateToLinterMachine = { 
-                    navController.navigate(Route.ConstructionDetail("linter_machine", linterTitle)) 
+                    if (activity != null) {
+                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.ConstructionDetail("linter_machine", linterTitle)) })
+                    } else {
+                        navController.navigate(Route.ConstructionDetail("linter_machine", linterTitle)) 
+                    }
                 },
                 onNavigateToShuttering = { 
-                    navController.navigate(Route.ConstructionDetail("shuttering", shutteringTitle)) 
+                    if (activity != null) {
+                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.ConstructionDetail("shuttering", shutteringTitle)) })
+                    } else {
+                        navController.navigate(Route.ConstructionDetail("shuttering", shutteringTitle)) 
+                    }
                 }
             )
         }
@@ -377,6 +470,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -388,6 +482,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -399,6 +494,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -410,6 +506,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -421,9 +518,14 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToCategory = { category ->
-                    navController.navigate(Route.LabourDetails(category))
+                    if (activity != null) {
+                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.LabourDetails(category)) })
+                    } else {
+                        navController.navigate(Route.LabourDetails(category))
+                    }
                 }
             )
         }
@@ -435,6 +537,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -445,9 +548,14 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToCategory = { id, name ->
-                    navController.navigate(Route.TransportDetails(id, name))
+                    if (activity != null) {
+                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.TransportDetails(id, name)) })
+                    } else {
+                        navController.navigate(Route.TransportDetails(id, name))
+                    }
                 }
             )
         }
@@ -470,6 +578,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -480,6 +589,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToNewsDetails = { id -> navController.navigate(Route.NewsDetails(id)) },
                 onNavigateToNoticeDetails = { id -> navController.navigate(Route.NoticeDetails(id)) }
@@ -515,6 +625,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateToDetails = { id ->
                     navController.navigate(Route.NotificationDetails(id))
                 },
@@ -535,9 +646,14 @@ fun RootNavGraph(
 
         composable<Route.FamilyFunction> {
             FamilyFunctionScreen(
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToDetails = { categoryId ->
-                    navController.navigate(Route.FamilyFunctionDetails(categoryId))
+                    if (activity != null) {
+                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.FamilyFunctionDetails(categoryId)) })
+                    } else {
+                        navController.navigate(Route.FamilyFunctionDetails(categoryId))
+                    }
                 }
             )
         }
@@ -560,6 +676,7 @@ fun RootNavGraph(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() }
             )
         }

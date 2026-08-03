@@ -47,6 +47,7 @@ fun EmergencyListScreen(
     error: com.dv.apna.core.common.UiText?,
     onEvent: (HealthEvent) -> Unit,
     effect: Flow<HealthEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onDialPhone: (String) -> Unit
 ) {
@@ -118,6 +119,9 @@ fun EmergencyListScreen(
                                 phone = item.phone,
                                 onCallClick = { onEvent(HealthEvent.CallClick(item.phone)) }
                             )
+                        }
+                        item {
+                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }

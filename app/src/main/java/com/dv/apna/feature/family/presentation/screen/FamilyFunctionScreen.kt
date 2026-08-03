@@ -28,6 +28,7 @@ import com.dv.apna.core.utils.ssp
 
 @Composable
 fun FamilyFunctionScreen(
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onNavigateToDetails: (String) -> Unit
 ) {
@@ -104,6 +105,9 @@ fun FamilyFunctionScreen(
                         icon = painterResource(id = R.drawable.ic_marriage_hall),
                         onClick = { onNavigateToDetails("marriage_halls") }
                     )
+                }
+                item {
+                    com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                 }
             }
         }
@@ -227,6 +231,7 @@ fun FamilyFunctionOptionCard(
 fun FamilyFunctionScreenPreview() {
     AapanGavTheme {
         FamilyFunctionScreen(
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {},
             onNavigateToDetails = {}
         )

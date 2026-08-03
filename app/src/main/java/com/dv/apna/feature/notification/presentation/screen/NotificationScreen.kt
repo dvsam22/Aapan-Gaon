@@ -42,6 +42,7 @@ fun NotificationScreen(
     state: NotificationState,
     onEvent: (NotificationEvent) -> Unit,
     effect: kotlinx.coroutines.flow.Flow<NotificationEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateToDetails: (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -120,6 +121,9 @@ fun NotificationScreen(
                                 notification = notification,
                                 onClick = { onEvent(NotificationEvent.SelectNotification(notification.id)) })
                         }
+                    }
+                    item {
+                        com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                     }
                 }
             }
@@ -279,6 +283,7 @@ fun NotificationScreenPreview() {
         ),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateToDetails = {},
             onNavigateBack = {})
     }

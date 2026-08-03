@@ -38,6 +38,9 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var preferenceManager: PreferenceManager
 
+    @Inject
+    lateinit var appOpenAdManager: com.dv.apna.core.ads.AppOpenAdManager
+
     private var navController: androidx.navigation.NavHostController? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -115,6 +118,10 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     private fun subscribeToSavedVillageTopic() {

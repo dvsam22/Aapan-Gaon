@@ -41,6 +41,7 @@ fun DoctorScreen(
     state: HealthState,
     onEvent: (HealthEvent) -> Unit,
     effect: Flow<HealthEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onDialPhone: (String) -> Unit
 ) {
@@ -106,6 +107,9 @@ fun DoctorScreen(
                     ) {
                         items(state.doctors) { doctor ->
                             DoctorItemCard(doctor = doctor, onCallClick = { onEvent(HealthEvent.CallClick(doctor.phone)) })
+                        }
+                        item {
+                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -333,6 +337,7 @@ fun DoctorScreenPreview() {
             ),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {},
             onDialPhone = {}
         )

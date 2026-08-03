@@ -46,6 +46,7 @@ fun BricksSuppliersScreen(
     state: BricksState,
     onEvent: (BricksEvent) -> Unit,
     effect: Flow<BricksEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -113,6 +114,9 @@ fun BricksSuppliersScreen(
                                 supplier = supplier,
                                 onCallClick = { onEvent(BricksEvent.CallClick(supplier.phone)) }
                             )
+                        }
+                        item {
+                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -351,6 +355,7 @@ fun BricksSuppliersScreenPreview() {
             state = BricksState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

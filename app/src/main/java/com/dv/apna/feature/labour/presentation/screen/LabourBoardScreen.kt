@@ -57,6 +57,7 @@ fun LabourBoardScreen(
     state: LabourState,
     onEvent: (LabourEvent) -> Unit,
     effect: Flow<LabourEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onNavigateToCategory: (String) -> Unit
 ) {
@@ -113,7 +114,11 @@ fun LabourBoardScreen(
                         LabourOptionCard(
                             title = service.title.asString(),
                             icon = painterResource(id = service.icon),
-                            onClick = { onEvent(LabourEvent.CategoryClick(service.categoryId)) })
+                            onClick = { onEvent(LabourEvent.CategoryClick(service.categoryId)) }
+                        )
+                    }
+                    item {
+                        com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                     }
                 }
             }
@@ -239,6 +244,7 @@ fun LabourBoardScreenPreview() {
         ),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {},
             onNavigateToCategory = {})
     }

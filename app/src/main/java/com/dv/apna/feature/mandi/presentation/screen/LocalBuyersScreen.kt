@@ -46,6 +46,7 @@ fun LocalBuyersScreen(
     state: MandiState,
     onEvent: (MandiEvent) -> Unit,
     effect: Flow<MandiEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -118,6 +119,9 @@ fun LocalBuyersScreen(
                             buyer = buyer,
                             onCallClick = { onEvent(MandiEvent.CallClick(buyer.contact)) }
                         )
+                    }
+                    item {
+                        com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                     }
                 }
             }
@@ -331,6 +335,7 @@ fun LocalBuyersScreenPreview() {
             ),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

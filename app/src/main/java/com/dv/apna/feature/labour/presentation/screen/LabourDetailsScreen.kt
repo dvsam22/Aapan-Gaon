@@ -45,6 +45,7 @@ fun LabourDetailsScreen(
     state: LabourState,
     onEvent: (LabourEvent) -> Unit,
     effect: Flow<LabourEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -115,6 +116,9 @@ fun LabourDetailsScreen(
                                 labour = labour,
                                 onCallClick = { context.dial(labour.contact) }
                             )
+                        }
+                        item {
+                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -354,6 +358,7 @@ fun LabourDetailsScreenPreview() {
             state = LabourState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

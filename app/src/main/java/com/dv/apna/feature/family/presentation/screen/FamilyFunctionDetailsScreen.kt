@@ -45,6 +45,7 @@ fun FamilyFunctionDetailsScreen(
     state: FamilyFunctionState,
     onEvent: (FamilyFunctionEvent) -> Unit,
     effect: Flow<FamilyFunctionEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit
 ) {
     LaunchedEffect(Unit) {
@@ -114,6 +115,9 @@ fun FamilyFunctionDetailsScreen(
                                 provider = provider,
                                 onCallClick = { onEvent(FamilyFunctionEvent.CallClick(provider.contact)) }
                             )
+                        }
+                        item {
+                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -367,6 +371,7 @@ fun FamilyFunctionDetailsScreenPreview() {
             ),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

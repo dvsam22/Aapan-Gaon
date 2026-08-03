@@ -54,6 +54,7 @@ fun MandiHubScreen(
     state: MandiState,
     onEvent: (MandiEvent) -> Unit,
     effect: Flow<MandiEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onNavigateToCropPrices: () -> Unit,
     onNavigateToTodayMarket: () -> Unit,
@@ -131,6 +132,9 @@ fun MandiHubScreen(
                         icon = painterResource(id = R.drawable.local_buyer),
                         onClick = { onEvent(MandiEvent.LocalBuyersClick) }
                     )
+                }
+                item {
+                    com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                 }
             }
         }
@@ -257,6 +261,7 @@ fun MandiHubScreenPreview() {
             state = MandiState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {},
             onNavigateToCropPrices = {},
             onNavigateToTodayMarket = {},

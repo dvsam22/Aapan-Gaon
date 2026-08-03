@@ -48,6 +48,7 @@ fun LocalNewsScreen(
     state: NewsState,
     onEvent: (NewsEvent) -> Unit,
     effect: Flow<NewsEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onNavigateToNewsDetails: (String) -> Unit,
     onNavigateToNoticeDetails: (String) -> Unit
@@ -86,7 +87,6 @@ fun LocalNewsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
-                .navigationBarsPadding()
                 .constrainAs(mainContent) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -123,6 +123,10 @@ fun LocalNewsScreen(
                                 modifier = Modifier.fillParentMaxSize(),
                                 message = stringResource(id = R.string.no_news_available)
                             )
+                        }
+                    } else {
+                        item {
+                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -352,6 +356,7 @@ fun LocalNewsScreenPreview() {
             state = NewsState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {},
             onNavigateToNewsDetails = {},
             onNavigateToNoticeDetails = {}

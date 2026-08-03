@@ -56,6 +56,7 @@ fun ConstructionHubScreen(
     state: ConstructionState,
     onEvent: (ConstructionEvent) -> Unit,
     effect: Flow<ConstructionEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onNavigateToBricks: () -> Unit,
     onNavigateToMaterialShops: () -> Unit,
@@ -149,6 +150,9 @@ fun ConstructionHubScreen(
                         icon = painterResource(id = R.drawable.ic_shuttering),
                         onClick = { onEvent(ConstructionEvent.ShutteringClick) }
                     )
+                }
+                item {
+                    com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                 }
             }
         }
@@ -275,6 +279,7 @@ fun ConstructionHubScreenPreview() {
             state = ConstructionState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {},
             onNavigateToBricks = {},
             onNavigateToMaterialShops = {},

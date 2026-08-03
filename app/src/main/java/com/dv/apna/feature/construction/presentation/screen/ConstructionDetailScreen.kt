@@ -47,6 +47,7 @@ fun ConstructionDetailScreen(
     state: ConstructionDetailState,
     onEvent: (ConstructionDetailEvent) -> Unit,
     effect: Flow<ConstructionDetailEffect>,
+    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -115,6 +116,9 @@ fun ConstructionDetailScreen(
                                 item = item,
                                 onCallClick = { onEvent(ConstructionDetailEvent.CallClick(item.phone)) }
                             )
+                        }
+                        item {
+                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -354,6 +358,7 @@ fun ConstructionDetailScreenPreview() {
             state = ConstructionDetailState(),
             onEvent = {},
             effect = kotlinx.coroutines.flow.emptyFlow(),
+            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
             onNavigateBack = {}
         )
     }
