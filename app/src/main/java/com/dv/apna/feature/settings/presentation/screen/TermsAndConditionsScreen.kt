@@ -17,6 +17,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
 import com.dv.apna.core.theme.AapanGavTheme
+import com.dv.apna.core.utils.getHtmlAssetUrl
 
 @Composable
 fun TermsAndConditionsScreen(
@@ -68,7 +69,7 @@ fun TermsAndConditionsScreen(
                         settings.loadWithOverviewMode = true
                         settings.useWideViewPort = true
                         setBackgroundColor(0) // Transparent background
-                        loadUrl("file:///android_asset/terms_and_conditions.html")
+                        loadUrl(context.getHtmlAssetUrl("terms_and_conditions"))
                     }
                 }
             )

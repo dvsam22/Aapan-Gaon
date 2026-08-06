@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
+import com.dv.apna.core.utils.getHtmlAssetUrl
 
 @Composable
 fun AboutUsScreen(
@@ -80,7 +81,7 @@ fun AboutUsScreen(
                         settings.loadWithOverviewMode = true
                         settings.useWideViewPort = true
                         setBackgroundColor(0) // Transparent background
-                        loadUrl("file:///android_asset/about_us.html")
+                        loadUrl(context.getHtmlAssetUrl("about_us"))
                     }
                 }
             )

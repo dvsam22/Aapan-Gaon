@@ -117,6 +117,8 @@ class LanguageViewModel @Inject constructor(
                     // Use village from state, or fallback to saved village if we are just changing language
                     val villageId = currentState.selectedVillage?.id ?: preferenceManager.villageId.firstOrNull()
                     val villageName = currentState.selectedVillage?.villageName ?: preferenceManager.villageName.firstOrNull()
+                    val villageLat = currentState.selectedVillage?.lat ?: preferenceManager.villageLat.firstOrNull() ?: 0.0
+                    val villageLng = currentState.selectedVillage?.lng ?: preferenceManager.villageLng.firstOrNull() ?: 0.0
 
                     if (villageId != null && selectedLanguage != null) {
                         _state.update { it.copy(isLoading = true) }
@@ -141,7 +143,7 @@ class LanguageViewModel @Inject constructor(
                         }
 
                         // 2. Save everything and WAIT (Atomic)
-                        saveVillageSelectionUseCase(villageId, villageName ?: "")
+                        saveVillageSelectionUseCase(villageId, villageName ?: "", villageLat, villageLng)
                         saveLanguageUseCase(selectedLanguage.code)
                         
                         // 3. Subscribe to new topic

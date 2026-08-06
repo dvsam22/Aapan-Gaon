@@ -57,6 +57,22 @@ fun FamilyFunctionDetailsScreen(
         }
     }
 
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredFamilyFunctionDetails = remember(state.familyFunctionDetails, query) {
+        if (query.isBlank()) {
+            state.familyFunctionDetails
+        } else {
+            state.familyFunctionDetails.filter { provider ->
+                provider.name.contains(query, ignoreCase = true) ||
+                provider.services.contains(query, ignoreCase = true) ||
+                provider.location.contains(query, ignoreCase = true) ||
+                provider.startingPrice.contains(query, ignoreCase = true) ||
+                provider.contact.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -91,14 +107,21 @@ fun FamilyFunctionDetailsScreen(
             val title = state.selectedCategoryTitle?.asString() ?: state.selectedCategory
             FamilyFunctionDetailsTopBar(
                 title = stringResource(id = R.string.details_title, title),
-                availableCount = state.familyFunctionDetails.size
+                availableCount = filteredFamilyFunctionDetails.size
             ) { onEvent(FamilyFunctionEvent.BackClick) }
+
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
+            )
 
             if (state.isLoading) {
                 LabourSkeleton() // Reusing the same skeleton as requested "like same"
             } else {
-                if (state.familyFunctionDetails.isEmpty() && state.error == null) {
-                    AapanGavEmptyData(message = stringResource(id = R.string.no_service_providers))
+                if (filteredFamilyFunctionDetails.isEmpty() && state.error == null) {
+                    AapanGavEmptyData(
+                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_service_providers)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -110,7 +133,7 @@ fun FamilyFunctionDetailsScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(16.sdp())
                     ) {
-                        items(state.familyFunctionDetails) { provider ->
+                        items(filteredFamilyFunctionDetails) { provider ->
                             ServiceProviderCard(
                                 provider = provider,
                                 onCallClick = { onEvent(FamilyFunctionEvent.CallClick(provider.contact)) }

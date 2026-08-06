@@ -37,6 +37,7 @@ import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
 import com.dv.apna.core.utils.shareApp
 import com.dv.apna.core.utils.rateApp
+import com.dv.apna.core.utils.openMap
 import com.dv.apna.feature.home.presentation.state.HomeState
 import com.dv.apna.feature.home.presentation.event.HomeEvent
 import com.dv.apna.feature.home.domain.model.BannerModel
@@ -135,6 +136,15 @@ fun HomeScreen(
                     onNotificationsClick = onNavigateToNotifications,
                     onMenuClick = {
                         scope.launch { drawerState.open() }
+                    },
+                    onLocationClick = {
+                        state.selectedVillage?.let { location ->
+                            context.openMap(
+                                location = location,
+                                lat = state.selectedVillageLat,
+                                lng = state.selectedVillageLng
+                            )
+                        }
                     }
                 )
 
@@ -309,7 +319,8 @@ enum class DrawerItem {
 fun HomeTopBar(
     villageName: String?,
     onNotificationsClick: () -> Unit,
-    onMenuClick: () -> Unit
+    onMenuClick: () -> Unit,
+    onLocationClick: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
@@ -327,14 +338,27 @@ fun HomeTopBar(
                 contentDescription = "Menu",
                 modifier = Modifier
                     .size(26.sdp())
-                    .clickable { onMenuClick() },
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { onMenuClick() },
                 tint = Color.Unspecified
             )
 
             if (villageName != null) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.sdp())
+                    horizontalArrangement = Arrangement.spacedBy(4.sdp()),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.sdp()))
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            enabled = onLocationClick != null
+                        ) {
+                            onLocationClick?.invoke()
+                        }
+                        .padding(horizontal = 4.sdp(), vertical = 2.sdp())
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.location_pin),

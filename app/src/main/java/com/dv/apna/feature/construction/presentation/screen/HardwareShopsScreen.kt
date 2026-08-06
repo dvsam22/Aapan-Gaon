@@ -62,12 +62,35 @@ fun HardwareShopsScreen(
     }
 
 
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredShops = remember(state.shops, query) {
+        if (query.isBlank()) {
+            state.shops
+        } else {
+            state.shops.filter { shop ->
+                shop.name.contains(query, ignoreCase = true) ||
+                shop.items.any { it.name.contains(query, ignoreCase = true) } ||
+                shop.address.contains(query, ignoreCase = true) ||
+                shop.phone.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(
+                androidx.compose.ui.graphics.Brush.verticalGradient(
+                    listOf(
+                        com.dv.apna.core.theme.MintGradientStart,
+                        com.dv.apna.core.theme.MintGradientMiddle,
+                        com.dv.apna.core.theme.MintGradientEnd
+                    )
+                )
+            )
     ) {
-        val (bottomImage, mainContent, loading, error) = createRefs()
+        val (bottomImage, mainContent, error) = createRefs()
 
         Image(
             painter = painterResource(id = R.drawable.iv_bottomview),
@@ -96,21 +119,28 @@ fun HardwareShopsScreen(
         ) {
             HardwareShopsTopBar(
                 onBackClick = { onEvent(HardwareShopsEvent.BackClick) },
-                availableCount = state.shops.size
+                availableCount = filteredShops.size
+            )
+
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
             )
 
             if (state.isLoading) {
                 ConstructionSkeleton()
             } else {
-                if (state.shops.isEmpty() && state.error == null) {
-                    AapanGavEmptyData(message = stringResource(id = R.string.no_shops_found))
+                if (filteredShops.isEmpty() && state.error == null) {
+                    AapanGavEmptyData(
+                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_shops_found)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 80.sdp()),
                         verticalArrangement = Arrangement.spacedBy(10.sdp())
                     ) {
-                        items(state.shops) { shop ->
+                        items(filteredShops) { shop ->
                             HardwareShopCard(
                                 shop = shop,
                                 onCallClick = { onEvent(HardwareShopsEvent.CallClick(shop.phone)) }

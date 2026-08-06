@@ -41,6 +41,10 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.platform.LocalContext
 import com.dv.apna.core.utils.dial
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.dv.apna.core.components.AapanGavEmptyData
+
 @Composable
 fun LocalBuyersScreen(
     state: MandiState,
@@ -58,6 +62,21 @@ fun LocalBuyersScreen(
                     context.dial(effect.phone)
                 }
                 else -> {}
+            }
+        }
+    }
+
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredBuyers = remember(state.localBuyers, query) {
+        if (query.isBlank()) {
+            state.localBuyers
+        } else {
+            state.localBuyers.filter { b ->
+                b.name.contains(query, ignoreCase = true) ||
+                b.category.contains(query, ignoreCase = true) ||
+                b.address.contains(query, ignoreCase = true) ||
+                b.contact.contains(query, ignoreCase = true)
             }
         }
     }
@@ -97,31 +116,42 @@ fun LocalBuyersScreen(
         ) {
             LocalBuyersTopBar(
                 title = stringResource(id = R.string.local_buyers),
-                availableCount = state.localBuyers.size,
+                availableCount = filteredBuyers.size,
                 onBackClick = { onEvent(MandiEvent.BackClick) }
+            )
+
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
             )
 
             if (state.isLoading) {
                 LocalBuyerSkeleton()
             } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(
-                        start = 16.sdp(),
-                        end = 16.sdp(),
-                        top = 1.sdp(),
-                        bottom = 80.sdp()
-                    ),
-                    verticalArrangement = Arrangement.spacedBy(12.sdp())
-                ) {
-                    items(state.localBuyers) { buyer ->
-                        LocalBuyerCard(
-                            buyer = buyer,
-                            onCallClick = { onEvent(MandiEvent.CallClick(buyer.contact)) }
-                        )
-                    }
-                    item {
-                        com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                if (filteredBuyers.isEmpty() && state.error == null) {
+                    AapanGavEmptyData(
+                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_records_found)
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            start = 16.sdp(),
+                            end = 16.sdp(),
+                            top = 1.sdp(),
+                            bottom = 80.sdp()
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(12.sdp())
+                    ) {
+                        items(filteredBuyers) { buyer ->
+                            LocalBuyerCard(
+                                buyer = buyer,
+                                onCallClick = { onEvent(MandiEvent.CallClick(buyer.contact)) }
+                            )
+                        }
+                        item {
+                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                        }
                     }
                 }
             }

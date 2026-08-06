@@ -132,4 +132,9 @@
     <string name="marriage_halls_lawns">Marriage Halls &amp; Lawns</string>
     <string name="starting_price_label">Starting Price:</string>
     <string name="no_service_providers">No service providers found</string>
+
+    <!-- Search -->
+    <string name="search_placeholder">Search Here...</string>
+    <string name="clear_search">Clear search</string>
+    <string name="no_results_found">No matching search results found</string>
 </resources>

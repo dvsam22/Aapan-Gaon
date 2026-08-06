@@ -48,8 +48,8 @@ class LanguageRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveVillage(id: String, name: String) {
-        preferenceManager.saveVillage(id, name)
+    override suspend fun saveVillage(id: String, name: String, lat: Double, lng: Double) {
+        preferenceManager.saveVillage(id, name, lat, lng)
     }
 
     override suspend fun saveLanguage(code: String) {

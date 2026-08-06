@@ -70,10 +70,20 @@ fun LabourBoardScreen(
         }
     }
 
+    val context = androidx.compose.ui.platform.LocalContext.current
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(
+                androidx.compose.ui.graphics.Brush.verticalGradient(
+                    listOf(
+                        com.dv.apna.core.theme.MintGradientStart,
+                        com.dv.apna.core.theme.MintGradientMiddle,
+                        com.dv.apna.core.theme.MintGradientEnd
+                    )
+                )
+            )
     ) {
         val (bottomImage, mainContent) = createRefs()
 

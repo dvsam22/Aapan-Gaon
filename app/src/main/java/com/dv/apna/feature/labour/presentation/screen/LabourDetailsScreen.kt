@@ -58,6 +58,22 @@ fun LabourDetailsScreen(
         }
     }
 
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredLabourDetails = remember(state.labourDetails, query) {
+        if (query.isBlank()) {
+            state.labourDetails
+        } else {
+            state.labourDetails.filter { labour ->
+                labour.name.contains(query, ignoreCase = true) ||
+                labour.skills.contains(query, ignoreCase = true) ||
+                labour.location.contains(query, ignoreCase = true) ||
+                labour.charges.contains(query, ignoreCase = true) ||
+                labour.contact.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -92,14 +108,21 @@ fun LabourDetailsScreen(
             val title = state.selectedCategoryTitle?.asString() ?: state.selectedCategory
             LabourDetailsTopBar(
                 title = stringResource(id = R.string.details_title, title),
-                availableCount = state.labourDetails.size
+                availableCount = filteredLabourDetails.size
             ) { onEvent(LabourEvent.BackClick) }
+
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
+            )
 
             if (state.isLoading) {
                 LabourSkeleton()
             } else {
-                if (state.labourDetails.isEmpty() && state.error == null) {
-                    AapanGavEmptyData(message = stringResource(id = R.string.no_workers))
+                if (filteredLabourDetails.isEmpty() && state.error == null) {
+                    AapanGavEmptyData(
+                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_workers)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -111,7 +134,7 @@ fun LabourDetailsScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(16.sdp())
                     ) {
-                        items(state.labourDetails) { labour ->
+                        items(filteredLabourDetails) { labour ->
                             LabourWorkerCard(
                                 labour = labour,
                                 onCallClick = { context.dial(labour.contact) }

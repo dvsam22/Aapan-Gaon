@@ -9,5 +9,7 @@ data class HomeState(
     val banners: List<BannerModel> = emptyList(),
     val data: List<HomeModel> = emptyList(),
     val selectedVillage: String? = null,
+    val selectedVillageLat: Double = 0.0,
+    val selectedVillageLng: Double = 0.0,
     val error: UiText? = null
 )

@@ -63,6 +63,20 @@ fun LocalNewsScreen(
         }
     }
 
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredNews = remember(state.news, query) {
+        if (query.isBlank()) {
+            state.news
+        } else {
+            state.news.filter { news ->
+                news.title.contains(query, ignoreCase = true) ||
+                news.description.contains(query, ignoreCase = true) ||
+                news.category.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -87,6 +101,7 @@ fun LocalNewsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .navigationBarsPadding()
                 .constrainAs(mainContent) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -95,6 +110,10 @@ fun LocalNewsScreen(
                 }
         ) {
             NewsTopBar(title = stringResource(id = R.string.breaking_news), onBackClick = { onEvent(NewsEvent.BackClick) })
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
+            )
 
             if (state.isLoading) {
                 NewsSkeleton()
@@ -108,8 +127,8 @@ fun LocalNewsScreen(
                     contentPadding = PaddingValues(bottom = 80.sdp())
                 ) {
                     // Breaking News Section
-                    if (state.news.isNotEmpty()) {
-                        items(state.news) { news ->
+                    if (filteredNews.isNotEmpty()) {
+                        items(filteredNews) { news ->
                             NewsItemCard(
                                 news = news,
                                 onClick = { onEvent(NewsEvent.NewsClick(news.id)) }
@@ -117,11 +136,11 @@ fun LocalNewsScreen(
                         }
                     }
 
-                    if (state.news.isEmpty() && !state.isLoading) {
+                    if (filteredNews.isEmpty() && !state.isLoading) {
                         item {
                             AapanGavEmptyData(
                                 modifier = Modifier.fillParentMaxSize(),
-                                message = stringResource(id = R.string.no_news_available)
+                                message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_news_available)
                             )
                         }
                     } else {

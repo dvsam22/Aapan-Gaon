@@ -63,6 +63,24 @@ fun ConstructionDetailScreen(
     }
 
 
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredItems = remember(state.items, query) {
+        if (query.isBlank()) {
+            state.items
+        } else {
+            state.items.filter { item ->
+                item.name.contains(query, ignoreCase = true) ||
+                item.address.contains(query, ignoreCase = true) ||
+                item.phone.contains(query, ignoreCase = true) ||
+                item.products.any { p ->
+                    p.name.contains(query, ignoreCase = true) ||
+                    p.price.contains(query, ignoreCase = true)
+                }
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -87,6 +105,7 @@ fun ConstructionDetailScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .navigationBarsPadding()
                 .constrainAs(mainContent) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -97,21 +116,28 @@ fun ConstructionDetailScreen(
             ConstructionDetailTopBar(
                 title = title,
                 onBackClick = { onEvent(ConstructionDetailEvent.BackClick) },
-                availableCount = state.items.size
+                availableCount = filteredItems.size
+            )
+
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
             )
 
             if (state.isLoading) {
                 ConstructionSkeleton()
             } else {
-                if (state.items.isEmpty() && state.error == null) {
-                    AapanGavEmptyData(message = stringResource(id = R.string.no_records_found))
+                if (filteredItems.isEmpty() && state.error == null) {
+                    AapanGavEmptyData(
+                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_records_found)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 80.sdp()),
                         verticalArrangement = Arrangement.spacedBy(10.sdp())
                     ) {
-                        items(state.items) { item ->
+                        items(filteredItems) { item ->
                             ConstructionItemCard(
                                 item = item,
                                 onCallClick = { onEvent(ConstructionDetailEvent.CallClick(item.phone)) }

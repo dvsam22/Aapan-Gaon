@@ -61,13 +61,35 @@ fun BricksSuppliersScreen(
         }
     }
 
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredSuppliers = remember(state.suppliers, query) {
+        if (query.isBlank()) {
+            state.suppliers
+        } else {
+            state.suppliers.filter { s ->
+                s.name.contains(query, ignoreCase = true) ||
+                s.brickTypes.any { it.name.contains(query, ignoreCase = true) } ||
+                s.address.contains(query, ignoreCase = true) ||
+                s.phone.contains(query, ignoreCase = true)
+            }
+        }
+    }
 
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(
+                androidx.compose.ui.graphics.Brush.verticalGradient(
+                    listOf(
+                        com.dv.apna.core.theme.MintGradientStart,
+                        com.dv.apna.core.theme.MintGradientMiddle,
+                        com.dv.apna.core.theme.MintGradientEnd
+                    )
+                )
+            )
     ) {
-        val (bottomImage, mainContent, loading, error) = createRefs()
+        val (bottomImage, mainContent, error) = createRefs()
 
         Image(
             painter = painterResource(id = R.drawable.iv_bottomview),
@@ -86,6 +108,7 @@ fun BricksSuppliersScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .navigationBarsPadding()
                 .constrainAs(mainContent) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -95,21 +118,28 @@ fun BricksSuppliersScreen(
         ) {
             BricksTopBar(
                 onBackClick = { onEvent(BricksEvent.BackClick) },
-                availableCount = state.suppliers.size
+                availableCount = filteredSuppliers.size
+            )
+
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
             )
 
             if (state.isLoading) {
                 ConstructionSkeleton()
             } else {
-                if (state.suppliers.isEmpty() && state.error == null) {
-                    AapanGavEmptyData(message = stringResource(id = R.string.no_suppliers))
+                if (filteredSuppliers.isEmpty() && state.error == null) {
+                    AapanGavEmptyData(
+                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_suppliers)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 80.sdp()),
                         verticalArrangement = Arrangement.spacedBy(10.sdp())
                     ) {
-                        items(state.suppliers) { supplier ->
+                        items(filteredSuppliers) { supplier ->
                             BricksSupplierCard(
                                 supplier = supplier,
                                 onCallClick = { onEvent(BricksEvent.CallClick(supplier.phone)) }

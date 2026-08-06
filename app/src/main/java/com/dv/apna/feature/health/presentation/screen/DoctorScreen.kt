@@ -55,6 +55,22 @@ fun DoctorScreen(
         }
     }
 
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredDoctors = remember(state.doctors, query) {
+        if (query.isBlank()) {
+            state.doctors
+        } else {
+            state.doctors.filter { doc ->
+                doc.name.contains(query, ignoreCase = true) ||
+                doc.specialization.contains(query, ignoreCase = true) ||
+                doc.address.contains(query, ignoreCase = true) ||
+                doc.availability.contains(query, ignoreCase = true) ||
+                doc.phone.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -88,12 +104,18 @@ fun DoctorScreen(
                 }
         ) {
             DoctorTopBar(onBackClick = { onEvent(HealthEvent.BackClick) })
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
+            )
 
             if (state.isLoading) {
                 HealthSkeleton()
             } else {
-                if (state.doctors.isEmpty() && state.error == null) {
-                    AapanGavEmptyData(message = stringResource(id = R.string.no_doctors_found))
+                if (filteredDoctors.isEmpty() && state.error == null) {
+                    AapanGavEmptyData(
+                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_doctors_found)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -105,7 +127,7 @@ fun DoctorScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
-                        items(state.doctors) { doctor ->
+                        items(filteredDoctors) { doctor ->
                             DoctorItemCard(doctor = doctor, onCallClick = { onEvent(HealthEvent.CallClick(doctor.phone)) })
                         }
                         item {

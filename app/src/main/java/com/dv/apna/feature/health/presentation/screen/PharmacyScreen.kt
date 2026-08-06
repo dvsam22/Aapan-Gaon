@@ -56,6 +56,21 @@ fun PharmacyScreen(
         }
     }
 
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredPharmacies = remember(state.pharmacies, query) {
+        if (query.isBlank()) {
+            state.pharmacies
+        } else {
+            state.pharmacies.filter { p ->
+                p.name.contains(query, ignoreCase = true) ||
+                p.services.contains(query, ignoreCase = true) ||
+                p.address.contains(query, ignoreCase = true) ||
+                p.phone.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -89,12 +104,18 @@ fun PharmacyScreen(
                 }
         ) {
             PharmacyTopBar(onBackClick = { onEvent(HealthEvent.BackClick) })
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
+            )
 
             if (state.isLoading) {
                 HealthSkeleton()
             } else {
-                if (state.pharmacies.isEmpty() && state.error == null) {
-                    AapanGavEmptyData(message = stringResource(id = R.string.no_pharmacies_found))
+                if (filteredPharmacies.isEmpty() && state.error == null) {
+                    AapanGavEmptyData(
+                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_pharmacies_found)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -106,7 +127,7 @@ fun PharmacyScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
-                        items(state.pharmacies) { pharmacy ->
+                        items(filteredPharmacies) { pharmacy ->
                             PharmacyItemCard(pharmacy = pharmacy, onCallClick = { onEvent(HealthEvent.CallClick(pharmacy.phone)) })
                         }
                         item {

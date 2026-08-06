@@ -61,6 +61,21 @@ fun EmergencyListScreen(
         }
     }
 
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredList = remember(list, query) {
+        if (query.isBlank()) {
+            list
+        } else {
+            list.filter { item ->
+                item.name.contains(query, ignoreCase = true) ||
+                item.specialization.contains(query, ignoreCase = true) ||
+                item.address.contains(query, ignoreCase = true) ||
+                item.phone.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -94,12 +109,18 @@ fun EmergencyListScreen(
                 }
         ) {
             EmergencyTopBar(title = title, onBackClick = { onEvent(HealthEvent.BackClick) })
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
+            )
 
             if (isLoading) {
                 HealthSkeleton()
             } else {
-                if (list.isEmpty() && error == null) {
-                    AapanGavEmptyData(message = stringResource(id = R.string.no_records_found))
+                if (filteredList.isEmpty() && error == null) {
+                    AapanGavEmptyData(
+                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_records_found)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -111,7 +132,7 @@ fun EmergencyListScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
-                        items(list) { item ->
+                        items(filteredList) { item ->
                             EmergencyItemCard(
                                 name = item.name,
                                 address = item.address,

@@ -57,6 +57,22 @@ fun HospitalScreen(
         }
     }
 
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredHospitals = remember(state.hospitals, query) {
+        if (query.isBlank()) {
+            state.hospitals
+        } else {
+            state.hospitals.filter { h ->
+                h.name.contains(query, ignoreCase = true) ||
+                h.type.contains(query, ignoreCase = true) ||
+                h.facilities.contains(query, ignoreCase = true) ||
+                h.address.contains(query, ignoreCase = true) ||
+                h.phone.contains(query, ignoreCase = true)
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -90,12 +106,18 @@ fun HospitalScreen(
                 }
         ) {
             HospitalTopBar(onBackClick = { onEvent(HealthEvent.BackClick) })
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
+            )
 
             if (state.isLoading) {
                 HealthSkeleton()
             } else {
-                if (state.hospitals.isEmpty() && state.error == null) {
-                    AapanGavEmptyData(message = stringResource(id = R.string.no_hospitals_found))
+                if (filteredHospitals.isEmpty() && state.error == null) {
+                    AapanGavEmptyData(
+                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_hospitals_found)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -107,7 +129,7 @@ fun HospitalScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
-                        items(state.hospitals) { hospital ->
+                        items(filteredHospitals) { hospital ->
                             HospitalItemCard(hospital = hospital, onCallClick = { onEvent(HealthEvent.CallClick(hospital.phone)) })
                         }
                         item {

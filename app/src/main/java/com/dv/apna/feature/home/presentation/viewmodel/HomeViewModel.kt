@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -48,21 +49,33 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun observeVillage() {
-        combine(
-            preferenceManager.villageId.filterNotNull(),
-            preferenceManager.languageCode,
-            getVillagesUseCase()
-        ) { villageId, _, villagesResource ->
-            if (villagesResource is Resource.Success<*>) {
-                val villages = villagesResource.data as? List<com.dv.apna.feature.language.domain.model.VillageModel>
+        viewModelScope.launch {
+            combine(
+                preferenceManager.villageId.filterNotNull(),
+                preferenceManager.villageName,
+                preferenceManager.villageLat,
+                preferenceManager.villageLng,
+                getVillagesUseCase()
+            ) { villageId, savedName, savedLat, savedLng, villagesResource ->
+                val villages = (villagesResource as? Resource.Success<*>)?.data as? List<com.dv.apna.feature.language.domain.model.VillageModel>
                 val village = villages?.find { it.id == villageId }
-                village?.villageName
-            } else null
-        }.onEach { villageName ->
-            if (villageName != null) {
-                _state.update { it.copy(selectedVillage = villageName) }
+                if (village != null) {
+                    Triple(village.villageName, village.lat, village.lng)
+                } else {
+                    Triple(savedName ?: "", savedLat, savedLng)
+                }
+            }.collectLatest { (name, lat, lng) ->
+                if (name.isNotEmpty()) {
+                    _state.update {
+                        it.copy(
+                            selectedVillage = name,
+                            selectedVillageLat = lat,
+                            selectedVillageLng = lng
+                        )
+                    }
+                }
             }
-        }.launchIn(viewModelScope)
+        }
     }
 
     private fun fetchBanners() {

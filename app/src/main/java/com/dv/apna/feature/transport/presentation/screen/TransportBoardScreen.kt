@@ -47,11 +47,14 @@ import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
 import com.dv.apna.feature.transport.domain.model.TransportService
+import com.dv.apna.feature.transport.presentation.state.TransportState
 import com.dv.apna.feature.transport.presentation.effect.TransportEffect
 import com.dv.apna.feature.transport.presentation.event.TransportEvent
-import com.dv.apna.feature.transport.presentation.state.TransportState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 
 @Composable
 fun TransportBoardScreen(
@@ -79,7 +82,15 @@ fun TransportBoardScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(
+                androidx.compose.ui.graphics.Brush.verticalGradient(
+                    listOf(
+                        com.dv.apna.core.theme.MintGradientStart,
+                        com.dv.apna.core.theme.MintGradientMiddle,
+                        com.dv.apna.core.theme.MintGradientEnd
+                    )
+                )
+            )
     ) {
         val (bottomImage, mainContent) = createRefs()
 

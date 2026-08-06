@@ -35,6 +35,11 @@ import com.dv.apna.feature.mandi.presentation.state.MandiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import com.dv.apna.core.components.AapanGavEmptyData
+
 @Composable
 fun TodayMarketScreen(
     state: MandiState,
@@ -48,6 +53,20 @@ fun TodayMarketScreen(
             when (effect) {
                 MandiEffect.NavigateBack -> onNavigateBack()
                 else -> {}
+            }
+        }
+    }
+
+    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val query = searchQueryState.value
+    val filteredMarketPrices = remember(state.marketPrices, query) {
+        if (query.isBlank()) {
+            state.marketPrices
+        } else {
+            state.marketPrices.filter { item ->
+                item.name.contains(query, ignoreCase = true) ||
+                item.unit.contains(query, ignoreCase = true) ||
+                item.price.toString().contains(query, ignoreCase = true)
             }
         }
     }
@@ -85,9 +104,17 @@ fun TodayMarketScreen(
                 }
         ) {
             MandiTopBar(title = stringResource(id = R.string.today_market), onBackClick = { onEvent(MandiEvent.BackClick) })
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = query,
+                onQueryChange = { searchQueryState.value = it }
+            )
 
             if (state.isLoading) {
                 MandiTableSkeleton()
+            } else if (filteredMarketPrices.isEmpty() && state.error == null) {
+                AapanGavEmptyData(
+                    message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_records_found)
+                )
             } else {
                 Card(
                     modifier = Modifier
@@ -140,7 +167,7 @@ fun TodayMarketScreen(
                             modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(10.sdp())
                         ) {
-                            items(state.marketPrices) { vegetable ->
+                            items(filteredMarketPrices) { vegetable ->
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween,

@@ -17,6 +17,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
 import com.dv.apna.core.theme.AapanGavTheme
+import com.dv.apna.core.utils.getHtmlAssetUrl
 
 @Composable
 fun PrivacyPolicyScreen(
@@ -68,7 +69,7 @@ fun PrivacyPolicyScreen(
                         settings.loadWithOverviewMode = true
                         settings.useWideViewPort = true
                         setBackgroundColor(0) // Transparent background
-                        loadUrl("file:///android_asset/privacy_policy.html")
+                        loadUrl(context.getHtmlAssetUrl("privacy_policy"))
                     }
                 }
             )

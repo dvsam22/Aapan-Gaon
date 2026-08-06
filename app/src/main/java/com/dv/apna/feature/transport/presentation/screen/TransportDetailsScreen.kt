@@ -41,6 +41,10 @@ import com.dv.apna.feature.transport.presentation.state.TransportState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+
 @Composable
 fun TransportDetailsScreen(
     state: TransportState,
@@ -57,6 +61,20 @@ fun TransportDetailsScreen(
                     // Handled in NavGraph
                 }
                 else -> {}
+            }
+        }
+    }
+
+    var searchQuery by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val filteredTransportDetails = remember(state.transportDetails, searchQuery) {
+        if (searchQuery.isBlank()) {
+            state.transportDetails
+        } else {
+            state.transportDetails.filter { transport ->
+                transport.name.contains(searchQuery, ignoreCase = true) ||
+                transport.vehicleType.contains(searchQuery, ignoreCase = true) ||
+                transport.location.contains(searchQuery, ignoreCase = true) ||
+                transport.contact.contains(searchQuery, ignoreCase = true)
             }
         }
     }
@@ -85,6 +103,7 @@ fun TransportDetailsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .navigationBarsPadding()
                 .constrainAs(mainContent) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -95,15 +114,22 @@ fun TransportDetailsScreen(
             val title = state.selectedCategoryTitle?.asString() ?: state.selectedCategory
             TransportDetailsTopBar(
                 title = stringResource(id = R.string.details_title, title),
-                availableCount = state.transportDetails.size,
+                availableCount = filteredTransportDetails.size,
                 onBackClick = { onEvent(TransportEvent.BackClick) }
+            )
+
+            com.dv.apna.core.components.AapanGavSearchBar(
+                query = searchQuery,
+                onQueryChange = { searchQuery = it }
             )
 
             if (state.isLoading) {
                 TransportSkeleton()
             } else {
-                if (state.transportDetails.isEmpty() && state.error == null) {
-                    AapanGavEmptyData(message = stringResource(id = R.string.no_vehicles_found))
+                if (filteredTransportDetails.isEmpty() && state.error == null) {
+                    AapanGavEmptyData(
+                        message = if (searchQuery.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_vehicles_found)
+                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
@@ -115,7 +141,7 @@ fun TransportDetailsScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
-                        items(state.transportDetails) { transport ->
+                        items(filteredTransportDetails) { transport ->
                             TransportVehicleCard(
                                 transport = transport,
                                 onCallClick = { onEvent(TransportEvent.CallClick(transport.contact)) }

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>गोपनीयता नीति - अपना गाँव</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2CA074;
+            --primary-dark: #165D47;
+            --primary-light: #EBF8F2;
+            --primary-border: #D1EFE2;
+            --text-main: #1C2A24;
+            --text-muted: #5A6E65;
+            --card-bg: #FFFFFF;
+            --bg-start: #EDF8F3;
+            --bg-end: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(180deg, var(--bg-start) 0%, #F7FCF9 30%, var(--bg-end) 100%);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 16px 14px 40px 14px;
+            min-height: 100vh;
+        }
+
+        .hero-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 22px 18px;
+            text-align: center;
+            border: 1px solid var(--primary-border);
+            box-shadow: 0 10px 30px rgba(44, 160, 116, 0.08);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #2CA074, #48D19F, #165D47);
+        }
+
+        .app-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 30px;
+            border: 1px solid var(--primary-border);
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            line-height: 1.3;
+            margin-bottom: 6px;
+        }
+
+        .update-tag {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .content-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 20px 18px;
+            margin-bottom: 16px;
+            border: 1px solid var(--primary-border);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1.5px dashed #E2F0EA;
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        p {
+            font-size: 13.5px;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .permission-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .permission-item {
+            background: #F9FDFB;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid #E8F6F0;
+        }
+
+        .permission-title {
+            font-weight: 700;
+            color: var(--primary-dark);
+            font-size: 13.5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+
+        .permission-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .highlight-badge {
+            display: inline-block;
+            background: #FFF7ED;
+            color: #C2410C;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 8px;
+            border: 1px solid #FFEDD5;
+            margin-top: 8px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 16px;
+            border-top: 1px solid var(--primary-border);
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        footer strong {
+            color: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Card -->
+    <div class="hero-card">
+        <div class="app-badge">
+            🔒 गोपनीयता एवं सुरक्षा
+        </div>
+        <h1>गोपनीयता नीति</h1>
+        <div class="update-tag">Privacy Policy • अंतिम अपडेट: जुलाई 2026</div>
+    </div>
+
+    <!-- Intro -->
+    <div class="content-card">
+        <p>
+            <strong>अपना गाँव</strong> ऐप में आपका स्वागत है। हम अपने ग्रामीण समुदाय के सदस्यों और स्थानीय सेवा प्रदाताओं की गोपनीयता और डेटा सुरक्षा की रक्षा के लिए पूरी तरह से प्रतिबद्ध हैं।
+        </p>
+    </div>
+
+    <!-- Permissions -->
+    <div class="content-card">
+        <div class="section-header">
+            <div class="section-icon">🔑</div>
+            <h2>उपयोग की जाने वाली अनुमतियाँ (Permissions)</h2>
+        </div>
+        <p>
+            अपने ऐप को सुरक्षित और हल्का बनाए रखने के लिए, हम केवल वही आवश्यक अनुमतियाँ मांगते हैं जो स्थानीय सेवाएँ प्रदान करने के लिए आवश्यक हैं:
+        </p>
+
+        <div class="permission-box">
+            <div class="permission-item">
+                <div class="permission-title">📞 फोन कॉल की अनुमति</div>
+                <div class="permission-desc">
+                    आपको किसी भी विक्रेता या डॉक्टर कार्ड पर "Call Now" टैप करके सीधे फोन डायलर खोलने की सुविधा मिलती है। हम आपकी कॉल को कभी भी रिकॉर्ड या स्टोर <strong>नहीं</strong> करते हैं।
+                </div>
+            </div>
+
+            <div class="permission-item">
+                <div class="permission-title">🔔 पुश नोटिफिकेशन अनुमति</div>
+                <div class="permission-desc">
+                    इसका उपयोग केवल आपको गाँव के आवश्यक नोटिस, आपातकालीन अपडेट और मंडी भाव भेजने के लिए किया जाता है।
+                </div>
+            </div>
+
+            <div class="permission-item">
+                <div class="permission-title">📋 सेवा प्रदाता प्रोफ़ाइल</div>
+                <div class="permission-desc">
+                    यदि आप एक सेवा प्रदाता (ट्रैक्टर मालिक, सजावट, डॉक्टर आदि) के रूप में पंजीकृत हैं, तो आपका नाम, मोबाइल नंबर और गाँव डायरेक्टरी में दिखाया जाता है ताकि आस-पास के लोग आपसे संपर्क कर सकें।
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Use & Sharing -->
+    <div class="content-card">
+        <div class="section-header">
+            <div class="section-icon">🛡️</div>
+            <h2>डेटा सुरक्षा एवं संरक्षण</h2>
+        </div>
+        <p>
+            <strong>डेटा बेचना पूरी तरह वर्जित:</strong> हम किसी भी मार्केटिंग कंपनियों या विज्ञापन नेटवर्क के साथ यूजर डेटा नहीं बेचते और न ही शेयर करते हैं।
+        </p>
+        <p>
+            <strong>सार्वजनिक डायरेक्टरी:</strong> केवल सेवा प्रदाताओं द्वारा स्वेच्छा से दी गई जानकारी ही सार्वजनिक डायरेक्टरी में दिखाई जाती है।
+        </p>
+        <div class="highlight-badge">
+            ✅ शून्य अवांछित विज्ञापन • शून्य ट्रैकिंग कुकीज़
+        </div>
+    </div>
+
+    <!-- Contact Support -->
+    <div class="content-card">
+        <div class="section-header">
+            <div class="section-icon">📧</div>
+            <h2>गोपनीयता सहायता</h2>
+        </div>
+        <p>
+            यदि आपके पास अपनी गोपनीयता के बारे में कोई प्रश्न हैं या अपनी जानकारी अपडेट करना चाहते हैं, तो हमसे संपर्क करें:
+        </p>
+        <p>
+            <strong>ईमेल:</strong> <a href="mailto:developersm22@gmail.com" style="color: var(--primary); text-decoration: none; font-weight: 600;">developersm22@gmail.com</a><br>
+            <strong>हेल्पलाइन:</strong> +91 8534865222
+        </p>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        © 2026 <strong>अपना गाँव</strong>। सर्वाधिकार सुरक्षित।
+    </footer>
+
+</body>
+</html>

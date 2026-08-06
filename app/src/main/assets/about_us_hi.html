@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>हमारे बारे में - अपना गाँव</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2CA074;
+            --primary-dark: #165D47;
+            --primary-light: #EBF8F2;
+            --primary-border: #D1EFE2;
+            --text-main: #1C2A24;
+            --text-muted: #5A6E65;
+            --card-bg: #FFFFFF;
+            --bg-start: #EDF8F3;
+            --bg-end: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(180deg, var(--bg-start) 0%, #F7FCF9 30%, var(--bg-end) 100%);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 16px 14px 40px 14px;
+            min-height: 100vh;
+        }
+
+        .hero-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 24px 20px;
+            text-align: center;
+            border: 1px solid var(--primary-border);
+            box-shadow: 0 10px 30px rgba(44, 160, 116, 0.08);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #2CA074, #48D19F, #165D47);
+        }
+
+        .app-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid var(--primary-border);
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            line-height: 1.25;
+            margin-bottom: 10px;
+        }
+
+        .hero-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.65;
+        }
+
+        .content-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            padding: 20px 18px;
+            margin-bottom: 16px;
+            border: 1px solid var(--primary-border);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1.5px dashed #E2F0EA;
+        }
+
+        .section-icon {
+            width: 34px;
+            height: 34px;
+            background: var(--primary-light);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        p {
+            font-size: 14px;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        p:last-child {
+            margin-bottom: 0;
+        }
+
+        .feature-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: #F9FDFB;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid #E8F6F0;
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: #FFFFFF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .feature-text {
+            font-size: 13.5px;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            color: var(--primary-dark);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .contact-card {
+            background: linear-gradient(135deg, #165D47 0%, #2CA074 100%);
+            color: #FFFFFF;
+            border-radius: 20px;
+            padding: 22px 18px;
+            margin-top: 20px;
+            box-shadow: 0 8px 24px rgba(22, 93, 71, 0.25);
+        }
+
+        .contact-card h2 {
+            color: #FFFFFF;
+            font-size: 19px;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .contact-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 12px 14px;
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+        }
+
+        .contact-row-icon {
+            font-size: 18px;
+        }
+
+        .contact-row a {
+            color: #FFFFFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13.5px;
+            word-break: break-all;
+        }
+
+        .contact-address {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #F0FAF5;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 16px;
+            border-top: 1px solid var(--primary-border);
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        footer strong {
+            color: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Card -->
+    <div class="hero-card">
+        <div class="app-badge">
+            🏡 आपके गाँव का अपना डिजिटल मंच
+        </div>
+        <h1>अपना गाँव</h1>
+        <p class="hero-desc">
+            आपकी सभी स्थानीय सेवाओं और ग्रामीण जरूरतों के लिए ऑल-इन-वन डिजिटल डायरेक्टरी मंच। गाँव को सीधे विश्वसनीय स्थानीय कारीगरों, विक्रेताओं, मंडी भावों और आवश्यक सेवाओं से जोड़ता है।
+        </p>
+    </div>
+
+    <!-- Our Mission -->
+    <div class="content-card">
+        <div class="section-header">
+            <div class="section-icon">🌟</div>
+            <h2>हमारा उद्देश्य</h2>
+        </div>
+        <p>
+            ग्रामीण क्षेत्रों में किराए पर ट्रैक्टर पाना, शादी के लिए कैटरर चुनना, टेंट हाउस बुक करना या तुरंत मिस्त्री और डॉक्टर खोजना अक्सर कठिन होता है।
+        </p>
+        <p>
+            <strong>अपना गाँव</strong> इस दूरी को समाप्त करता है और ग्रामीणों को केवल एक टैप में उनके पास के भरोसेमंद सेवा प्रदाताओं से सीधे जोड़ता है।
+        </p>
+    </div>
+
+    <!-- Key Features -->
+    <div class="content-card">
+        <div class="section-header">
+            <div class="section-icon">⚡</div>
+            <h2>मुख्य विशेषताएँ</h2>
+        </div>
+
+        <div class="feature-list">
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                    <span class="feature-title">गाँव की हर सेवा एक जगह</span>
+                    ट्रैक्टर बुकिंग, कैटरिंग, टेंट हाउस, डॉक्टर, मिस्त्री और कुशल मज़दूर आसानी से खोजें।
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                    <span class="feature-title">डायरेक्ट कॉल सुविधा</span>
+                    "Call Now" पर टैप करते ही सीधे सेवा प्रदाता के मोबाइल नंबर पर कॉल जुड़ जाएगी।
+                </div>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">✓</div>
+                <div class="feature-text">
+                    <span class="feature-title">स्थानीय मंडी और समाचार अपडेट</span>
+                    गाँव की ज़रूरी सूचनाएं, दैनिक मंडी भाव और आपातकालीन संपर्क नंबर तुरंत प्राप्त करें।
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Card -->
+    <div class="contact-card">
+        <h2>📞 सहायता एवं संपर्क करें</h2>
+        <div class="contact-info">
+            <div class="contact-row">
+                <span class="contact-row-icon">📧</span>
+                <a href="mailto:developersm22@gmail.com">developersm22@gmail.com</a>
+            </div>
+            <div class="contact-row">
+                <span class="contact-row-icon">📱</span>
+                <div>
+                    <a href="tel:+918534865222">+91 8534865222</a> | 
+                    <a href="tel:+918418931780">+91 8418931780</a>
+                </div>
+            </div>
+            <div class="contact-address">
+                <strong>📍 कार्यालय का पता:</strong><br>
+                ग्राम एवं पोस्ट: महुअन शुक्ला,<br>
+                पनियरा, ज़िला: महराजगंज,<br>
+                उत्तर प्रदेश, भारत – 273158
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        © 2026 <strong>अपना गाँव</strong>। सर्वाधिकार सुरक्षित।
+    </footer>
+
+</body>
+</html>
