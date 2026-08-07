@@ -40,6 +40,12 @@ class RemoteConfigManager @Inject constructor() {
         const val DEFAULT_BANNER_AD_UNIT = "ca-app-pub-3940256099942544/6300978111"
         const val DEFAULT_INTERSTITIAL_AD_UNIT = "ca-app-pub-3940256099942544/1033173712"
         const val DEFAULT_REWARDED_AD_UNIT = "ca-app-pub-3940256099942544/5224354917"
+
+        // Production Fallback Live Ad Unit IDs
+        const val FALLBACK_APP_OPEN_AD_UNIT = "ca-app-pub-2632394200654942/2336849258"
+        const val FALLBACK_BANNER_AD_UNIT = "ca-app-pub-2632394200654942/9055400925"
+        const val FALLBACK_INTERSTITIAL_AD_UNIT = "ca-app-pub-2632394200654942/2170428374"
+        const val FALLBACK_REWARDED_AD_UNIT = "ca-app-pub-2632394200654942/2953027000"
     }
 
     init {
@@ -52,16 +58,17 @@ class RemoteConfigManager @Inject constructor() {
         }
         remoteConfig.setConfigSettingsAsync(configSettings)
 
+        val isDebug = com.dv.apna.BuildConfig.DEBUG
         val defaults = mapOf(
             KEY_ADS_ENABLED to true,
             KEY_APP_OPEN_ADS_ENABLED to true,
             KEY_BANNER_ADS_ENABLED to true,
             KEY_INTERSTITIAL_ADS_ENABLED to true,
             KEY_REWARDED_ADS_ENABLED to true,
-            KEY_APP_OPEN_AD_UNIT_ID to DEFAULT_APP_OPEN_AD_UNIT,
-            KEY_BANNER_AD_UNIT_ID to DEFAULT_BANNER_AD_UNIT,
-            KEY_INTERSTITIAL_AD_UNIT_ID to DEFAULT_INTERSTITIAL_AD_UNIT,
-            KEY_REWARDED_AD_UNIT_ID to DEFAULT_REWARDED_AD_UNIT,
+            KEY_APP_OPEN_AD_UNIT_ID to if (isDebug) DEFAULT_APP_OPEN_AD_UNIT else FALLBACK_APP_OPEN_AD_UNIT,
+            KEY_BANNER_AD_UNIT_ID to if (isDebug) DEFAULT_BANNER_AD_UNIT else FALLBACK_BANNER_AD_UNIT,
+            KEY_INTERSTITIAL_AD_UNIT_ID to if (isDebug) DEFAULT_INTERSTITIAL_AD_UNIT else FALLBACK_INTERSTITIAL_AD_UNIT,
+            KEY_REWARDED_AD_UNIT_ID to if (isDebug) DEFAULT_REWARDED_AD_UNIT else FALLBACK_REWARDED_AD_UNIT,
             KEY_AD_SHOW_PROBABILITY to 1.0,
             KEY_MODULE_NOTIFICATIONS_CONFIG to """
                 {
@@ -97,22 +104,22 @@ class RemoteConfigManager @Inject constructor() {
 
     fun getAppOpenAdUnitId(): String {
         if (com.dv.apna.BuildConfig.DEBUG) return DEFAULT_APP_OPEN_AD_UNIT
-        return remoteConfig.getString(KEY_APP_OPEN_AD_UNIT_ID).ifBlank { DEFAULT_APP_OPEN_AD_UNIT }
+        return remoteConfig.getString(KEY_APP_OPEN_AD_UNIT_ID).ifBlank { FALLBACK_APP_OPEN_AD_UNIT }
     }
 
     fun getBannerAdUnitId(): String {
         if (com.dv.apna.BuildConfig.DEBUG) return DEFAULT_BANNER_AD_UNIT
-        return remoteConfig.getString(KEY_BANNER_AD_UNIT_ID).ifBlank { DEFAULT_BANNER_AD_UNIT }
+        return remoteConfig.getString(KEY_BANNER_AD_UNIT_ID).ifBlank { FALLBACK_BANNER_AD_UNIT }
     }
 
     fun getInterstitialAdUnitId(): String {
         if (com.dv.apna.BuildConfig.DEBUG) return DEFAULT_INTERSTITIAL_AD_UNIT
-        return remoteConfig.getString(KEY_INTERSTITIAL_AD_UNIT_ID).ifBlank { DEFAULT_INTERSTITIAL_AD_UNIT }
+        return remoteConfig.getString(KEY_INTERSTITIAL_AD_UNIT_ID).ifBlank { FALLBACK_INTERSTITIAL_AD_UNIT }
     }
 
     fun getRewardedAdUnitId(): String {
         if (com.dv.apna.BuildConfig.DEBUG) return DEFAULT_REWARDED_AD_UNIT
-        return remoteConfig.getString(KEY_REWARDED_AD_UNIT_ID).ifBlank { DEFAULT_REWARDED_AD_UNIT }
+        return remoteConfig.getString(KEY_REWARDED_AD_UNIT_ID).ifBlank { FALLBACK_REWARDED_AD_UNIT }
     }
 
     fun getAdShowProbability(): Double {
