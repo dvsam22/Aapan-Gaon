@@ -22,7 +22,7 @@ appcompat = "1.7.0"
 lottie = "6.7.1"
 core-splashscreen = "1.0.1"
 
-playServicesAds = "23.6.0"
+playServicesAds = "25.4.0"
 
 [libraries]
 play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }

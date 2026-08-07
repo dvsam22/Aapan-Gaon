@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
+//pass - apnagaon alias - apna
 android {
     namespace = "com.dv.apna"
     compileSdk = 37
@@ -16,8 +17,8 @@ android {
         applicationId = "com.dv.apna"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
