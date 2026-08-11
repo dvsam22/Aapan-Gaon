@@ -48,9 +48,8 @@ class AapanGavApp : Application() {
             Log.d("MobileAdsInit", "MobileAds initialization complete: ${status.adapterStatusMap}")
         }
 
-        // Initialize App Open Ad Manager & Preload Interstitial & Rewarded Ads
+        // Initialize App Open Ad Manager & Preload Interstitial Ads
         appOpenAdManager.initialize(this)
         adManager.preloadInterstitialAd(this)
-        adManager.preloadRewardedAd(this)
     }
 }

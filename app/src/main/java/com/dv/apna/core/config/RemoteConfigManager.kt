@@ -10,6 +10,17 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.random.Random
 
+enum class ServiceAdCategory {
+    GENERAL,
+    CONSTRUCTION,
+    LABOUR,
+    TRANSPORT,
+    MANDI,
+    HEALTH,
+    FAMILY,
+    NEWS
+}
+
 @Singleton
 class RemoteConfigManager @Inject constructor() {
 
@@ -29,6 +40,15 @@ class RemoteConfigManager @Inject constructor() {
         const val KEY_BANNER_AD_UNIT_ID = "banner_ad_unit_id"
         const val KEY_INTERSTITIAL_AD_UNIT_ID = "interstitial_ad_unit_id"
         const val KEY_REWARDED_AD_UNIT_ID = "rewarded_ad_unit_id"
+
+        // Category-Specific Interstitial Ad Unit Keys
+        const val KEY_INTERSTITIAL_CONSTRUCTION_AD_UNIT_ID = "interstitial_construction_ad_unit_id"
+        const val KEY_INTERSTITIAL_LABOUR_AD_UNIT_ID = "interstitial_labour_ad_unit_id"
+        const val KEY_INTERSTITIAL_TRANSPORT_AD_UNIT_ID = "interstitial_transport_ad_unit_id"
+        const val KEY_INTERSTITIAL_MANDI_AD_UNIT_ID = "interstitial_mandi_ad_unit_id"
+        const val KEY_INTERSTITIAL_HEALTH_AD_UNIT_ID = "interstitial_health_ad_unit_id"
+        const val KEY_INTERSTITIAL_FAMILY_AD_UNIT_ID = "interstitial_family_ad_unit_id"
+        const val KEY_INTERSTITIAL_NEWS_AD_UNIT_ID = "interstitial_news_ad_unit_id"
 
         const val KEY_AD_SHOW_PROBABILITY = "ad_show_probability"
 
@@ -69,6 +89,13 @@ class RemoteConfigManager @Inject constructor() {
             KEY_BANNER_AD_UNIT_ID to if (isDebug) DEFAULT_BANNER_AD_UNIT else FALLBACK_BANNER_AD_UNIT,
             KEY_INTERSTITIAL_AD_UNIT_ID to if (isDebug) DEFAULT_INTERSTITIAL_AD_UNIT else FALLBACK_INTERSTITIAL_AD_UNIT,
             KEY_REWARDED_AD_UNIT_ID to if (isDebug) DEFAULT_REWARDED_AD_UNIT else FALLBACK_REWARDED_AD_UNIT,
+            KEY_INTERSTITIAL_CONSTRUCTION_AD_UNIT_ID to "",
+            KEY_INTERSTITIAL_LABOUR_AD_UNIT_ID to "",
+            KEY_INTERSTITIAL_TRANSPORT_AD_UNIT_ID to "",
+            KEY_INTERSTITIAL_MANDI_AD_UNIT_ID to "",
+            KEY_INTERSTITIAL_HEALTH_AD_UNIT_ID to "",
+            KEY_INTERSTITIAL_FAMILY_AD_UNIT_ID to "",
+            KEY_INTERSTITIAL_NEWS_AD_UNIT_ID to "",
             KEY_AD_SHOW_PROBABILITY to 1.0,
             KEY_MODULE_NOTIFICATIONS_CONFIG to """
                 {
@@ -112,9 +139,22 @@ class RemoteConfigManager @Inject constructor() {
         return remoteConfig.getString(KEY_BANNER_AD_UNIT_ID).ifBlank { FALLBACK_BANNER_AD_UNIT }
     }
 
-    fun getInterstitialAdUnitId(): String {
+    fun getInterstitialAdUnitId(category: ServiceAdCategory = ServiceAdCategory.GENERAL): String {
         if (com.dv.apna.BuildConfig.DEBUG) return DEFAULT_INTERSTITIAL_AD_UNIT
-        return remoteConfig.getString(KEY_INTERSTITIAL_AD_UNIT_ID).ifBlank { FALLBACK_INTERSTITIAL_AD_UNIT }
+        val key = when (category) {
+            ServiceAdCategory.CONSTRUCTION -> KEY_INTERSTITIAL_CONSTRUCTION_AD_UNIT_ID
+            ServiceAdCategory.LABOUR -> KEY_INTERSTITIAL_LABOUR_AD_UNIT_ID
+            ServiceAdCategory.TRANSPORT -> KEY_INTERSTITIAL_TRANSPORT_AD_UNIT_ID
+            ServiceAdCategory.MANDI -> KEY_INTERSTITIAL_MANDI_AD_UNIT_ID
+            ServiceAdCategory.HEALTH -> KEY_INTERSTITIAL_HEALTH_AD_UNIT_ID
+            ServiceAdCategory.FAMILY -> KEY_INTERSTITIAL_FAMILY_AD_UNIT_ID
+            ServiceAdCategory.NEWS -> KEY_INTERSTITIAL_NEWS_AD_UNIT_ID
+            ServiceAdCategory.GENERAL -> KEY_INTERSTITIAL_AD_UNIT_ID
+        }
+        val customId = remoteConfig.getString(key)
+        if (customId.isNotBlank()) return customId
+        val defaultId = remoteConfig.getString(KEY_INTERSTITIAL_AD_UNIT_ID)
+        return defaultId.ifBlank { FALLBACK_INTERSTITIAL_AD_UNIT }
     }
 
     fun getRewardedAdUnitId(): String {

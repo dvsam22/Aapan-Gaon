@@ -18,6 +18,7 @@ import com.dv.apna.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.dv.apna.core.utils.dial
+import com.dv.apna.core.config.ServiceAdCategory
 import com.dv.apna.feature.home.presentation.screen.HomeScreen
 import com.dv.apna.feature.home.presentation.viewmodel.HomeViewModel
 import com.dv.apna.feature.mandi.presentation.screen.MandiHubScreen
@@ -225,15 +226,7 @@ fun RootNavGraph(
                 onNavigateToLabour = { navController.navigate(Route.LabourBoard) },
                 onNavigateToTransport = { navController.navigate(Route.Transport) },
                 onNavigateToMandi = { navController.navigate(Route.Mandi) },
-                onNavigateToNews = {
-                    if (activity != null) {
-                        adManager.showInterstitialAd(activity) {
-                            navController.navigate(Route.News)
-                        }
-                    } else {
-                        navController.navigate(Route.News)
-                    }
-                },
+                onNavigateToNews = { navController.navigate(Route.News) },
                 onNavigateToHealth = { navController.navigate(Route.Health) },
                 onNavigateToFamilyFunction = { navController.navigate(Route.FamilyFunction) },
                 onNavigateToLanguage = {
@@ -271,11 +264,41 @@ fun RootNavGraph(
                 effect = viewModel.effect,
                 remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToDoctors = { navController.navigate(Route.Doctors) },
-                onNavigateToHospitals = { navController.navigate(Route.Hospitals) },
-                onNavigateToPharmacy = { navController.navigate(Route.Pharmacy) },
-                onNavigateToAmbulance = { navController.navigate(Route.Ambulance) },
-                onNavigateToPolice = { navController.navigate(Route.Police) },
+                onNavigateToDoctors = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.HEALTH) { navController.navigate(Route.Doctors) }
+                    } else {
+                        navController.navigate(Route.Doctors)
+                    }
+                },
+                onNavigateToHospitals = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.HEALTH) { navController.navigate(Route.Hospitals) }
+                    } else {
+                        navController.navigate(Route.Hospitals)
+                    }
+                },
+                onNavigateToPharmacy = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.HEALTH) { navController.navigate(Route.Pharmacy) }
+                    } else {
+                        navController.navigate(Route.Pharmacy)
+                    }
+                },
+                onNavigateToAmbulance = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.HEALTH) { navController.navigate(Route.Ambulance) }
+                    } else {
+                        navController.navigate(Route.Ambulance)
+                    }
+                },
+                onNavigateToPolice = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.HEALTH) { navController.navigate(Route.Police) }
+                    } else {
+                        navController.navigate(Route.Police)
+                    }
+                },
                 onDialPhone = { phone -> context.dial(phone) }
             )
         }
@@ -359,9 +382,27 @@ fun RootNavGraph(
                 effect = viewModel.effect,
                 remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToCropPrices = { navController.navigate(Route.CropPrices) },
-                onNavigateToTodayMarket = { navController.navigate(Route.TodayMarket) },
-                onNavigateToLocalBuyers = { navController.navigate(Route.LocalBuyers) }
+                onNavigateToCropPrices = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.MANDI) { navController.navigate(Route.CropPrices) }
+                    } else {
+                        navController.navigate(Route.CropPrices)
+                    }
+                },
+                onNavigateToTodayMarket = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.MANDI) { navController.navigate(Route.TodayMarket) }
+                    } else {
+                        navController.navigate(Route.TodayMarket)
+                    }
+                },
+                onNavigateToLocalBuyers = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.MANDI) { navController.navigate(Route.LocalBuyers) }
+                    } else {
+                        navController.navigate(Route.LocalBuyers)
+                    }
+                }
             )
         }
         composable<Route.CropPrices> {
@@ -420,35 +461,35 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToBricks = {
                     if (activity != null) {
-                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.BricksSuppliers) })
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.CONSTRUCTION) { navController.navigate(Route.BricksSuppliers) }
                     } else {
                         navController.navigate(Route.BricksSuppliers)
                     }
                 },
                 onNavigateToMaterialShops = {
                     if (activity != null) {
-                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.MaterialShops) })
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.CONSTRUCTION) { navController.navigate(Route.MaterialShops) }
                     } else {
                         navController.navigate(Route.MaterialShops)
                     }
                 },
                 onNavigateToHardwareShops = {
                     if (activity != null) {
-                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.HardwareShops) })
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.CONSTRUCTION) { navController.navigate(Route.HardwareShops) }
                     } else {
                         navController.navigate(Route.HardwareShops)
                     }
                 },
                 onNavigateToLinterMachine = { 
                     if (activity != null) {
-                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.ConstructionDetail("linter_machine", linterTitle)) })
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.CONSTRUCTION) { navController.navigate(Route.ConstructionDetail("linter_machine", linterTitle)) }
                     } else {
                         navController.navigate(Route.ConstructionDetail("linter_machine", linterTitle)) 
                     }
                 },
                 onNavigateToShuttering = { 
                     if (activity != null) {
-                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.ConstructionDetail("shuttering", shutteringTitle)) })
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.CONSTRUCTION) { navController.navigate(Route.ConstructionDetail("shuttering", shutteringTitle)) }
                     } else {
                         navController.navigate(Route.ConstructionDetail("shuttering", shutteringTitle)) 
                     }
@@ -522,7 +563,7 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToCategory = { category ->
                     if (activity != null) {
-                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.LabourDetails(category)) })
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.LABOUR) { navController.navigate(Route.LabourDetails(category)) }
                     } else {
                         navController.navigate(Route.LabourDetails(category))
                     }
@@ -552,7 +593,7 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToCategory = { id, name ->
                     if (activity != null) {
-                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.TransportDetails(id, name)) })
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.TRANSPORT) { navController.navigate(Route.TransportDetails(id, name)) }
                     } else {
                         navController.navigate(Route.TransportDetails(id, name))
                     }
@@ -650,7 +691,7 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToDetails = { categoryId ->
                     if (activity != null) {
-                        adManager.showRewardedAd(activity, {}, { navController.navigate(Route.FamilyFunctionDetails(categoryId)) })
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.FAMILY) { navController.navigate(Route.FamilyFunctionDetails(categoryId)) }
                     } else {
                         navController.navigate(Route.FamilyFunctionDetails(categoryId))
                     }
