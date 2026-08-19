@@ -22,6 +22,7 @@ class AdManager @Inject constructor(
 ) {
 
     private var interstitialAd: InterstitialAd? = null
+    private var preloadedAdUnitId: String? = null
     private var isInterstitialLoading = false
 
     companion object {
@@ -29,15 +30,19 @@ class AdManager @Inject constructor(
     }
 
     /**
-     * Preloads Interstitial Ad if enabled and not already loaded.
+     * Preloads Interstitial Ad for specific category (defaults to GENERAL).
      */
-    fun preloadInterstitialAd(context: Context) {
-        if (!remoteConfigManager.isInterstitialAdsEnabled() || interstitialAd != null || isInterstitialLoading) {
+    fun preloadInterstitialAd(context: Context, category: ServiceAdCategory = ServiceAdCategory.GENERAL) {
+        if (!remoteConfigManager.isInterstitialAdsEnabled() || isInterstitialLoading) {
+            return
+        }
+
+        val adUnitId = remoteConfigManager.getInterstitialAdUnitId(category)
+        if (interstitialAd != null && preloadedAdUnitId == adUnitId) {
             return
         }
 
         isInterstitialLoading = true
-        val adUnitId = remoteConfigManager.getInterstitialAdUnitId(ServiceAdCategory.GENERAL)
         val adRequest = AdRequest.Builder().build()
 
         InterstitialAd.load(
@@ -47,18 +52,20 @@ class AdManager @Inject constructor(
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
                     interstitialAd = ad
+                    preloadedAdUnitId = adUnitId
                     isInterstitialLoading = false
-                    Log.d(TAG, "Interstitial Ad preloaded successfully")
-                    FirebaseCrashlytics.getInstance().log("AdMob: Interstitial Ad preloaded successfully")
+                    Log.d(TAG, "Interstitial Ad preloaded successfully for category: $category ($adUnitId)")
+                    FirebaseCrashlytics.getInstance().log("AdMob: Interstitial Ad preloaded successfully for $category ($adUnitId)")
                 }
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
                     interstitialAd = null
+                    preloadedAdUnitId = null
                     isInterstitialLoading = false
-                    Log.e(TAG, "Interstitial Ad preload failed: ${error.message}")
-                    FirebaseCrashlytics.getInstance().log("AdMob: Interstitial Ad preload failed: ${error.message} [code=${error.code}]")
+                    Log.e(TAG, "Interstitial Ad preload failed for $category: ${error.message}")
+                    FirebaseCrashlytics.getInstance().log("AdMob: Interstitial Ad preload failed for $category: ${error.message} [code=${error.code}]")
                     FirebaseCrashlytics.getInstance().recordException(
-                        Exception("AdMob Interstitial Preload Failed [code=${error.code}]: ${error.message}")
+                        Exception("AdMob Interstitial Preload Failed ($category) [code=${error.code}]: ${error.message}")
                     )
                 }
             }
@@ -66,7 +73,7 @@ class AdManager @Inject constructor(
     }
 
     /**
-     * Shows Interstitial Ad if preloaded ad is available.
+     * Shows Interstitial Ad if preloaded ad is available for category.
      * If preloaded ad is null (e.g. slow network), immediately invokes onAdDismissed() so navigation is never blocked,
      * and triggers a background preload for future transitions.
      */
@@ -84,16 +91,18 @@ class AdManager @Inject constructor(
         }
 
         FirebaseCrashlytics.getInstance().setCustomKey("last_ad_category", category.name)
+        val targetAdUnitId = remoteConfigManager.getInterstitialAdUnitId(category)
 
-        if (interstitialAd != null) {
+        if (interstitialAd != null && preloadedAdUnitId == targetAdUnitId) {
             displayInterstitial(activity, interstitialAd!!, category, onAdDismissed)
             interstitialAd = null
+            preloadedAdUnitId = null
         } else {
             // Instantly navigate to prevent UI freeze on slow network
-            Log.d(TAG, "Interstitial Ad not ready yet ($category). Navigating immediately and preloading in background.")
-            FirebaseCrashlytics.getInstance().log("AdMob: Interstitial Ad not preloaded yet for category $category. Navigating instantly.")
+            Log.d(TAG, "Interstitial Ad not ready yet for category $category ($targetAdUnitId). Navigating immediately and preloading in background.")
+            FirebaseCrashlytics.getInstance().log("AdMob: Interstitial Ad not preloaded yet for category $category ($targetAdUnitId). Navigating instantly.")
             onAdDismissed()
-            preloadInterstitialAd(activity.applicationContext)
+            preloadInterstitialAd(activity.applicationContext, category)
         }
     }
 
@@ -107,7 +116,7 @@ class AdManager @Inject constructor(
             override fun onAdDismissedFullScreenContent() {
                 Log.d(TAG, "Interstitial Ad dismissed for category: $category")
                 FirebaseCrashlytics.getInstance().log("AdMob: Interstitial Ad dismissed for category: $category")
-                preloadInterstitialAd(activity.applicationContext)
+                preloadInterstitialAd(activity.applicationContext, category)
                 onAdDismissed()
             }
 
@@ -117,7 +126,7 @@ class AdManager @Inject constructor(
                 FirebaseCrashlytics.getInstance().recordException(
                     Exception("AdMob Interstitial Show Failed ($category) [code=${adError.code}]: ${adError.message}")
                 )
-                preloadInterstitialAd(activity.applicationContext)
+                preloadInterstitialAd(activity.applicationContext, category)
                 onAdDismissed()
             }
 

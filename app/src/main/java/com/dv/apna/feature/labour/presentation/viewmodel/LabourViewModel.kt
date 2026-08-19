@@ -80,6 +80,7 @@ class LabourViewModel @Inject constructor(
             LabourService(UiText.StringResource(R.string.electrician), R.drawable.electrician, "electrician"),
             LabourService(UiText.StringResource(R.string.carpenter), R.drawable.carpenter, "carpenter"),
             LabourService(UiText.StringResource(R.string.tailor), R.drawable.tailor, "tailor"),
+            LabourService(UiText.StringResource(R.string.painter), R.drawable.painter, "painter"),
             LabourService(UiText.StringResource(R.string.labour), R.drawable.labour, "labour")
         )
         _state.update { it.copy(services = services) }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -76,6 +77,25 @@ fun BricksSuppliersScreen(
         }
     }
 
+    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
+        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.CONSTRUCTION),
+        isEnabled = remoteConfigManager.isNativeAdsEnabled()
+    )
+
+    val adPositions = remember(filteredSuppliers.size) {
+        val positions = mutableSetOf<Int>()
+        if (filteredSuppliers.size > 3) {
+            var current = kotlin.random.Random.nextInt(4, 7)
+            while (current < filteredSuppliers.size) {
+                positions.add(current)
+                current += kotlin.random.Random.nextInt(6, 11)
+            }
+        } else if (filteredSuppliers.isNotEmpty()) {
+            positions.add(filteredSuppliers.lastIndex)
+        }
+        positions
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -139,13 +159,24 @@ fun BricksSuppliersScreen(
                         contentPadding = PaddingValues(bottom = 80.sdp()),
                         verticalArrangement = Arrangement.spacedBy(10.sdp())
                     ) {
-                        items(filteredSuppliers) { supplier ->
+                        itemsIndexed(
+                            items = filteredSuppliers,
+                            key = { index, supplier -> if (supplier.id.isNotBlank()) supplier.id else "${supplier.name}_$index" }
+                        ) { index, supplier ->
                             BricksSupplierCard(
                                 supplier = supplier,
                                 onCallClick = { onEvent(BricksEvent.CallClick(supplier.phone)) }
                             )
+
+                            if (nativeAd != null && index in adPositions) {
+                                Spacer(modifier = Modifier.height(10.sdp()))
+                                com.dv.apna.core.ads.NativeAdCard(
+                                    nativeAd = nativeAd,
+                                    modifier = Modifier.padding(horizontal = 16.sdp())
+                                )
+                            }
                         }
-                        item {
+                        item(key = "banner_ad_item") {
                             com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }

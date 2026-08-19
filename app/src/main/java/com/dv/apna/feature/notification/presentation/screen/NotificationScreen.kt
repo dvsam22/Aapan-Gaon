@@ -55,6 +55,25 @@ fun NotificationScreen(
         }
     }
 
+    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
+        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.NOTIFICATION),
+        isEnabled = remoteConfigManager.isNativeAdsEnabled()
+    )
+
+    val adPositions = remember(state.notifications.size) {
+        val positions = mutableSetOf<Int>()
+        if (state.notifications.size > 3) {
+            var current = kotlin.random.Random.nextInt(4, 7)
+            while (current < state.notifications.size) {
+                positions.add(current)
+                current += kotlin.random.Random.nextInt(6, 11)
+            }
+        } else if (state.notifications.isNotEmpty()) {
+            positions.add(state.notifications.lastIndex)
+        }
+        positions
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -108,21 +127,29 @@ fun NotificationScreen(
                     contentPadding = PaddingValues(16.sdp()),
                     verticalArrangement = Arrangement.spacedBy(8.sdp())
                 ) {
+                    var globalIndex = 0
                     groupedNotifications.forEach { (category, notifications) ->
-                        item {
+                        item(key = "header_$category") {
                             Text(
                                 text = category, style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.SemiBold, fontSize = 12.ssp()
                                 ), color = Color.Black, modifier = Modifier.padding(bottom = 8.sdp())
                             )
                         }
-                        items(notifications) { notification ->
+                        items(notifications, key = { it.id }) { notification ->
+                            val currentIndex = globalIndex++
                             NotificationCard(
                                 notification = notification,
-                                onClick = { onEvent(NotificationEvent.SelectNotification(notification.id)) })
+                                onClick = { onEvent(NotificationEvent.SelectNotification(notification.id)) }
+                            )
+
+                            if (nativeAd != null && currentIndex in adPositions) {
+                                Spacer(modifier = Modifier.height(8.sdp()))
+                                com.dv.apna.core.ads.NativeAdCard(nativeAd = nativeAd)
+                            }
                         }
                     }
-                    item {
+                    item(key = "banner_ad_item") {
                         com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                     }
                 }

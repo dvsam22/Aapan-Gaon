@@ -4,9 +4,6 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ProcessLifecycleOwner
 import com.dv.apna.core.config.RemoteConfigManager
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -21,7 +18,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 @Singleton
 class AppOpenAdManager @Inject constructor(
     private val remoteConfigManager: RemoteConfigManager
-) : Application.ActivityLifecycleCallbacks, DefaultLifecycleObserver {
+) : Application.ActivityLifecycleCallbacks {
 
     private var appOpenAd: AppOpenAd? = null
     private var isShowingAd = false
@@ -31,7 +28,6 @@ class AppOpenAdManager @Inject constructor(
     private var myApplication: Application? = null
 
     private var hasShownAdOnLaunch = false
-    private var isAppInBackground = false
 
     companion object {
         private const val TAG = "AppOpenAdManager"
@@ -40,15 +36,14 @@ class AppOpenAdManager @Inject constructor(
     fun initialize(application: Application) {
         this.myApplication = application
         application.registerActivityLifecycleCallbacks(this)
-        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         fetchAd()
     }
 
     /**
-     * Request an App Open ad.
+     * Request an App Open ad for initial launch.
      */
     fun fetchAd() {
-        if (isAdAvailable() || isLoadingAd || !remoteConfigManager.isAppOpenAdsEnabled()) {
+        if (hasShownAdOnLaunch || isAdAvailable() || isLoadingAd || !remoteConfigManager.isAppOpenAdsEnabled()) {
             return
         }
 
@@ -68,13 +63,12 @@ class AppOpenAdManager @Inject constructor(
                     Log.d(TAG, "App Open Ad Loaded successfully")
                     FirebaseCrashlytics.getInstance().log("AdMob: App Open Ad loaded successfully")
 
-                    // On cold start, show ad as soon as first load finishes
+                    // Show ad ONLY ONCE on cold start
                     if (!hasShownAdOnLaunch) {
-                        hasShownAdOnLaunch = true
-                        currentActivity?.let { activity ->
-                            if (!activity.isFinishing && !activity.isDestroyed) {
-                                showAdIfAvailable(activity)
-                            }
+                        val act = currentActivity
+                        if (act != null && !act.isFinishing && !act.isDestroyed && !isAdActivity(act)) {
+                            hasShownAdOnLaunch = true
+                            showAdIfAvailable(act)
                         }
                     }
                 }
@@ -83,12 +77,14 @@ class AppOpenAdManager @Inject constructor(
                     isLoadingAd = false
                     Log.e(TAG, "App Open Ad Failed to Load: ${loadAdError.message}")
                     FirebaseCrashlytics.getInstance().log("AdMob: App Open Ad Failed to Load: ${loadAdError.message} [code=${loadAdError.code}]")
-                    FirebaseCrashlytics.getInstance().recordException(
-                        Exception("AdMob AppOpen Failed To Load [code=${loadAdError.code}]: ${loadAdError.message}")
-                    )
                 }
             }
         )
+    }
+
+    private fun isAdActivity(activity: Activity): Boolean {
+        val name = activity.javaClass.name
+        return name.contains("AdActivity") || name.contains("GoogleMobileAds")
     }
 
     /**
@@ -110,7 +106,7 @@ class AppOpenAdManager @Inject constructor(
     fun showAdIfAvailable(activity: Activity) {
         val isEnabled = remoteConfigManager.isAppOpenAdsEnabled()
 
-        if (!isEnabled) return
+        if (!isEnabled || isAdActivity(activity)) return
 
         if (!isShowingAd && isAdAvailable()) {
             appOpenAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
@@ -119,18 +115,13 @@ class AppOpenAdManager @Inject constructor(
                     FirebaseCrashlytics.getInstance().log("AdMob: App Open Ad dismissed")
                     appOpenAd = null
                     isShowingAd = false
-                    fetchAd()
                 }
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
                     Log.e(TAG, "App Open Ad failed to show: ${adError.message}")
                     FirebaseCrashlytics.getInstance().log("AdMob: App Open Ad failed to show: ${adError.message}")
-                    FirebaseCrashlytics.getInstance().recordException(
-                        Exception("AdMob AppOpen Show Failed [code=${adError.code}]: ${adError.message}")
-                    )
                     appOpenAd = null
                     isShowingAd = false
-                    fetchAd()
                 }
 
                 override fun onAdShowedFullScreenContent() {
@@ -141,36 +132,23 @@ class AppOpenAdManager @Inject constructor(
             }
             isShowingAd = true
             appOpenAd?.show(activity)
-        } else {
-            fetchAd()
         }
-    }
-
-    override fun onStart(owner: LifecycleOwner) {
-        super.onStart(owner)
-        // Only show ad when returning from background (home button press)
-        if (isAppInBackground) {
-            isAppInBackground = false
-            currentActivity?.let { activity ->
-                if (!activity.isFinishing && !activity.isDestroyed) {
-                    showAdIfAvailable(activity)
-                }
-            }
-        }
-    }
-
-    override fun onStop(owner: LifecycleOwner) {
-        super.onStop(owner)
-        // Mark app as in background when process stops
-        isAppInBackground = true
     }
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
     override fun onActivityStarted(activity: Activity) {
-        currentActivity = activity
+        if (!isAdActivity(activity)) {
+            currentActivity = activity
+            if (!hasShownAdOnLaunch && isAdAvailable() && !isShowingAd) {
+                hasShownAdOnLaunch = true
+                showAdIfAvailable(activity)
+            }
+        }
     }
     override fun onActivityResumed(activity: Activity) {
-        currentActivity = activity
+        if (!isAdActivity(activity)) {
+            currentActivity = activity
+        }
     }
     override fun onActivityPaused(activity: Activity) {}
     override fun onActivityStopped(activity: Activity) {}

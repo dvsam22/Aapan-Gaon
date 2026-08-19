@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -79,6 +80,25 @@ fun TransportDetailsScreen(
         }
     }
 
+    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
+        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.TRANSPORT),
+        isEnabled = remoteConfigManager.isNativeAdsEnabled()
+    )
+
+    val adPositions = remember(filteredTransportDetails.size) {
+        val positions = mutableSetOf<Int>()
+        if (filteredTransportDetails.size > 3) {
+            var current = kotlin.random.Random.nextInt(4, 7)
+            while (current < filteredTransportDetails.size) {
+                positions.add(current)
+                current += kotlin.random.Random.nextInt(6, 11)
+            }
+        } else if (filteredTransportDetails.isNotEmpty()) {
+            positions.add(filteredTransportDetails.lastIndex)
+        }
+        positions
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -141,13 +161,21 @@ fun TransportDetailsScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
-                        items(filteredTransportDetails) { transport ->
+                        itemsIndexed(
+                            items = filteredTransportDetails,
+                            key = { index, transport -> if (transport.id.isNotBlank()) transport.id else "${transport.name}_$index" }
+                        ) { index, transport ->
                             TransportVehicleCard(
                                 transport = transport,
                                 onCallClick = { onEvent(TransportEvent.CallClick(transport.contact)) }
                             )
+
+                            if (nativeAd != null && index in adPositions) {
+                                Spacer(modifier = Modifier.height(12.sdp()))
+                                com.dv.apna.core.ads.NativeAdCard(nativeAd = nativeAd)
+                            }
                         }
-                        item {
+                        item(key = "banner_ad_item") {
                             com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }

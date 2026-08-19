@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -73,6 +74,25 @@ fun FamilyFunctionDetailsScreen(
         }
     }
 
+    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
+        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.FAMILY),
+        isEnabled = remoteConfigManager.isNativeAdsEnabled()
+    )
+
+    val adPositions = remember(filteredFamilyFunctionDetails.size) {
+        val positions = mutableSetOf<Int>()
+        if (filteredFamilyFunctionDetails.size > 3) {
+            var current = kotlin.random.Random.nextInt(4, 7)
+            while (current < filteredFamilyFunctionDetails.size) {
+                positions.add(current)
+                current += kotlin.random.Random.nextInt(6, 11)
+            }
+        } else if (filteredFamilyFunctionDetails.isNotEmpty()) {
+            positions.add(filteredFamilyFunctionDetails.lastIndex)
+        }
+        positions
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -133,13 +153,21 @@ fun FamilyFunctionDetailsScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(16.sdp())
                     ) {
-                        items(filteredFamilyFunctionDetails) { provider ->
+                        itemsIndexed(
+                            items = filteredFamilyFunctionDetails,
+                            key = { index, provider -> if (provider.id.isNotBlank()) provider.id else "${provider.name}_$index" }
+                        ) { index, provider ->
                             ServiceProviderCard(
                                 provider = provider,
                                 onCallClick = { onEvent(FamilyFunctionEvent.CallClick(provider.contact)) }
                             )
+
+                            if (nativeAd != null && index in adPositions) {
+                                Spacer(modifier = Modifier.height(16.sdp()))
+                                com.dv.apna.core.ads.NativeAdCard(nativeAd = nativeAd)
+                            }
                         }
-                        item {
+                        item(key = "banner_ad_item") {
                             com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }

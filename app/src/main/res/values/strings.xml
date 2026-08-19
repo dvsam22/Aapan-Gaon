@@ -34,12 +34,12 @@
 
     <!-- Services -->
     <string name="services">Services</string>
-    <string name="construction_hub">Construction Hub</string>
-    <string name="labour_board">Labour Board</string>
-    <string name="transport_rentals">Transport &amp; Rentals</string>
-    <string name="mandi_hub">Mandi Hub</string>
-    <string name="local_news">Local News</string>
-    <string name="health_emergency">Health &amp; Emergency</string>
+    <string name="construction_hub">Construction &amp; Building</string>
+    <string name="labour_board">Craftsmen &amp; Labourers</string>
+    <string name="transport_rentals">Vehicle &amp; Tractor Rentals</string>
+    <string name="mandi_hub">Farmers Market (Mandi)</string>
+    <string name="local_news">Village News</string>
+    <string name="health_emergency">Doctors &amp; Hospitals</string>
 
     <!-- Language Selection Screen -->
     <string name="select_language_bilingual">Select Language/ भाषा चुने</string>
@@ -48,9 +48,9 @@
     <string name="no_villages_found">No villages found</string>
 
     <!-- Mandi Hub -->
-    <string name="crop_prices">Crop Prices</string>
-    <string name="today_market">Today’s Market</string>
-    <string name="local_buyers">Local Buyers</string>
+    <string name="crop_prices">Mandi Rates</string>
+    <string name="today_market">Fresh Market Rates</string>
+    <string name="local_buyers">Crop &amp; Vegetable Buyers</string>
     <string name="crop">Crop</string>
     <string name="unit">Unit</string>
     <string name="price">Price</string>
@@ -58,11 +58,11 @@
     <string name="for_label">For:</string>
 
     <!-- Construction Hub -->
-    <string name="bricks">Bricks</string>
-    <string name="material_shops">Material Shops</string>
-    <string name="hardware_shops">Hardware Shops</string>
+    <string name="bricks">Bricks &amp; Kiln</string>
+    <string name="material_shops">Cement, Sand &amp; Material</string>
+    <string name="hardware_shops">Hardware Store</string>
     <string name="linter_machine">Linter Machine</string>
-    <string name="shuttering">Shuttering</string>
+    <string name="shuttering">Centering &amp; Shuttering</string>
     <string name="no_shops_found">No shops found</string>
     <string name="items_available">Items Available:</string>
     <string name="materials_available">Materials Available:</string>
@@ -73,10 +73,10 @@
     <string name="gram_sarpanch">Gram Sarpanch</string>
     <string name="doctors">Doctors</string>
     <string name="hospitals">Hospitals</string>
-    <string name="pharmacy">Pharmacy</string>
+    <string name="pharmacy">Medical Store</string>
     <string name="no_doctors_found">No doctors found</string>
     <string name="no_hospitals_found">No hospitals found</string>
-    <string name="no_pharmacies_found">No pharmacies found</string>
+    <string name="no_pharmacies_found">No medical stores found</string>
     <string name="specialization_label">Specialist:</string>
     <string name="availability_label">Timing:</string>
     <string name="type_label">Type:</string>
@@ -114,6 +114,7 @@
     <string name="electrician">Electrician</string>
     <string name="carpenter">Carpenter</string>
     <string name="tailor">Tailor</string>
+    <string name="painter">Painter</string>
     <string name="labour">Labour</string>
 
     <!-- Transport Services -->
@@ -124,11 +125,11 @@
     <string name="jcb">JCB</string>
 
     <!-- Family Functions -->
-    <string name="family_functions">Family Functions</string>
-    <string name="tent_pandal_decor">Tent, Pandal &amp; Decor</string>
-    <string name="catering_halwai">Catering &amp; Halwai</string>
+    <string name="family_functions">Weddings &amp; Events</string>
+    <string name="tent_pandal_decor">Tent House &amp; Decor</string>
+    <string name="catering_halwai">Halwai &amp; Catering</string>
     <string name="photo_videography">Photo &amp; Videography</string>
-    <string name="dj_sound_band">DJ, Sound &amp; Band</string>
+    <string name="dj_sound_band">DJ &amp; Band</string>
     <string name="marriage_halls_lawns">Marriage Halls &amp; Lawns</string>
     <string name="starting_price_label">Starting Price:</string>
     <string name="no_service_providers">No service providers found</string>

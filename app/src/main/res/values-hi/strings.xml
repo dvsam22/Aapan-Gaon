@@ -11,15 +11,15 @@
     <string name="today">आज</string>
     <string name="yesterday">कल</string>
 
-    <string name="bricks_suppliers">ईंट आपूर्तिकर्ता</string>
+    <string name="bricks_suppliers">ईंट सप्लायर</string>
     <string name="available">%1$d उपलब्ध</string>
     <string name="call_now">अभी कॉल करें</string>
     <string name="brick_types">ईंटों के प्रकार:</string>
-    <string name="no_suppliers">कोई आपूर्तिकर्ता नहीं मिला</string>
+    <string name="no_suppliers">कोई सप्लायर नहीं मिला</string>
 
-    <string name="skills">कौशल:</string>
-    <string name="charges">शुल्क:</string>
-    <string name="no_workers">कोई कर्मचारी नहीं मिला</string>
+    <string name="skills">काम:</string>
+    <string name="charges">रेट:</string>
+    <string name="no_workers">कोई कारीगर/मजदूर नहीं मिला</string>
     <string name="details_title">%1$s विवरण</string>
 
     <!-- Navigation & Menu -->
@@ -30,27 +30,27 @@
     <string name="terms_and_conditions">नियम और शर्तें</string>
     <string name="share_app">ऐप शेयर करें</string>
     <string name="rate_us">हमें रेटिंग दें</string>
-    <string name="version_format">वर्शन %1$s</string>
+    <string name="version_format">वर्ज़न %1$s</string>
 
     <!-- Services -->
     <string name="services">सेवाएं</string>
-    <string name="construction_hub">निर्माण हब</string>
-    <string name="labour_board">श्रमिक बोर्ड</string>
-    <string name="transport_rentals">परिवहन और किराए पर</string>
-    <string name="mandi_hub">मंडी हब</string>
-    <string name="local_news">स्थानीय समाचार</string>
-    <string name="health_emergency">स्वास्थ्य और आपातकालीन</string>
+    <string name="construction_hub">मकान निर्माण</string>
+    <string name="labour_board">कारीगर व मजदूर</string>
+    <string name="transport_rentals">गाड़ी व ट्रैक्टर किराया</string>
+    <string name="mandi_hub">किसान मंडी</string>
+    <string name="local_news">गांव की खबरें</string>
+    <string name="health_emergency">डॉक्टर व अस्पताल</string>
 
     <!-- Language Selection Screen -->
-    <string name="select_language_bilingual">Select Language/ भाषा चुने</string>
-    <string name="select_village_bilingual">Select Village/ गाँव चुनें</string>
-    <string name="select_here_bilingual">Select Here/ यहाँ चुनें</string>
+    <string name="select_language_bilingual">भाषा चुनें / Select Language</string>
+    <string name="select_village_bilingual">गाँव चुनें / Select Village</string>
+    <string name="select_here_bilingual">यहाँ चुनें / Select Here</string>
     <string name="no_villages_found">कोई गांव नहीं मिला</string>
 
     <!-- Mandi Hub -->
-    <string name="crop_prices">फसल की कीमतें</string>
-    <string name="today_market">आज का बाजार</string>
-    <string name="local_buyers">स्थानीय खरीदार</string>
+    <string name="crop_prices">मंडी भाव</string>
+    <string name="today_market">ताज़ा बाजार भाव</string>
+    <string name="local_buyers">फसल व सब्जी खरीदार</string>
     <string name="crop">फसल</string>
     <string name="unit">इकाई</string>
     <string name="price">कीमत</string>
@@ -58,11 +58,11 @@
     <string name="for_label">के लिए:</string>
 
     <!-- Construction Hub -->
-    <string name="bricks">ईंटें</string>
-    <string name="material_shops">सामग्री की दुकानें</string>
-    <string name="hardware_shops">हार्डवेयर की दुकानें</string>
+    <string name="bricks">ईंट व भट्ठा</string>
+    <string name="material_shops">सीमेंट, बालू व गिट्टी</string>
+    <string name="hardware_shops">हार्डवेयर स्टोर</string>
     <string name="linter_machine">लिन्टर मशीन</string>
-    <string name="shuttering">शटरिंग</string>
+    <string name="shuttering">सेंटरिंग-शटरिंग</string>
     <string name="no_shops_found">कोई दुकान नहीं मिली</string>
     <string name="items_available">उपलब्ध वस्तुएं:</string>
     <string name="materials_available">उपलब्ध सामग्री:</string>
@@ -73,10 +73,10 @@
     <string name="gram_sarpanch">ग्राम सरपंच</string>
     <string name="doctors">डॉक्टर</string>
     <string name="hospitals">अस्पताल</string>
-    <string name="pharmacy">फार्मेसी</string>
+    <string name="pharmacy">मेडिकल स्टोर</string>
     <string name="no_doctors_found">कोई डॉक्टर नहीं मिला</string>
     <string name="no_hospitals_found">कोई अस्पताल नहीं मिला</string>
-    <string name="no_pharmacies_found">कोई फार्मेसी नहीं मिली</string>
+    <string name="no_pharmacies_found">कोई मेडिकल स्टोर नहीं मिला</string>
     <string name="specialization_label">विशेषज्ञ:</string>
     <string name="availability_label">समय:</string>
     <string name="type_label">प्रकार:</string>
@@ -87,10 +87,10 @@
     <!-- General -->
     <string name="no_records_found">कोई रिकॉर्ड नहीं मिला</string>
     <string name="info_label">जानकारी:</string>
-    <string name="news_notices">समाचार और सूचनाएं</string>
-    <string name="breaking_news">ताजा खबर</string>
+    <string name="news_notices">खबरें व सूचनाएं</string>
+    <string name="breaking_news">ताज़ा खबरें</string>
     <string name="official_notices">आधिकारिक सूचनाएं</string>
-    <string name="no_news_available">कोई समाचार या सूचना उपलब्ध नहीं है</string>
+    <string name="no_news_available">कोई खबर या सूचना नहीं मिली</string>
     <string name="discount_label">छूट </string>
     <!-- Splash Screen -->
     <string name="splash_text_part1">अपने गांव का अपना ऐप</string>
@@ -101,19 +101,20 @@
     <string name="error_select_village">कृपया गांव चुनें</string>
     <string name="error_village_not_selected">गांव नहीं चुना गया</string>
     <!-- Transport & News -->
-    <string name="no_vehicles_found">कोई वाहन नहीं मिला</string>
+    <string name="no_vehicles_found">कोई गाड़ी/वाहन नहीं मिला</string>
     <string name="location_label">स्थान:</string>
     <string name="vehicle_type_label">वाहन:</string>
-    <string name="news_details">समाचार विवरण</string>
+    <string name="news_details">खबर विवरण</string>
     <string name="notice_details">सूचना विवरण</string>
-    <string name="published_label">प्रकाशित: %1$s</string>
+    <string name="published_label">तारीख: %1$s</string>
     <string name="date_label">दिनांक: %1$s</string>
     <!-- Labour Services -->
     <string name="rajmistri">राजमिस्त्री</string>
     <string name="plumber">प्लंबर</string>
-    <string name="electrician">इलेक्ट्रीशियन</string>
+    <string name="electrician">बिजली मिस्त्री</string>
     <string name="carpenter">बढ़ई</string>
     <string name="tailor">दर्जी</string>
+    <string name="painter">पेंटर</string>
     <string name="labour">मजदूर</string>
 
     <!-- Transport Services -->
@@ -124,12 +125,12 @@
     <string name="jcb">जेसीबी</string>
 
     <!-- Family Functions -->
-    <string name="family_functions">पारिवारिक समारोह</string>
-    <string name="tent_pandal_decor">टेंट, पंडाल और सजावट</string>
-    <string name="catering_halwai">कैटरिंग और हलवाई</string>
-    <string name="photo_videography">फोटो और वीडियोग्राफी</string>
-    <string name="dj_sound_band">डीजे, साउंड और बैंड</string>
-    <string name="marriage_halls_lawns">मैरिज हॉल और लॉन</string>
+    <string name="family_functions">शादी व मांगलिक कार्य</string>
+    <string name="tent_pandal_decor">टेंट हाउस व सजावट</string>
+    <string name="catering_halwai">हलवाई व कैटरिंग</string>
+    <string name="photo_videography">फोटो व वीडियोग्राफी</string>
+    <string name="dj_sound_band">डीजे व बैंड बाजा</string>
+    <string name="marriage_halls_lawns">मैरिज हॉल व वाटिका</string>
     <string name="starting_price_label">शुरुआती कीमत:</string>
-    <string name="no_service_providers">कोई सेवा प्रदाता नहीं मिला</string>
+    <string name="no_service_providers">कोई बुकिंग/सुविधा नहीं मिली</string>
 </resources>

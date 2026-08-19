@@ -151,7 +151,9 @@ fun AapanGavLoading(
 
 @Composable
 fun AapanGavEmptyData(
-    modifier: Modifier = Modifier.fillMaxSize(),
+    modifier: Modifier = Modifier
+        .fillMaxWidth()
+        .padding(top = 32.sdp()),
     message: String = "No Data Found"
 ) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.no_data_found))
@@ -161,14 +163,14 @@ fun AapanGavEmptyData(
     )
 
     Column(
-        modifier = modifier.padding(24.sdp()),
+        modifier = modifier.padding(horizontal = 24.sdp()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Top
     ) {
         LottieAnimation(
             composition = composition,
             progress = { progress },
-            modifier = Modifier.size(200.sdp())
+            modifier = Modifier.size(180.sdp())
         )
         Spacer(modifier = Modifier.height(16.sdp()))
         Text(

@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -71,6 +72,25 @@ fun DoctorScreen(
         }
     }
 
+    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
+        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.HEALTH),
+        isEnabled = remoteConfigManager.isNativeAdsEnabled()
+    )
+
+    val adPositions = remember(filteredDoctors.size) {
+        val positions = mutableSetOf<Int>()
+        if (filteredDoctors.size > 3) {
+            var current = kotlin.random.Random.nextInt(4, 7)
+            while (current < filteredDoctors.size) {
+                positions.add(current)
+                current += kotlin.random.Random.nextInt(6, 11)
+            }
+        } else if (filteredDoctors.isNotEmpty()) {
+            positions.add(filteredDoctors.lastIndex)
+        }
+        positions
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -127,10 +147,18 @@ fun DoctorScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
-                        items(filteredDoctors) { doctor ->
+                        itemsIndexed(
+                            items = filteredDoctors,
+                            key = { index, doctor -> if (doctor.id.isNotBlank()) doctor.id else "${doctor.name}_$index" }
+                        ) { index, doctor ->
                             DoctorItemCard(doctor = doctor, onCallClick = { onEvent(HealthEvent.CallClick(doctor.phone)) })
+
+                            if (nativeAd != null && index in adPositions) {
+                                Spacer(modifier = Modifier.height(12.sdp()))
+                                com.dv.apna.core.ads.NativeAdCard(nativeAd = nativeAd)
+                            }
                         }
-                        item {
+                        item(key = "banner_ad_item") {
                             com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }

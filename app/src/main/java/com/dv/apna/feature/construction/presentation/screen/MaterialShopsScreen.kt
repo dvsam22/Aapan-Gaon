@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -77,6 +78,25 @@ fun MaterialShopsScreen(
         }
     }
 
+    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
+        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.CONSTRUCTION),
+        isEnabled = remoteConfigManager.isNativeAdsEnabled()
+    )
+
+    val adPositions = remember(filteredShops.size) {
+        val positions = mutableSetOf<Int>()
+        if (filteredShops.size > 3) {
+            var current = kotlin.random.Random.nextInt(4, 7)
+            while (current < filteredShops.size) {
+                positions.add(current)
+                current += kotlin.random.Random.nextInt(6, 11)
+            }
+        } else if (filteredShops.isNotEmpty()) {
+            positions.add(filteredShops.lastIndex)
+        }
+        positions
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -132,13 +152,24 @@ fun MaterialShopsScreen(
                         contentPadding = PaddingValues(bottom = 80.sdp()),
                         verticalArrangement = Arrangement.spacedBy(10.sdp())
                     ) {
-                        items(filteredShops) { shop ->
+                        itemsIndexed(
+                            items = filteredShops,
+                            key = { index, shop -> if (shop.id.isNotBlank()) shop.id else "${shop.name}_$index" }
+                        ) { index, shop ->
                             MaterialShopCard(
                                 shop = shop,
                                 onCallClick = { onEvent(MaterialShopsEvent.CallClick(shop.phone)) }
                             )
+
+                            if (nativeAd != null && index in adPositions) {
+                                Spacer(modifier = Modifier.height(10.sdp()))
+                                com.dv.apna.core.ads.NativeAdCard(
+                                    nativeAd = nativeAd,
+                                    modifier = Modifier.padding(horizontal = 16.sdp())
+                                )
+                            }
                         }
-                        item {
+                        item(key = "banner_ad_item") {
                             com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }

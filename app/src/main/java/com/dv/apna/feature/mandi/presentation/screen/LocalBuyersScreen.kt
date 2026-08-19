@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -81,6 +82,25 @@ fun LocalBuyersScreen(
         }
     }
 
+    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
+        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.MANDI),
+        isEnabled = remoteConfigManager.isNativeAdsEnabled()
+    )
+
+    val adPositions = remember(filteredBuyers.size) {
+        val positions = mutableSetOf<Int>()
+        if (filteredBuyers.size > 3) {
+            var current = kotlin.random.Random.nextInt(4, 7)
+            while (current < filteredBuyers.size) {
+                positions.add(current)
+                current += kotlin.random.Random.nextInt(6, 11)
+            }
+        } else if (filteredBuyers.isNotEmpty()) {
+            positions.add(filteredBuyers.lastIndex)
+        }
+        positions
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -143,13 +163,21 @@ fun LocalBuyersScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
-                        items(filteredBuyers) { buyer ->
+                        itemsIndexed(
+                            items = filteredBuyers,
+                            key = { index, buyer -> if (buyer.id.isNotBlank()) buyer.id else "${buyer.name}_$index" }
+                        ) { index, buyer ->
                             LocalBuyerCard(
                                 buyer = buyer,
                                 onCallClick = { onEvent(MandiEvent.CallClick(buyer.contact)) }
                             )
+
+                            if (nativeAd != null && index in adPositions) {
+                                Spacer(modifier = Modifier.height(12.sdp()))
+                                com.dv.apna.core.ads.NativeAdCard(nativeAd = nativeAd)
+                            }
                         }
-                        item {
+                        item(key = "banner_ad_item") {
                             com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }

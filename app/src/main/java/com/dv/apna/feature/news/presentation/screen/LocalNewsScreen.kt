@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CalendarMonth
@@ -77,6 +78,25 @@ fun LocalNewsScreen(
         }
     }
 
+    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
+        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.NEWS),
+        isEnabled = remoteConfigManager.isNativeAdsEnabled()
+    )
+
+    val adPositions = remember(filteredNews.size) {
+        val positions = mutableSetOf<Int>()
+        if (filteredNews.size > 3) {
+            var current = kotlin.random.Random.nextInt(4, 7)
+            while (current < filteredNews.size) {
+                positions.add(current)
+                current += kotlin.random.Random.nextInt(6, 11)
+            }
+        } else if (filteredNews.isNotEmpty()) {
+            positions.add(filteredNews.lastIndex)
+        }
+        positions
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -128,11 +148,21 @@ fun LocalNewsScreen(
                 ) {
                     // Breaking News Section
                     if (filteredNews.isNotEmpty()) {
-                        items(filteredNews) { news ->
+                        itemsIndexed(
+                            items = filteredNews,
+                            key = { index, news -> if (news.id.isNotBlank()) news.id else "${news.title}_$index" }
+                        ) { index, news ->
                             NewsItemCard(
                                 news = news,
                                 onClick = { onEvent(NewsEvent.NewsClick(news.id)) }
                             )
+
+                            if (nativeAd != null && index in adPositions) {
+                                com.dv.apna.core.ads.NativeAdCard(
+                                    nativeAd = nativeAd,
+                                    modifier = Modifier.padding(horizontal = 16.sdp(), vertical = 6.sdp())
+                                )
+                            }
                         }
                     }
 
@@ -144,7 +174,7 @@ fun LocalNewsScreen(
                             )
                         }
                     } else {
-                        item {
+                        item(key = "banner_ad_item") {
                             com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }

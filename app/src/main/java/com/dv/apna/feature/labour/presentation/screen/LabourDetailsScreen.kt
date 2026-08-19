@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -74,6 +75,26 @@ fun LabourDetailsScreen(
         }
     }
 
+    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
+        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.LABOUR),
+        isEnabled = remoteConfigManager.isNativeAdsEnabled()
+    )
+
+    // Calculate dynamic random ad positions (e.g. after 5, 8, 10 cards)
+    val adPositions = remember(filteredLabourDetails.size) {
+        val positions = mutableSetOf<Int>()
+        if (filteredLabourDetails.size > 3) {
+            var current = kotlin.random.Random.nextInt(4, 7) // First ad after 4-6 cards
+            while (current < filteredLabourDetails.size) {
+                positions.add(current)
+                current += kotlin.random.Random.nextInt(6, 11) // Next ad after 6-10 cards (e.g. 7, 8, 10)
+            }
+        } else if (filteredLabourDetails.isNotEmpty()) {
+            positions.add(filteredLabourDetails.lastIndex) // End of list if small
+        }
+        positions
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -134,13 +155,22 @@ fun LabourDetailsScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(16.sdp())
                     ) {
-                        items(filteredLabourDetails) { labour ->
+                        itemsIndexed(
+                            items = filteredLabourDetails,
+                            key = { index, labour -> if (labour.id.isNotBlank()) labour.id else "${labour.name}_$index" }
+                        ) { index, labour ->
                             LabourWorkerCard(
                                 labour = labour,
                                 onCallClick = { context.dial(labour.contact) }
                             )
+
+                            // Display Native Ad Card randomly (e.g. after 5, 8, 10 items)
+                            if (nativeAd != null && index in adPositions) {
+                                Spacer(modifier = Modifier.height(16.sdp()))
+                                com.dv.apna.core.ads.NativeAdCard(nativeAd = nativeAd)
+                            }
                         }
-                        item {
+                        item(key = "banner_ad_item") {
                             com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }

@@ -3,77 +3,44 @@
     "ads_enabled": {
       "defaultValue": {
         "value": "true"
-      }
+      },
+      "description": "Global master switch for all ads in the app",
+      "valueType": "BOOLEAN"
     },
     "app_open_ads_enabled": {
       "defaultValue": {
         "value": "true"
-      }
+      },
+      "description": "Enable or disable App Open Ad on cold launch",
+      "valueType": "BOOLEAN"
     },
     "banner_ads_enabled": {
       "defaultValue": {
         "value": "true"
-      }
+      },
+      "description": "Enable or disable Banner Ads in list screens and bottom bars",
+      "valueType": "BOOLEAN"
     },
     "interstitial_ads_enabled": {
       "defaultValue": {
         "value": "true"
-      }
+      },
+      "description": "Enable or disable Interstitial Ads across navigation & call actions",
+      "valueType": "BOOLEAN"
+    },
+    "native_ads_enabled": {
+      "defaultValue": {
+        "value": "true"
+      },
+      "description": "Enable or disable In-Feed Native Ads across all category screens",
+      "valueType": "BOOLEAN"
     },
     "ad_show_probability": {
       "defaultValue": {
         "value": "1.0"
-      }
-    },
-    "app_open_ad_unit_id": {
-      "defaultValue": {
-        "value": "ca-app-pub-2632394200654942/2336849258"
-      }
-    },
-    "banner_ad_unit_id": {
-      "defaultValue": {
-        "value": "ca-app-pub-2632394200654942/9055400925"
-      }
-    },
-    "interstitial_ad_unit_id": {
-      "defaultValue": {
-        "value": "ca-app-pub-2632394200654942/2170428374"
-      }
-    },
-    "interstitial_construction_ad_unit_id": {
-      "defaultValue": {
-        "value": ""
-      }
-    },
-    "interstitial_labour_ad_unit_id": {
-      "defaultValue": {
-        "value": ""
-      }
-    },
-    "interstitial_transport_ad_unit_id": {
-      "defaultValue": {
-        "value": ""
-      }
-    },
-    "interstitial_mandi_ad_unit_id": {
-      "defaultValue": {
-        "value": ""
-      }
-    },
-    "interstitial_health_ad_unit_id": {
-      "defaultValue": {
-        "value": ""
-      }
-    },
-    "interstitial_family_ad_unit_id": {
-      "defaultValue": {
-        "value": ""
-      }
-    },
-    "interstitial_news_ad_unit_id": {
-      "defaultValue": {
-        "value": ""
-      }
+      },
+      "description": "Probability threshold (0.0 to 1.0) for displaying ads",
+      "valueType": "NUMBER"
     }
   }
 }

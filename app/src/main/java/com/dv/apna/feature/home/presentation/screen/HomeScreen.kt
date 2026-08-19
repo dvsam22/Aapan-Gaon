@@ -258,7 +258,7 @@ fun HomeDrawer(
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-            text = stringResource(id = R.string.version_format, "1.1"),
+            text = stringResource(id = R.string.version_format, com.dv.apna.BuildConfig.VERSION_NAME),
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 12.ssp(),
                 color = Color(0xFF8391A1)

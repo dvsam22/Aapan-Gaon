@@ -41,6 +41,11 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var appOpenAdManager: com.dv.apna.core.ads.AppOpenAdManager
 
+    @Inject
+    lateinit var remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager
+
+    private lateinit var inAppUpdateManager: com.dv.apna.core.utils.InAppUpdateManager
+
     private var navController: androidx.navigation.NavHostController? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
@@ -57,6 +62,10 @@ class MainActivity : AppCompatActivity() {
         
         enableEdgeToEdge()
         subscribeToSavedVillageTopic()
+
+        // Check Google Play Store for App Updates & launch native bottom sheet
+        inAppUpdateManager = com.dv.apna.core.utils.InAppUpdateManager(this)
+        inAppUpdateManager.checkForUpdate()
 
         // Extract notification data from Intent Bundle
         val id = intent?.getStringExtra("id") ?: intent?.getStringExtra("notification_id")
@@ -122,6 +131,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (::inAppUpdateManager.isInitialized) {
+            inAppUpdateManager.resumeUpdateIfInProgress()
+        }
     }
 
     private fun subscribeToSavedVillageTopic() {

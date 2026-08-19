@@ -231,7 +231,7 @@ fun RootNavGraph(
                 onNavigateToFamilyFunction = { navController.navigate(Route.FamilyFunction) },
                 onNavigateToLanguage = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity) {
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.GENERAL) {
                             navController.navigate(Route.ChangeLanguage)
                         }
                     } else {
@@ -240,7 +240,7 @@ fun RootNavGraph(
                 },
                 onNavigateToChangeVillage = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity) {
+                        adManager.showInterstitialAd(activity, ServiceAdCategory.GENERAL) {
                             navController.navigate(Route.ChangeVillage)
                         }
                     } else {
@@ -258,6 +258,11 @@ fun RootNavGraph(
             val viewModel: HealthViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             val context = LocalContext.current
+
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.HEALTH)
+            }
+
             HealthHubScreen(
                 state = state,
                 onEvent = viewModel::onEvent,
@@ -376,6 +381,12 @@ fun RootNavGraph(
         composable<Route.Mandi> {
             val viewModel: MandiViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.MANDI)
+            }
+
             MandiHubScreen(
                 state = state,
                 onEvent = viewModel::onEvent,
@@ -450,8 +461,13 @@ fun RootNavGraph(
         composable<Route.Construction> {
             val viewModel: ConstructionViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
             val linterTitle = stringResource(id = R.string.linter_machine)
             val shutteringTitle = stringResource(id = R.string.shuttering)
+
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.CONSTRUCTION)
+            }
 
             ConstructionHubScreen(
                 state = state,
@@ -555,6 +571,12 @@ fun RootNavGraph(
         composable<Route.LabourBoard> {
             val viewModel: LabourViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.LABOUR)
+            }
+
             LabourBoardScreen(
                 state = state,
                 onEvent = viewModel::onEvent,
@@ -585,6 +607,12 @@ fun RootNavGraph(
         composable<Route.Transport> {
             val viewModel: TransportViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.TRANSPORT)
+            }
+
             TransportBoardScreen(
                 state = state,
                 onEvent = viewModel::onEvent,
@@ -626,6 +654,12 @@ fun RootNavGraph(
         composable<Route.News> {
             val viewModel: NewsViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.NEWS)
+            }
+
             LocalNewsScreen(
                 state = state,
                 onEvent = viewModel::onEvent,
@@ -686,6 +720,12 @@ fun RootNavGraph(
         }
 
         composable<Route.FamilyFunction> {
+            val context = LocalContext.current
+
+            androidx.compose.runtime.LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.FAMILY)
+            }
+
             FamilyFunctionScreen(
                 remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },

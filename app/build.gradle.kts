@@ -17,11 +17,21 @@ android {
         applicationId = "com.dv.apna"
         minSdk = 26
         targetSdk = 37
-        versionCode = 4
-        versionName = "1.4"
+        versionCode = 8
+        versionName = "1.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+    }
+
+    androidResources {
+        localeFilters += listOf("en", "hi")
+    }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
     }
 
     buildTypes {
@@ -30,7 +40,12 @@ android {
         }
         release {
             manifestPlaceholders["admobAppId"] = "ca-app-pub-2632394200654942~7740616534"
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = signingConfigs.getByName("debug")
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
@@ -93,8 +108,10 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.config)
 
-    // Google Mobile Ads (AdMob) & Lifecycle Process
+    // Google Mobile Ads (AdMob) & Lifecycle Process & Play App Update
     implementation(libs.play.services.ads)
+    implementation(libs.play.app.update)
+    implementation(libs.play.app.update.ktx)
     implementation(libs.androidx.lifecycle.process)
 
     testImplementation(libs.junit)
