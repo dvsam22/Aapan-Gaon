@@ -353,11 +353,14 @@ fun ConstructionItemCard(
 
                 item.products.forEach { product ->
                     Row(
-                        modifier = Modifier.padding(start = 4.sdp(), bottom = 3.sdp()),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 4.sdp(), bottom = 3.sdp()),
+                        verticalAlignment = Alignment.Top
                     ) {
                         Box(
                             modifier = Modifier
+                                .padding(top = 4.sdp())
                                 .size(6.sdp())
                                 .background(Color(0xFF38C792), CircleShape)
                         )
@@ -367,7 +370,8 @@ fun ConstructionItemCard(
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontSize = 11.ssp(),
                                 color = Color.Black.copy(alpha = 0.7f)
-                            )
+                            ),
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }

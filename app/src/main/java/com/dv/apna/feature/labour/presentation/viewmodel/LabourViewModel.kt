@@ -44,6 +44,18 @@ class LabourViewModel @Inject constructor(
     private val _effect = MutableSharedFlow<LabourEffect>()
     val effect = _effect.asSharedFlow()
 
+    companion object {
+        val ALL_LABOUR_SERVICES = listOf(
+            LabourService(UiText.StringResource(R.string.rajmistri), R.drawable.rajmistri, "rajmistri"),
+            LabourService(UiText.StringResource(R.string.plumber), R.drawable.plumber, "plumber"),
+            LabourService(UiText.StringResource(R.string.electrician), R.drawable.electrician, "electrician"),
+            LabourService(UiText.StringResource(R.string.carpenter), R.drawable.carpenter, "carpenter"),
+            LabourService(UiText.StringResource(R.string.tailor), R.drawable.tailor, "tailor"),
+            LabourService(UiText.StringResource(R.string.painter), R.drawable.painter, "painter"),
+            LabourService(UiText.StringResource(R.string.labour), R.drawable.labour, "labour")
+        )
+    }
+
     private var loadJob: Job? = null
 
     init {
@@ -54,15 +66,7 @@ class LabourViewModel @Inject constructor(
     private fun checkLabourDetails() {
         try {
             val route = savedStateHandle.toRoute<Route.LabourDetails>()
-            val services = listOf(
-                LabourService(UiText.StringResource(R.string.rajmistri), R.drawable.rajmistri, "rajmistri"),
-                LabourService(UiText.StringResource(R.string.plumber), R.drawable.plumber, "plumber"),
-                LabourService(UiText.StringResource(R.string.electrician), R.drawable.electrician, "electrician"),
-                LabourService(UiText.StringResource(R.string.carpenter), R.drawable.carpenter, "carpenter"),
-                LabourService(UiText.StringResource(R.string.tailor), R.drawable.tailor, "tailor"),
-                LabourService(UiText.StringResource(R.string.labour), R.drawable.labour, "labour")
-            )
-            val service = services.find { it.categoryId == route.category }
+            val service = ALL_LABOUR_SERVICES.find { it.categoryId.equals(route.category, ignoreCase = true) }
             _state.update { it.copy(
                 selectedCategory = route.category,
                 selectedCategoryTitle = service?.title ?: UiText.DynamicString(route.category)
@@ -74,16 +78,7 @@ class LabourViewModel @Inject constructor(
     }
 
     private fun getLabourServices() {
-        val services = listOf(
-            LabourService(UiText.StringResource(R.string.rajmistri), R.drawable.rajmistri, "rajmistri"),
-            LabourService(UiText.StringResource(R.string.plumber), R.drawable.plumber, "plumber"),
-            LabourService(UiText.StringResource(R.string.electrician), R.drawable.electrician, "electrician"),
-            LabourService(UiText.StringResource(R.string.carpenter), R.drawable.carpenter, "carpenter"),
-            LabourService(UiText.StringResource(R.string.tailor), R.drawable.tailor, "tailor"),
-            LabourService(UiText.StringResource(R.string.painter), R.drawable.painter, "painter"),
-            LabourService(UiText.StringResource(R.string.labour), R.drawable.labour, "labour")
-        )
-        _state.update { it.copy(services = services) }
+        _state.update { it.copy(services = ALL_LABOUR_SERVICES) }
     }
 
     fun onEvent(event: LabourEvent) {

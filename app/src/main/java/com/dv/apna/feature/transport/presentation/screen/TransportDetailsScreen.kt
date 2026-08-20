@@ -321,7 +321,10 @@ fun TransportVehicleCard(
 
             Spacer(modifier = Modifier.height(16.sdp()))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.receipt),
                     contentDescription = null,
@@ -343,7 +346,8 @@ fun TransportVehicleCard(
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontSize = 11.ssp(),
                         color = Color.Black.copy(alpha = 0.7f)
-                    )
+                    ),
+                    modifier = Modifier.weight(1f)
                 )
             }
 

@@ -340,11 +340,14 @@ fun HardwareShopCard(
 
                 shop.items.forEach { item ->
                     Row(
-                        modifier = Modifier.padding(start = 4.sdp(), bottom = 3.sdp()),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 4.sdp(), bottom = 3.sdp()),
+                        verticalAlignment = Alignment.Top
                     ) {
                         Box(
                             modifier = Modifier
+                                .padding(top = 4.sdp())
                                 .size(6.sdp())
                                 .background(Color(0xFF38C792), CircleShape)
                         )
@@ -353,7 +356,8 @@ fun HardwareShopCard(
                             text = "${item.name} - ₹${item.price} / ${item.unit}",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontSize = 11.ssp(), color = Color.Black.copy(alpha = 0.7f)
-                            )
+                            ),
+                            modifier = Modifier.weight(1f)
                         )
                     }
                 }

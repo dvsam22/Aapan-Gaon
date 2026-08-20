@@ -288,7 +288,10 @@ fun DoctorItemCard(
 
             Spacer(modifier = Modifier.height(16.sdp()))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.specialisation),
                     contentDescription = null,
@@ -310,13 +313,17 @@ fun DoctorItemCard(
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontSize = 11.ssp(),
                         color = Color.Black.copy(alpha = 0.7f)
-                    )
+                    ),
+                    modifier = Modifier.weight(1f)
                 )
             }
 
             Spacer(modifier = Modifier.height(8.sdp()))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.clock),
                     contentDescription = null,
@@ -338,7 +345,8 @@ fun DoctorItemCard(
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontSize = 11.ssp(),
                         color = Color.Black.copy(alpha = 0.7f)
-                    )
+                    ),
+                    modifier = Modifier.weight(1f)
                 )
             }
 

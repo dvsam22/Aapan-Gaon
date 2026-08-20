@@ -474,63 +474,14 @@ fun BannerCarousel(banners: List<BannerModel>) {
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 border = BorderStroke(1.sdp(), Color(0x1A000000))
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    AsyncImage(
-                        model = banner.imageUrl,
-                        contentDescription = banner.title,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop,
-                        placeholder = painterResource(id = R.drawable.iv_dummy_banner),
-                        error = painterResource(id = R.drawable.iv_dummy_banner)
-                    )
-
-                    // Overlay for content if needed
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
-                                    colors = listOf(
-                                        Color.White.copy(alpha = 0.9f),
-                                        Color.White.copy(alpha = 0.4f),
-                                        Color.Transparent
-                                    )
-                                )
-                            )
-                            .padding(16.sdp()),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        if (banner.title.isNotEmpty()) {
-                            Text(
-                                text = banner.title,
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 14.ssp()
-                                ),
-                                color = Color.Black,
-                                modifier = Modifier.fillMaxWidth(0.6f)
-                            )
-                        }
-
-                        if (banner.discountText.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(8.sdp()))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = stringResource(id = R.string.discount_label),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.Black
-                                )
-                                Text(
-                                    text = banner.discountText,
-                                    style = MaterialTheme.typography.titleLarge.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFFF59E0B)
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
+                AsyncImage(
+                    model = banner.imageUrl,
+                    contentDescription = banner.title,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    placeholder = painterResource(id = R.drawable.iv_dummy_banner),
+                    error = painterResource(id = R.drawable.iv_dummy_banner)
+                )
             }
         }
 
