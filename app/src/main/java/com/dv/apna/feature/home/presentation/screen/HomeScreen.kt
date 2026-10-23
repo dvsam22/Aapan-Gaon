@@ -583,12 +583,12 @@ fun BannerCarousel(
                                     horizontalArrangement = Arrangement.spacedBy(3.sdp())
                                 ) {
                                     val actionText = when (banner.link.lowercase().trim()) {
-                                        "today_market", "mandi" -> "भाव देखें"
-                                        "news", "samachar" -> "खबरें पढ़ें"
-                                        "add_business", "register_shop", "business" -> "फ्री जोड़ें"
-                                        "local_buyers", "buyers" -> "खरीदार देखें"
-                                        "health", "emergency" -> "हेल्पलाइन"
-                                        else -> "देखें"
+                                        "today_market", "mandi" -> stringResource(id = R.string.action_view_rates)
+                                        "news", "samachar" -> stringResource(id = R.string.action_read_news)
+                                        "add_business", "register_shop", "business" -> stringResource(id = R.string.action_add_free)
+                                        "local_buyers", "buyers" -> stringResource(id = R.string.action_view_buyers)
+                                        "health", "emergency" -> stringResource(id = R.string.action_helpline)
+                                        else -> stringResource(id = R.string.action_view)
                                     }
                                     Text(
                                         text = actionText,

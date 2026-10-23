@@ -4,7 +4,7 @@ import androidx.annotation.Keep
 
 @Keep
 data class BannerDto(
-    val discountText: String? = null,
+    val discountText: Any? = null,
     val id: String? = null,
     val imageUrl: String? = null,
     val link: String? = null,

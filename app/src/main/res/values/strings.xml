@@ -171,4 +171,10 @@
     <string name="error_mobile_invalid">Please enter a valid 10-digit mobile number</string>
     <string name="error_address_empty">Please enter your village or address</string>
     <string name="free_badge">FREE</string>
+    <string name="action_view_rates">View Rates</string>
+    <string name="action_read_news">Read News</string>
+    <string name="action_add_free">Add Free</string>
+    <string name="action_view_buyers">View Buyers</string>
+    <string name="action_helpline">Helpline</string>
+    <string name="action_view">View</string>
 </resources>

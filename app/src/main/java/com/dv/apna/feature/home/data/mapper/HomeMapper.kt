@@ -36,7 +36,7 @@ fun BannerDto.toDomain(languageCode: String): BannerModel {
         id = id ?: "",
         imageUrl = imageUrl ?: "",
         title = title.toLocalizedSafeString(languageCode),
-        discountText = discountText ?: "",
+        discountText = discountText.toLocalizedSafeString(languageCode),
         link = link ?: "",
         villageId = villageId ?: "",
         drawableRes = matchedDrawable

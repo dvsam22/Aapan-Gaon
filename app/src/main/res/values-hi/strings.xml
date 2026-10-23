@@ -171,4 +171,10 @@
     <string name="error_address_empty">कृपया अपना गांव या पता दर्ज करें</string>
     <string name="free_badge">मुफ़्त</string>
     <string name="read_full_story">पूरी खबर वेब पर पढ़ें</string>
+    <string name="action_view_rates">भाव देखें</string>
+    <string name="action_read_news">खबरें पढ़ें</string>
+    <string name="action_add_free">फ्री जोड़ें</string>
+    <string name="action_view_buyers">खरीदार देखें</string>
+    <string name="action_helpline">हेल्पलाइन</string>
+    <string name="action_view">देखें</string>
 </resources>
