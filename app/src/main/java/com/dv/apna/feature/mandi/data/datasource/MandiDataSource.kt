@@ -11,16 +11,45 @@ class MandiDataSource @Inject constructor(
 ) : FirestoreDataSource(firestore) {
 
     suspend fun getMandiData(villageId: String, categoryId: String): List<MandiDto> {
-        return try {
+        val villageData = try {
             getCollection("villages")
                 .document(villageId)
                 .collection("mandi")
                 .whereEqualTo("categoryId", categoryId)
                 .get()
                 .await()
-                .toObjects(MandiDto::class.java)
+                .documents.mapNotNull { doc ->
+                    doc.toObject(MandiDto::class.java)?.copy(id = doc.id)
+                }
         } catch (e: Exception) {
             emptyList()
         }
+
+        val centralData = try {
+            getCollection("mandi")
+                .whereEqualTo("categoryId", categoryId)
+                .get()
+                .await()
+                .documents.mapNotNull { doc ->
+                    doc.toObject(MandiDto::class.java)?.copy(id = doc.id)
+                }
+        } catch (e: Exception) {
+            emptyList()
+        }
+
+        // Merge village-level custom entries with central daily mandi entries
+        val combinedMap = linkedMapOf<String, MandiDto>()
+        villageData.forEach { item ->
+            val id = item.id.ifBlank { null } ?: return@forEach
+            combinedMap[id] = item
+        }
+        centralData.forEach { item ->
+            val id = item.id.ifBlank { null } ?: return@forEach
+            if (!combinedMap.containsKey(id)) {
+                combinedMap[id] = item
+            }
+        }
+
+        return combinedMap.values.sortedByDescending { it.date }
     }
 }

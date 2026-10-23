@@ -7,23 +7,29 @@ import com.dv.apna.feature.mandi.domain.model.LocalBuyerModel
 import com.dv.apna.feature.mandi.domain.model.MarketPriceModel
 
 fun MandiDto.toCropPriceModel(languageCode: String): CropPriceModel {
+    val baseName = cropName.toLocalizedSafeString(languageCode)
+    val marketStr = market.toLocalizedSafeString(languageCode)
+    val displayName = if (marketStr.isNotBlank()) "$baseName • $marketStr" else baseName
     return CropPriceModel(
         id = id,
-        name = cropName.toLocalizedSafeString(languageCode),
-        unit = unit.toLocalizedSafeString(languageCode),
+        name = displayName,
+        unit = unit.toLocalizedSafeString(languageCode).ifBlank { "1 Quintal" },
         price = price,
-        trend = trend.toLocalizedSafeString(languageCode),
+        trend = trend.toLocalizedSafeString(languageCode).ifBlank { "stable" },
         date = date
     )
 }
 
 fun MandiDto.toMarketPriceModel(languageCode: String): MarketPriceModel {
+    val baseName = cropName.toLocalizedSafeString(languageCode)
+    val marketStr = market.toLocalizedSafeString(languageCode)
+    val displayName = if (marketStr.isNotBlank()) "$baseName • $marketStr" else baseName
     return MarketPriceModel(
         id = id,
-        name = cropName.toLocalizedSafeString(languageCode),
-        unit = unit.toLocalizedSafeString(languageCode),
+        name = displayName,
+        unit = unit.toLocalizedSafeString(languageCode).ifBlank { "1 Quintal" },
         price = price,
-        trend = trend.toLocalizedSafeString(languageCode),
+        trend = trend.toLocalizedSafeString(languageCode).ifBlank { "stable" },
         date = date
     )
 }

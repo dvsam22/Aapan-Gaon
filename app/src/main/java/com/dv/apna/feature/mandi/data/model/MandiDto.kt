@@ -16,5 +16,6 @@ data class MandiDto(
     val price: Double = 0.0,
     val trend: Any? = null,
     val unit: Any? = null,
-    val villageId: String = ""
+    val villageId: String = "",
+    val market: Any? = null
 )
