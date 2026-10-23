@@ -89,6 +89,28 @@ fun LocalNewsScreen(
         }
     }
 
+    val todayStr = stringResource(id = R.string.today)
+    val yesterdayStr = stringResource(id = R.string.yesterday)
+
+    val groupedNews = remember(filteredNews, todayStr, yesterdayStr) {
+        val now = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("dd MMM, yyyy", Locale.getDefault())
+
+        filteredNews.groupBy { news ->
+            if (news.date <= 0L) return@groupBy todayStr
+            val itemCal = Calendar.getInstance().apply { timeInMillis = news.date }
+            val isSameYear = now.get(Calendar.YEAR) == itemCal.get(Calendar.YEAR)
+            val isToday = isSameYear && now.get(Calendar.DAY_OF_YEAR) == itemCal.get(Calendar.DAY_OF_YEAR)
+            val isYesterday = isSameYear && (now.get(Calendar.DAY_OF_YEAR) - itemCal.get(Calendar.DAY_OF_YEAR) == 1)
+
+            when {
+                isToday -> todayStr
+                isYesterday -> yesterdayStr
+                else -> dateFormat.format(Date(news.date))
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -138,16 +160,29 @@ fun LocalNewsScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(bottom = 80.sdp())
                 ) {
-                    // Breaking News Section
+                    // Grouped News Section with Date Headers (Today, Yesterday, Date)
                     if (filteredNews.isNotEmpty()) {
-                        itemsIndexed(
-                            items = filteredNews,
-                            key = { index, news -> if (news.id.isNotBlank()) news.id else "${news.title}_$index" }
-                        ) { index, news ->
-                            NewsItemCard(
-                                news = news,
-                                onClick = { onEvent(NewsEvent.NewsClick(news.id)) }
-                            )
+                        groupedNews.forEach { (dateHeader, newsList) ->
+                            item(key = "header_$dateHeader") {
+                                Text(
+                                    text = dateHeader,
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 12.ssp()
+                                    ),
+                                    color = Color.Black,
+                                    modifier = Modifier.padding(start = 16.sdp(), end = 16.sdp(), top = 12.sdp(), bottom = 4.sdp())
+                                )
+                            }
+                            itemsIndexed(
+                                items = newsList,
+                                key = { index, news -> if (news.id.isNotBlank()) news.id else "${news.title}_$index" }
+                            ) { index, news ->
+                                NewsItemCard(
+                                    news = news,
+                                    onClick = { onEvent(NewsEvent.NewsClick(news.id)) }
+                                )
+                            }
                         }
                     }
 
@@ -271,14 +306,11 @@ fun NewsItemCard(
 
                 Spacer(modifier = Modifier.height(8.sdp()))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(id = R.drawable.clock),
                         contentDescription = null,
-                        modifier = Modifier.size(13.sdp()),
+                        modifier = Modifier.size(14.sdp()),
                         tint = Color(0xFF2CA074)
                     )
                     Spacer(modifier = Modifier.width(4.sdp()))
@@ -287,16 +319,15 @@ fun NewsItemCard(
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontSize = 10.ssp(),
                             color = Color.Gray
-                        ),
-                        maxLines = 1
+                        )
                     )
                     if (news.source.isNotBlank()) {
-                        Spacer(modifier = Modifier.width(6.sdp()))
+                        Spacer(modifier = Modifier.width(8.sdp()))
                         Text(
                             text = "•  ${news.source}",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontSize = 10.ssp(),
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Medium,
                                 color = Color(0xFF2CA074)
                             ),
                             maxLines = 1,
@@ -393,24 +424,10 @@ fun NoticeItemCard(
     }
 }
 
-@Composable
 fun formatDate(timestamp: Long): String {
     if (timestamp == 0L) return ""
-    val now = Calendar.getInstance()
-    val itemCal = Calendar.getInstance().apply { timeInMillis = timestamp }
-
-    val isSameYear = now.get(Calendar.YEAR) == itemCal.get(Calendar.YEAR)
-    val isToday = isSameYear && now.get(Calendar.DAY_OF_YEAR) == itemCal.get(Calendar.DAY_OF_YEAR)
-    val isYesterday = isSameYear && (now.get(Calendar.DAY_OF_YEAR) - itemCal.get(Calendar.DAY_OF_YEAR) == 1)
-
-    val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
-    val timeStr = timeFormat.format(Date(timestamp))
-
-    return when {
-        isToday -> "${stringResource(id = R.string.today)}, $timeStr"
-        isYesterday -> "${stringResource(id = R.string.yesterday)}, $timeStr"
-        else -> SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(Date(timestamp))
-    }
+    val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+    return sdf.format(Date(timestamp))
 }
 
 @Preview(showBackground = true)
