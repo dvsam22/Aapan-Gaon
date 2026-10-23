@@ -257,7 +257,36 @@ fun RootNavGraph(
                     }
                 },
                 onNavigateToPrivacyPolicy = { navController.navigate(Route.PrivacyPolicy) },
-                onNavigateToTerms = { navController.navigate(Route.TermsAndConditions) }
+                onNavigateToTerms = { navController.navigate(Route.TermsAndConditions) },
+                onBannerClick = { banner ->
+                    when (banner.link.lowercase().trim()) {
+                        "today_market", "mandi", "market" -> {
+                            navController.navigate(Route.TodayMarket)
+                        }
+                        "news", "samachar" -> {
+                            navController.navigate(Route.News)
+                        }
+                        "add_business", "register_shop", "business" -> {
+                            navController.navigate(Route.AddBusiness)
+                        }
+                        "local_buyers", "buyers", "kisan_market" -> {
+                            navController.navigate(Route.LocalBuyers)
+                        }
+                        "health", "emergency", "ambulance", "police" -> {
+                            navController.navigate(Route.Health)
+                        }
+                        else -> {
+                            if (banner.link.startsWith("http://") || banner.link.startsWith("https://")) {
+                                try {
+                                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(banner.link))
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    // ignore
+                                }
+                            }
+                        }
+                    }
+                }
             )
         }
 

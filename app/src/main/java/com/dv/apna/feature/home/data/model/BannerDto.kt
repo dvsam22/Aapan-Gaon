@@ -9,5 +9,6 @@ data class BannerDto(
     val imageUrl: String? = null,
     val link: String? = null,
     val title: Any? = null,
-    val villageId: String? = null
+    val villageId: String? = null,
+    val order: Int? = null
 )

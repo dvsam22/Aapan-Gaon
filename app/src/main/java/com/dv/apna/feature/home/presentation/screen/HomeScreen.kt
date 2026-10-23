@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
@@ -71,6 +72,7 @@ fun HomeScreen(
     onNavigateToAboutUs: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
     onNavigateToTerms: () -> Unit,
+    onBannerClick: (BannerModel) -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -170,7 +172,8 @@ fun HomeScreen(
                         onMandiClick = onNavigateToMandi,
                         onNewsClick = onNavigateToNews,
                         onHealthClick = onNavigateToHealth,
-                        onFamilyFunctionClick = onNavigateToFamilyFunction
+                        onFamilyFunctionClick = onNavigateToFamilyFunction,
+                        onBannerClick = onBannerClick
                     )
                 }
             }
@@ -417,7 +420,8 @@ fun HomeContent(
     onMandiClick: () -> Unit,
     onNewsClick: () -> Unit,
     onHealthClick: () -> Unit,
-    onFamilyFunctionClick: () -> Unit
+    onFamilyFunctionClick: () -> Unit,
+    onBannerClick: (BannerModel) -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -427,7 +431,10 @@ fun HomeContent(
             if (isLoading) {
                 BannerSkeleton()
             } else {
-                BannerCarousel(banners = banners)
+                BannerCarousel(
+                    banners = banners,
+                    onBannerClick = onBannerClick
+                )
             }
         }
 
@@ -457,7 +464,10 @@ fun HomeContent(
 }
 
 @Composable
-fun BannerCarousel(banners: List<BannerModel>) {
+fun BannerCarousel(
+    banners: List<BannerModel>,
+    onBannerClick: (BannerModel) -> Unit = {}
+) {
     if (banners.isEmpty()) return
 
     val realSize = banners.size
@@ -469,21 +479,38 @@ fun BannerCarousel(banners: List<BannerModel>) {
         pageCount = { pageCountValue }
     )
 
+    // Auto-scroll banners smoothly every 4 seconds
+    if (realSize > 1) {
+        LaunchedEffect(pagerState) {
+            while (true) {
+                kotlinx.coroutines.delay(4000)
+                try {
+                    pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                } catch (e: Exception) {
+                    break
+                }
+            }
+        }
+    }
+
     Column {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(130.sdp()),
+                .height(135.sdp()),
             contentPadding = PaddingValues(horizontal = 16.sdp()),
-            pageSpacing = 8.sdp()
+            pageSpacing = 10.sdp()
         ) { page ->
             val banner = banners[page % realSize]
             Card(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clickable { onBannerClick(banner) },
                 shape = RoundedCornerShape(12.sdp()),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
-                border = BorderStroke(1.sdp(), Color(0x1A000000))
+                border = BorderStroke(1.sdp(), Color(0x1A000000)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.sdp())
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     AsyncImage(
@@ -495,49 +522,101 @@ fun BannerCarousel(banners: List<BannerModel>) {
                         error = painterResource(id = R.drawable.iv_dummy_banner)
                     )
 
-                    // Overlay for content if needed
-                    Column(
+                    // Gradient overlay to guarantee high-contrast readability
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .background(
                                 brush = Brush.horizontalGradient(
                                     colors = listOf(
-                                        Color.White.copy(alpha = 0.9f),
-                                        Color.White.copy(alpha = 0.4f),
+                                        Color.White.copy(alpha = 0.96f),
+                                        Color.White.copy(alpha = 0.88f),
+                                        Color.White.copy(alpha = 0.35f),
                                         Color.Transparent
-                                    )
+                                    ),
+                                    startX = 0f,
+                                    endX = 750f
                                 )
                             )
-                            .padding(16.sdp()),
+                    )
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 14.sdp(), vertical = 12.sdp()),
                         verticalArrangement = Arrangement.Center
                     ) {
                         if (banner.title.isNotEmpty()) {
                             Text(
                                 text = banner.title,
-                                style = MaterialTheme.typography.bodyLarge.copy(
+                                style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.ssp()
                                 ),
-                                color = Color.Black,
-                                modifier = Modifier.fillMaxWidth(0.6f)
+                                color = Color(0xFF1E293B),
+                                modifier = Modifier.fillMaxWidth(0.68f),
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
 
                         if (banner.discountText.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(8.sdp()))
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = stringResource(id = R.string.discount_label),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = Color.Black
-                                )
+                            Spacer(modifier = Modifier.height(4.sdp()))
+                            Surface(
+                                shape = RoundedCornerShape(4.sdp()),
+                                color = Color(0xFFE8F5E9)
+                            ) {
                                 Text(
                                     text = banner.discountText,
-                                    style = MaterialTheme.typography.titleLarge.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFFF59E0B)
-                                    )
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 10.ssp(),
+                                        color = Color(0xFF1B5E20)
+                                    ),
+                                    modifier = Modifier.padding(horizontal = 6.sdp(), vertical = 2.sdp()),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
+                            }
+                        }
+
+                        // CTA action pill button
+                        if (banner.link.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(6.sdp()))
+                            Surface(
+                                shape = RoundedCornerShape(12.sdp()),
+                                color = Color(0xFF38C792)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 8.sdp(), vertical = 3.sdp()),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(3.sdp())
+                                ) {
+                                    val actionText = when (banner.link.lowercase().trim()) {
+                                        "today_market", "mandi" -> "भाव देखें"
+                                        "news", "samachar" -> "खबरें पढ़ें"
+                                        "add_business", "register_shop", "business" -> "फ्री जोड़ें"
+                                        "local_buyers", "buyers" -> "खरीदार देखें"
+                                        "health", "emergency" -> "हेल्पलाइन"
+                                        else -> "देखें"
+                                    }
+                                    Text(
+                                        text = actionText,
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 10.ssp(),
+                                            color = Color.White
+                                        )
+                                    )
+                                    Text(
+                                        text = "➔",
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 10.ssp(),
+                                            color = Color.White
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

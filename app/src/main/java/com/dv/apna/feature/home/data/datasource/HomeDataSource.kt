@@ -11,11 +11,32 @@ class HomeDataSource @Inject constructor(
 ) : FirestoreDataSource(firestore) {
     
     suspend fun getBanners(villageId: String): List<BannerDto> {
-        return getCollection("villages")
-            .document(villageId)
-            .collection("banners")
-            .get()
-            .await()
-            .toObjects(BannerDto::class.java)
+        val villageBanners = try {
+            getCollection("villages")
+                .document(villageId)
+                .collection("banners")
+                .get()
+                .await()
+                .toObjects(BannerDto::class.java)
+        } catch (e: Exception) {
+            emptyList()
+        }
+
+        val centralBanners = try {
+            getCollection("banners")
+                .get()
+                .await()
+                .toObjects(BannerDto::class.java)
+                .sortedBy { it.order ?: 99 }
+        } catch (e: Exception) {
+            emptyList()
+        }
+
+        // Village banners come first, followed by central banners
+        val combined = (villageBanners + centralBanners)
+            .filter { !it.imageUrl.isNullOrBlank() || it.title != null }
+            .distinctBy { it.id ?: (it.imageUrl ?: "") }
+
+        return combined
     }
 }
