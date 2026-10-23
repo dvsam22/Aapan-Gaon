@@ -50,6 +50,9 @@
     <!-- Mandi Hub -->
     <string name="crop_prices">Mandi Rates</string>
     <string name="today_market">Fresh Market Rates</string>
+    <string name="today_mandi_prices">Today Mandi Prices</string>
+    <string name="crop_or_item">Commodity / Crop</string>
+    <string name="rates_updated">Rate Updated</string>
     <string name="local_buyers">Crop &amp; Vegetable Buyers</string>
     <string name="crop">Crop</string>
     <string name="unit">Unit</string>

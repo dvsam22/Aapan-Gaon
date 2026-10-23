@@ -49,6 +49,10 @@ import com.dv.apna.core.theme.MintGradientEnd
 import com.dv.apna.core.theme.MintGradientMiddle
 import com.dv.apna.core.theme.MintGradientStart
 import kotlinx.coroutines.flow.emptyFlow
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun TodayMarketScreen(
@@ -113,7 +117,7 @@ fun TodayMarketScreen(
                     end.linkTo(parent.end)
                 }
         ) {
-            MandiTopBar(title = stringResource(id = R.string.today_market), onBackClick = { onEvent(MandiEvent.BackClick) })
+            MandiTopBar(title = stringResource(id = R.string.today_mandi_prices), onBackClick = { onEvent(MandiEvent.BackClick) })
             AapanGavSearchBar(
                 query = query,
                 onQueryChange = { searchQueryState.value = it }
@@ -126,10 +130,57 @@ fun TodayMarketScreen(
                     message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_records_found)
                 )
             } else {
+                val latestDate = filteredMarketPrices.maxOfOrNull { it.date } ?: 0L
+                val dateLabel = formatMandiDate(latestDate)
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.sdp(), vertical = 6.sdp()),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Surface(
+                        shape = RoundedCornerShape(8.sdp()),
+                        color = Color(0xFFEFFAF6),
+                        border = BorderStroke(1.sdp(), Color(0xFF2CA074).copy(alpha = 0.3f))
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.sdp(), vertical = 6.sdp()),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.sdp())
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.clock),
+                                contentDescription = null,
+                                modifier = Modifier.size(13.sdp()),
+                                tint = Color(0xFF2CA074)
+                            )
+                            Text(
+                                text = "${stringResource(id = R.string.rates_updated)}: $dateLabel",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 12.ssp()
+                                ),
+                                color = Color(0xFF2CA074)
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = stringResource(id = R.string.available, filteredMarketPrices.size),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontSize = 11.ssp(),
+                            fontWeight = FontWeight.Medium
+                        ),
+                        color = Color.Gray
+                    )
+                }
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.sdp(), vertical = 8.sdp()),
+                        .padding(horizontal = 16.sdp(), vertical = 4.sdp()),
                     shape = RoundedCornerShape(15.sdp()),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
                     border = BorderStroke(1.sdp(), Color(0xFF2CA074).copy(alpha = 0.3f))
@@ -143,7 +194,7 @@ fun TodayMarketScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = stringResource(id = R.string.vegetables),
+                                text = stringResource(id = R.string.crop_or_item),
                                 style = MaterialTheme.typography.bodyLarge.copy(
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.ssp()
@@ -244,6 +295,26 @@ fun TodayMarketScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun formatMandiDate(dateMs: Long): String {
+    if (dateMs <= 0L) return stringResource(id = R.string.today)
+    val now = Calendar.getInstance()
+    val itemCal = Calendar.getInstance().apply { timeInMillis = dateMs }
+
+    val isSameYear = now.get(Calendar.YEAR) == itemCal.get(Calendar.YEAR)
+    val isToday = isSameYear && now.get(Calendar.DAY_OF_YEAR) == itemCal.get(Calendar.DAY_OF_YEAR)
+    val isYesterday = isSameYear && (now.get(Calendar.DAY_OF_YEAR) - itemCal.get(Calendar.DAY_OF_YEAR) == 1)
+
+    val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    val formattedDateStr = dateFormat.format(Date(dateMs))
+
+    return when {
+        isToday -> "${stringResource(id = R.string.today)} ($formattedDateStr)"
+        isYesterday -> "${stringResource(id = R.string.yesterday)} ($formattedDateStr)"
+        else -> formattedDateStr
     }
 }
 

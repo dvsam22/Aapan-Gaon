@@ -50,6 +50,9 @@
     <!-- Mandi Hub -->
     <string name="crop_prices">मंडी भाव</string>
     <string name="today_market">ताज़ा बाजार भाव</string>
+    <string name="today_mandi_prices">ताज़ा मंडी भाव</string>
+    <string name="crop_or_item">फसल / सब्जी</string>
+    <string name="rates_updated">भाव अपडेट</string>
     <string name="local_buyers">फसल व सब्जी खरीदार</string>
     <string name="crop">फसल</string>
     <string name="unit">इकाई</string>

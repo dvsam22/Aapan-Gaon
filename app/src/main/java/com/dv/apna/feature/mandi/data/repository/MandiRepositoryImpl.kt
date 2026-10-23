@@ -36,7 +36,7 @@ class MandiRepositoryImpl @Inject constructor(
         emit(Resource.Loading())
         try {
             val languageCode = preferenceManager.languageCode.firstOrNull() ?: "en"
-            val data = dataSource.getMandiData(villageId, "market")
+            val data = dataSource.getAllMandiPrices(villageId)
                 .map { it.toMarketPriceModel(languageCode) }
             emit(Resource.Success(data))
         } catch (e: Exception) {

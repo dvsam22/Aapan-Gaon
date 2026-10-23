@@ -52,4 +52,47 @@ class MandiDataSource @Inject constructor(
 
         return combinedMap.values.sortedByDescending { it.date }
     }
+
+    suspend fun getAllMandiPrices(villageId: String): List<MandiDto> {
+        val villageData = try {
+            getCollection("villages")
+                .document(villageId)
+                .collection("mandi")
+                .get()
+                .await()
+                .documents.mapNotNull { doc ->
+                    doc.toObject(MandiDto::class.java)?.copy(id = doc.id)
+                }
+        } catch (e: Exception) {
+            emptyList()
+        }
+
+        val centralData = try {
+            getCollection("mandi")
+                .get()
+                .await()
+                .documents.mapNotNull { doc ->
+                    doc.toObject(MandiDto::class.java)?.copy(id = doc.id)
+                }
+        } catch (e: Exception) {
+            emptyList()
+        }
+
+        // Merge village and central items, exclude buyers, deduplicate by commodity and market
+        val combinedMap = linkedMapOf<String, MandiDto>()
+        villageData.forEach { item ->
+            if (item.categoryId == "buyers") return@forEach
+            val key = "${item.cropName}_${item.market}".ifBlank { item.id }
+            combinedMap[key] = item
+        }
+        centralData.forEach { item ->
+            if (item.categoryId == "buyers") return@forEach
+            val key = "${item.cropName}_${item.market}".ifBlank { item.id }
+            if (!combinedMap.containsKey(key)) {
+                combinedMap[key] = item
+            }
+        }
+
+        return combinedMap.values.sortedByDescending { it.date }
+    }
 }

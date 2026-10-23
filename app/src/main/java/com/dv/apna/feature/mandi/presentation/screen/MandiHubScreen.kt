@@ -122,14 +122,7 @@ fun MandiHubScreen(
             ) {
                 item {
                     MandiOptionCard(
-                        title = stringResource(id = R.string.crop_prices),
-                        icon = painterResource(id = R.drawable.crops),
-                        onClick = { onEvent(MandiEvent.CropPricesClick) }
-                    )
-                }
-                item {
-                    MandiOptionCard(
-                        title = stringResource(id = R.string.today_market),
+                        title = stringResource(id = R.string.today_mandi_prices),
                         icon = painterResource(id = R.drawable.market),
                         onClick = { onEvent(MandiEvent.TodayMarketClick) }
                     )
