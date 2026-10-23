@@ -498,7 +498,7 @@ fun BannerCarousel(
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(135.sdp()),
+                .height(138.sdp()),
             contentPadding = PaddingValues(horizontal = 16.sdp()),
             pageSpacing = 10.sdp()
         ) { page ->
@@ -543,7 +543,7 @@ fun BannerCarousel(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 14.sdp(), vertical = 12.sdp()),
+                            .padding(start = 14.sdp(), end = 14.sdp(), top = 8.sdp(), bottom = 8.sdp()),
                         verticalArrangement = Arrangement.Center
                     ) {
                         if (banner.title.isNotEmpty()) {
@@ -551,17 +551,18 @@ fun BannerCarousel(
                                 text = banner.title,
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Bold,
-                                    fontSize = 14.ssp()
+                                    fontSize = 13.ssp(),
+                                    lineHeight = 17.ssp()
                                 ),
                                 color = Color(0xFF1E293B),
-                                modifier = Modifier.fillMaxWidth(0.68f),
+                                modifier = Modifier.fillMaxWidth(0.64f),
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
 
                         if (banner.discountText.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(4.sdp()))
+                            Spacer(modifier = Modifier.height(3.sdp()))
                             Surface(
                                 shape = RoundedCornerShape(4.sdp()),
                                 color = Color(0xFFE8F5E9)
@@ -582,7 +583,7 @@ fun BannerCarousel(
 
                         // CTA action pill button
                         if (banner.link.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(6.sdp()))
+                            Spacer(modifier = Modifier.height(5.sdp()))
                             Surface(
                                 shape = RoundedCornerShape(12.sdp()),
                                 color = Color(0xFF38C792)
@@ -593,7 +594,7 @@ fun BannerCarousel(
                                     horizontalArrangement = Arrangement.spacedBy(3.sdp())
                                 ) {
                                     val actionText = when (banner.link.lowercase().trim()) {
-                                        "today_market", "mandi" -> "भाव देखें"
+                                        "today_market", "mandi" -> "रेट देखें"
                                         "news", "samachar" -> "खबरें पढ़ें"
                                         "add_business", "register_shop", "business" -> "फ्री जोड़ें"
                                         "local_buyers", "buyers" -> "खरीदार देखें"

@@ -39,8 +39,8 @@ class HomeRepositoryImpl @Inject constructor(
             BannerModel(
                 id = "def_mandi",
                 imageUrl = "",
-                title = if (isHi) "आज का ताज़ा मंडी भाव 🌾" else "Today's Live Mandi Rates 🌾",
-                discountText = if (isHi) "खलीलाबाद व नौगढ़ मंडी रेट देखें" else "Check live mandi rates",
+                title = if (isHi) "आज का मंडी रेट देखें 🌾" else "Today's Mandi Rates 🌾",
+                discountText = if (isHi) "खलीलाबाद व नौगढ़ मंडी" else "Khalilabad & Naugarh Mandi",
                 link = "today_market",
                 villageId = villageId,
                 drawableRes = R.drawable.banner_mandi_rates
@@ -48,8 +48,8 @@ class HomeRepositoryImpl @Inject constructor(
             BannerModel(
                 id = "def_news",
                 imageUrl = "",
-                title = if (isHi) "महराजगंज व क्षेत्र की बड़ी खबरें 📢" else "Maharajganj & Local News 📢",
-                discountText = if (isHi) "पल-पल के ताज़ा समाचार पढ़ें" else "Read local news updates",
+                title = if (isHi) "जिले की ताज़ा खबरें 📢" else "District Latest News 📢",
+                discountText = if (isHi) "महराजगंज व गांव के समाचार" else "Local Village & District News",
                 link = "news",
                 villageId = villageId,
                 drawableRes = R.drawable.banner_local_news
@@ -57,8 +57,8 @@ class HomeRepositoryImpl @Inject constructor(
             BannerModel(
                 id = "def_business",
                 imageUrl = "",
-                title = if (isHi) "अपनी दुकान या ट्रैक्टर मुफ्त जोड़ें 🏪" else "Register Shop or Vehicle Free 🏪",
-                discountText = if (isHi) "अपने गांव में नए ग्राहक पाएं" else "Reach more local customers",
+                title = if (isHi) "दुकान व ट्रैक्टर जोड़ें 🏪" else "Add Shop or Tractor 🏪",
+                discountText = if (isHi) "अपने गांव में ग्राहक पाएं" else "Reach local customers",
                 link = "add_business",
                 villageId = villageId,
                 drawableRes = R.drawable.banner_register_business
@@ -66,8 +66,8 @@ class HomeRepositoryImpl @Inject constructor(
             BannerModel(
                 id = "def_buyers",
                 imageUrl = "",
-                title = if (isHi) "फसल व सब्जियां सीधे बेचें 🌱" else "Sell Crops & Veggies Directly 🌱",
-                discountText = if (isHi) "बिना बिचौलिए खरीदार खोजें" else "Connect with buyers directly",
+                title = if (isHi) "फसल व सब्जियां बेचें 🌱" else "Sell Crops & Veggies 🌱",
+                discountText = if (isHi) "सीधे खरीदारों से जुड़ें" else "Connect with verified buyers",
                 link = "local_buyers",
                 villageId = villageId,
                 drawableRes = R.drawable.banner_fresh_produce
@@ -75,8 +75,8 @@ class HomeRepositoryImpl @Inject constructor(
             BannerModel(
                 id = "def_emergency",
                 imageUrl = "",
-                title = if (isHi) "आपातकालीन सेवाएं व हेल्पलाइन 🚨" else "Emergency Helpline & Doctors 🚨",
-                discountText = if (isHi) "एम्बुलेंस, पुलिस व डॉक्टर" else "Ambulance, police & doctors",
+                title = if (isHi) "आपातकालीन हेल्पलाइन 🚨" else "Emergency Helpline 🚨",
+                discountText = if (isHi) "एम्बुलेंस, पुलिस व डॉक्टर" else "Ambulance, Police & Hospital",
                 link = "health",
                 villageId = villageId,
                 drawableRes = R.drawable.banner_emergency_health
