@@ -2,16 +2,16 @@ package com.dv.apna.feature.news.presentation.screen
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,10 +24,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
 import com.dv.apna.R
+import com.dv.apna.core.components.AapanGavButton
 import com.dv.apna.core.components.NewsDetailsSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.theme.MintGradientEnd
@@ -119,14 +121,23 @@ fun NewsDetailsScreen(
                             ),
                             color = Color.Gray
                         )
-                        if (news.source.isNotBlank()) {
+                    }
+
+                    if (news.source.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(6.sdp()))
+                        Surface(
+                            shape = RoundedCornerShape(6.sdp()),
+                            color = Color(0xFFEFFAF6),
+                            border = BorderStroke(1.sdp(), Color(0xFF2CA074).copy(alpha = 0.3f))
+                        ) {
                             Text(
-                                text = "•  ${news.source}",
+                                text = news.source,
                                 style = MaterialTheme.typography.bodySmall.copy(
-                                    fontSize = 12.ssp(),
+                                    fontSize = 11.ssp(),
                                     fontWeight = FontWeight.SemiBold
                                 ),
-                                color = Color(0xFF2CA074)
+                                color = Color(0xFF2CA074),
+                                modifier = Modifier.padding(horizontal = 8.sdp(), vertical = 3.sdp())
                             )
                         }
                     }
@@ -159,7 +170,8 @@ fun NewsDetailsScreen(
                     if (news.url.isNotBlank()) {
                         Spacer(modifier = Modifier.height(24.sdp()))
                         val context = LocalContext.current
-                        Button(
+                        AapanGavButton(
+                            text = stringResource(id = R.string.read_full_story),
                             onClick = {
                                 try {
                                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(news.url))
@@ -167,22 +179,19 @@ fun NewsDetailsScreen(
                                 } catch (e: Exception) {
                                     e.printStackTrace()
                                 }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF2CA074),
-                                contentColor = Color.White
-                            ),
-                            shape = RoundedCornerShape(10.sdp()),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.sdp())
-                        ) {
+                            }
+                        )
+                        if (news.source.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(8.sdp()))
                             Text(
-                                text = stringResource(id = R.string.read_full_story),
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 14.ssp()
-                                )
+                                text = "स्रोत: ${news.source}",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 11.ssp(),
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                color = Color.Gray,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
