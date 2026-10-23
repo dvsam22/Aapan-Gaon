@@ -323,9 +323,13 @@ def sync_mandi_to_firestore(db, items, dry_run=False):
 
 def main():
     parser = argparse.ArgumentParser(description="Sync daily Mandi prices for Sant Kabir Nagar & Siddharth Nagar.")
-    parser.add_argument("--api-key", default=os.environ.get("DATA_GOV_API_KEY", DEFAULT_API_KEY), help="data.gov.in API Key")
+    env_key = os.environ.get("DATA_GOV_API_KEY", "").strip()
+    default_key = env_key if env_key else DEFAULT_API_KEY
+    parser.add_argument("--api-key", default=default_key, help="data.gov.in API Key")
     parser.add_argument("--dry-run", action="store_true", help="Run without writing to Firebase")
     args = parser.parse_args()
+
+    api_key = args.api_key.strip() if args.api_key and args.api_key.strip() else DEFAULT_API_KEY
 
     print("==========================================")
     print("   Apna Gaon - Daily Mandi Sync Service   ")
@@ -335,7 +339,7 @@ def main():
 
     all_records = []
     for dist in TARGET_DISTRICTS:
-        recs = fetch_district_mandi(args.api_key, dist)
+        recs = fetch_district_mandi(api_key, dist)
         all_records.extend(recs)
 
     if not all_records:
