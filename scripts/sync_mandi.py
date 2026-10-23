@@ -31,7 +31,7 @@ import ssl
 
 try:
     import firebase_admin
-    from firebase_admin import credentials, firestore
+    from firebase_admin import credentials, firestore, messaging
     FIREBASE_AVAILABLE = True
 except ImportError:
     FIREBASE_AVAILABLE = False
@@ -321,12 +321,58 @@ def sync_mandi_to_firestore(db, items, dry_run=False):
     return saved_count, deleted_count
 
 
+def send_mandi_notification(db, arrival_date_str: str, force: bool = False, dry_run: bool = False):
+    """Sends a push notification to FCM topic 'mandi' when fresh rates arrive."""
+    if not FIREBASE_AVAILABLE or dry_run:
+        print(f"[DRY-RUN/SKIP] Would send FCM Mandi notification for date: {arrival_date_str}")
+        return
+
+    meta_ref = db.collection("settings").document("mandi_sync_meta")
+
+    if not force:
+        try:
+            meta_doc = meta_ref.get()
+            if meta_doc.exists:
+                last_notified = meta_doc.to_dict().get("last_notified_date")
+                if last_notified == arrival_date_str:
+                    print(f"[INFO] Notification already sent today for arrival date '{arrival_date_str}'. Skipping duplicate.")
+                    return
+        except Exception as e:
+            print(f"[WARNING] Could not check mandi sync metadata: {e}")
+
+    try:
+        title = "🌾 आज का ताज़ा मंडी भाव अपडेट हो गया है!"
+        body = "खलीलाबाद व नौगढ़ मंडी के आलू, टमाटर, बैंगन, गोभी व फसलों के नए रेट देखने के लिए टैप करें।"
+
+        msg = messaging.Message(
+            notification=messaging.Notification(
+                title=title,
+                body=body
+            ),
+            data={
+                "id": "mandi",
+                "type": "mandi"
+            },
+            topic="mandi"
+        )
+        response = messaging.send(msg)
+        print(f"[INFO] FCM Mandi notification successfully sent to topic 'mandi': {response}")
+
+        meta_ref.set({
+            "last_notified_date": arrival_date_str,
+            "last_notification_sent_at": firestore.SERVER_TIMESTAMP
+        }, merge=True)
+    except Exception as e:
+        print(f"[ERROR] Failed to send FCM Mandi notification: {e}", file=sys.stderr)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Sync daily Mandi prices for Sant Kabir Nagar & Siddharth Nagar.")
     env_key = os.environ.get("DATA_GOV_API_KEY", "").strip()
     default_key = env_key if env_key else DEFAULT_API_KEY
     parser.add_argument("--api-key", default=default_key, help="data.gov.in API Key")
     parser.add_argument("--dry-run", action="store_true", help="Run without writing to Firebase")
+    parser.add_argument("--force-notify", action="store_true", help="Force send FCM notification even if already sent today")
     args = parser.parse_args()
 
     api_key = args.api_key.strip() if args.api_key and args.api_key.strip() else DEFAULT_API_KEY
@@ -353,6 +399,7 @@ def main():
         print("[INFO] Dry-run preview:")
         for it in processed_items[:10]:
             print(f"  [{it['categoryId']}] {it['cropName']['hi']} : ₹{it['price']} ({it['market']['en']})")
+        send_mandi_notification(None, "TODAY", force=args.force_notify, dry_run=True)
         return
 
     db = init_firebase()
@@ -362,6 +409,13 @@ def main():
 
     saved, deleted = sync_mandi_to_firestore(db, processed_items, dry_run=args.dry_run)
     print(f"[SUMMARY] Saved/Updated: {saved} | Expired deleted: {deleted}")
+
+    # Determine latest arrival date string (e.g. 23/10/2026)
+    arrival_dates = [rec.get("arrival_date", "").replace("\\", "").strip() for rec in all_records if rec.get("arrival_date")]
+    latest_arrival_date = arrival_dates[0] if arrival_dates else datetime.now(timezone.utc).strftime("%d/%m/%Y")
+
+    if saved > 0 or args.force_notify:
+        send_mandi_notification(db, latest_arrival_date, force=args.force_notify, dry_run=args.dry_run)
 
 
 if __name__ == "__main__":

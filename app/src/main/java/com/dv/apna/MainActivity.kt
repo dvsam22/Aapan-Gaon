@@ -124,6 +124,7 @@ class MainActivity : AppCompatActivity() {
                 when (type?.lowercase()) {
                     "news" -> nav.navigate(Route.NewsDetails(id))
                     "notice" -> nav.navigate(Route.NoticeDetails(id))
+                    "mandi" -> nav.navigate(Route.TodayMarket)
                     else -> nav.navigate(Route.NotificationDetails(id))
                 }
             }
@@ -139,6 +140,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun subscribeToSavedVillageTopic() {
         FirebaseMessaging.getInstance().subscribeToTopic("news")
+        FirebaseMessaging.getInstance().subscribeToTopic("mandi")
         lifecycleScope.launch {
             val villageId = preferenceManager.villageId.firstOrNull()
             if (villageId != null) {

@@ -156,6 +156,7 @@ fun RootNavGraph(
                     when (type?.lowercase()) {
                         "news" -> navController.navigate(Route.NewsDetails(id))
                         "notice" -> navController.navigate(Route.NoticeDetails(id))
+                        "mandi" -> navController.navigate(Route.TodayMarket)
                         else -> navController.navigate(Route.NotificationDetails(id))
                     }
                 }
