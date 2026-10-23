@@ -107,15 +107,11 @@
 -keep class * implements dagger.hilt.android.internal.builders.ViewWithFragmentComponentBuilder { *; }
 
 # ------------------------------------------------------------------------------
-# 5. Firebase (Firestore, Messaging, Crashlytics, RemoteConfig, Analytics)
+# 5. Firebase
 # ------------------------------------------------------------------------------
+# Firebase SDKs package their own consumer ProGuard rules in their AARs.
+# We keep -dontwarn to prevent build breakages on optional dependencies.
 -dontwarn com.google.firebase.**
--keep class com.google.firebase.** { *; }
--keep class com.google.firebase.firestore.** { *; }
--keep class com.google.firebase.remoteconfig.** { *; }
--keep class com.google.firebase.messaging.** { *; }
--keep class com.google.firebase.crashlytics.** { *; }
--keep class com.google.firebase.analytics.** { *; }
 
 # ------------------------------------------------------------------------------
 # 6. Google Mobile Ads (AdMob)
@@ -140,10 +136,9 @@
 # ------------------------------------------------------------------------------
 # 8. Jetpack Compose, Coil, Lottie, SDP/SSP
 # ------------------------------------------------------------------------------
--keep class androidx.compose.** { *; }
+# Compose and Coil ship their own consumer ProGuard rules.
+# Wildcard -keep on entire packages was forcing R8 to keep thousands of unused classes.
 -dontwarn androidx.compose.**
-
--keep class coil.** { *; }
 -dontwarn coil.**
 
 -keep class com.airbnb.lottie.** { *; }
