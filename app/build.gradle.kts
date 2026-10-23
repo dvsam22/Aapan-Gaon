@@ -42,7 +42,6 @@ android {
             manifestPlaceholders["admobAppId"] = "ca-app-pub-2632394200654942~7740616534"
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("debug")
             ndk {
                 debugSymbolLevel = "FULL"
             }
