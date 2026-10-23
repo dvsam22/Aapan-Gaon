@@ -61,7 +61,7 @@ class HomeRepositoryImpl @Inject constructor(
             ),
             BannerModel(
                 id = "def_buyers",
-                imageUrl = "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&auto=format&fit=crop",
+                imageUrl = "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800&auto=format&fit=crop",
                 title = if (isHi) "फसल व सब्जियां सीधे बेचें 🌱" else "Sell Crops & Veggies Directly 🌱",
                 discountText = if (isHi) "बिना बिचौलिए खरीदार खोजें" else "Connect with buyers directly",
                 link = "local_buyers",

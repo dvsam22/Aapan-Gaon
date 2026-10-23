@@ -15,9 +15,14 @@ fun HomeDto.toDomain(languageCode: String): HomeModel {
 }
 
 fun BannerDto.toDomain(languageCode: String): BannerModel {
+    val finalImageUrl = if (id == "banner_buyers" || link == "local_buyers" || link == "buyers" || (imageUrl?.contains("photo-1500937386664") == true)) {
+        "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800&auto=format&fit=crop"
+    } else {
+        imageUrl ?: ""
+    }
     return BannerModel(
         id = id ?: "",
-        imageUrl = imageUrl ?: "",
+        imageUrl = finalImageUrl,
         title = title.toLocalizedSafeString(languageCode),
         discountText = discountText ?: "",
         link = link ?: "",
