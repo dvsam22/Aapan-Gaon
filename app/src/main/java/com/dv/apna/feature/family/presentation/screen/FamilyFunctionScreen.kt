@@ -25,17 +25,23 @@ import com.dv.apna.R
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
 
 @Composable
 fun FamilyFunctionScreen(
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onNavigateToDetails: (String) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -107,7 +113,7 @@ fun FamilyFunctionScreen(
                     )
                 }
                 item {
-                    com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                    BannerAdView(remoteConfigManager = remoteConfigManager)
                 }
             }
         }
@@ -231,7 +237,7 @@ fun FamilyFunctionOptionCard(
 fun FamilyFunctionScreenPreview() {
     AapanGavTheme {
         FamilyFunctionScreen(
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {},
             onNavigateToDetails = {}
         )

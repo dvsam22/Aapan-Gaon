@@ -1,0 +1,33 @@
+name: Sync Local News to Firestore
+
+on:
+  schedule:
+    # Runs twice every day at 02:00 UTC (7:30 AM IST) and 14:00 UTC (7:30 PM IST)
+    - cron: '0 2,14 * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  sync-news:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install firebase-admin
+
+      - name: Run News Sync Script
+        env:
+          GNEWS_API_KEY: ${{ secrets.GNEWS_API_KEY }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NEWS_QUERY: "Maharajganj"
+        run: |
+          python scripts/sync_news.py

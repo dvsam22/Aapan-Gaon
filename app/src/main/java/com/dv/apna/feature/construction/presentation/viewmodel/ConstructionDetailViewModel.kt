@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.dv.apna.R
 
 @HiltViewModel
 class ConstructionDetailViewModel @Inject constructor(
@@ -57,7 +58,7 @@ class ConstructionDetailViewModel @Inject constructor(
         viewModelScope.launch {
             val villageId = preferenceManager.villageId.firstOrNull()
             if (villageId == null) {
-                _state.update { it.copy(error = UiText.StringResource(com.dv.apna.R.string.error_village_not_selected)) }
+                _state.update { it.copy(error = UiText.StringResource(R.string.error_village_not_selected)) }
                 return@launch
             }
 

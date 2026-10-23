@@ -35,6 +35,10 @@ import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
 import com.dv.apna.feature.notification.domain.model.NotificationModel
 import com.dv.apna.feature.notification.presentation.state.NotificationState
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
 
 @Composable
 fun NotificationDetailsScreen(
@@ -43,7 +47,7 @@ fun NotificationDetailsScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 

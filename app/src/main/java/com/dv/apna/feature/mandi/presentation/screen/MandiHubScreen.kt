@@ -48,13 +48,21 @@ import com.dv.apna.feature.mandi.presentation.event.MandiEvent
 import com.dv.apna.feature.mandi.presentation.state.MandiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.painter.Painter
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun MandiHubScreen(
     state: MandiState,
     onEvent: (MandiEvent) -> Unit,
     effect: Flow<MandiEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onNavigateToCropPrices: () -> Unit,
     onNavigateToTodayMarket: () -> Unit,
@@ -75,7 +83,7 @@ fun MandiHubScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -134,7 +142,7 @@ fun MandiHubScreen(
                     )
                 }
                 item {
-                    com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                    BannerAdView(remoteConfigManager = remoteConfigManager)
                 }
             }
         }
@@ -185,7 +193,7 @@ fun MandiTopBar(title: String, onBackClick: () -> Unit) {
 @Composable
 fun MandiOptionCard(
     title: String,
-    icon: androidx.compose.ui.graphics.painter.Painter,
+    icon: Painter,
     onClick: () -> Unit
 ) {
     Card(
@@ -260,8 +268,8 @@ fun MandiHubScreenPreview() {
         MandiHubScreen(
             state = MandiState(),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {},
             onNavigateToCropPrices = {},
             onNavigateToTodayMarket = {},

@@ -48,6 +48,11 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import kotlinx.coroutines.launch
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.BuildConfig
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
 @Composable
 fun HomeScreen(
     state: HomeState,
@@ -62,6 +67,7 @@ fun HomeScreen(
     onNavigateToFamilyFunction: () -> Unit,
     onNavigateToLanguage: () -> Unit,
     onNavigateToChangeVillage: () -> Unit,
+    onNavigateToAddBusiness: () -> Unit,
     onNavigateToAboutUs: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
     onNavigateToTerms: () -> Unit,
@@ -87,6 +93,7 @@ fun HomeScreen(
                         when (item) {
                             DrawerItem.Language -> onNavigateToLanguage()
                             DrawerItem.Village -> onNavigateToChangeVillage()
+                            DrawerItem.AddBusiness -> onNavigateToAddBusiness()
                             DrawerItem.AboutUs -> onNavigateToAboutUs()
                             DrawerItem.PrivacyPolicy -> onNavigateToPrivacyPolicy()
                             DrawerItem.Terms -> onNavigateToTerms()
@@ -102,7 +109,7 @@ fun HomeScreen(
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxSize()
-                .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+                .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
         ) {
             val (bottomImage, mainContent) = createRefs()
 
@@ -235,6 +242,10 @@ fun HomeDrawer(
             onClick = { onItemClick(DrawerItem.Village) }
         )
         DrawerMenuItem(
+            title = stringResource(id = R.string.add_business_service),
+            onClick = { onItemClick(DrawerItem.AddBusiness) }
+        )
+        DrawerMenuItem(
             title = stringResource(id = R.string.about_us),
             onClick = { onItemClick(DrawerItem.AboutUs) }
         )
@@ -258,7 +269,7 @@ fun HomeDrawer(
         Spacer(modifier = Modifier.weight(1f))
 
         Text(
-            text = stringResource(id = R.string.version_format, com.dv.apna.BuildConfig.VERSION_NAME),
+            text = stringResource(id = R.string.version_format, BuildConfig.VERSION_NAME),
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 12.ssp(),
                 color = Color(0xFF8391A1)
@@ -312,7 +323,7 @@ fun DrawerMenuItem(
 }
 
 enum class DrawerItem {
-    Language, Village, AboutUs, PrivacyPolicy, Terms, Share, RateUs
+    Language, Village, AddBusiness, AboutUs, PrivacyPolicy, Terms, Share, RateUs
 }
 
 @Composable
@@ -474,14 +485,63 @@ fun BannerCarousel(banners: List<BannerModel>) {
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 border = BorderStroke(1.sdp(), Color(0x1A000000))
             ) {
-                AsyncImage(
-                    model = banner.imageUrl,
-                    contentDescription = banner.title,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
-                    placeholder = painterResource(id = R.drawable.iv_dummy_banner),
-                    error = painterResource(id = R.drawable.iv_dummy_banner)
-                )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    AsyncImage(
+                        model = banner.imageUrl,
+                        contentDescription = banner.title,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        placeholder = painterResource(id = R.drawable.iv_dummy_banner),
+                        error = painterResource(id = R.drawable.iv_dummy_banner)
+                    )
+
+                    // Overlay for content if needed
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color.White.copy(alpha = 0.9f),
+                                        Color.White.copy(alpha = 0.4f),
+                                        Color.Transparent
+                                    )
+                                )
+                            )
+                            .padding(16.sdp()),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        if (banner.title.isNotEmpty()) {
+                            Text(
+                                text = banner.title,
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.ssp()
+                                ),
+                                color = Color.Black,
+                                modifier = Modifier.fillMaxWidth(0.6f)
+                            )
+                        }
+
+                        if (banner.discountText.isNotEmpty()) {
+                            Spacer(modifier = Modifier.height(8.sdp()))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = stringResource(id = R.string.discount_label),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color.Black
+                                )
+                                Text(
+                                    text = banner.discountText,
+                                    style = MaterialTheme.typography.titleLarge.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFFF59E0B)
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -669,6 +729,7 @@ fun HomeScreenPreview() {
             onNavigateToLanguage = {},
             onNavigateToChangeVillage = {},
             onNavigateToAboutUs = {},
+            onNavigateToAddBusiness = {},
             onNavigateToPrivacyPolicy = {},
             onNavigateToTerms = {}
         )

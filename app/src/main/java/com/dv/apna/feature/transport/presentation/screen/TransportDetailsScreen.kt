@@ -45,13 +45,23 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun TransportDetailsScreen(
     state: TransportState,
     onEvent: (TransportEvent) -> Unit,
     effect: Flow<TransportEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit
 ) {
     LaunchedEffect(Unit) {
@@ -66,7 +76,7 @@ fun TransportDetailsScreen(
         }
     }
 
-    var searchQuery by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
     val filteredTransportDetails = remember(state.transportDetails, searchQuery) {
         if (searchQuery.isBlank()) {
             state.transportDetails
@@ -80,29 +90,10 @@ fun TransportDetailsScreen(
         }
     }
 
-    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
-        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.TRANSPORT),
-        isEnabled = remoteConfigManager.isNativeAdsEnabled()
-    )
-
-    val adPositions = remember(filteredTransportDetails.size) {
-        val positions = mutableSetOf<Int>()
-        if (filteredTransportDetails.size > 3) {
-            var current = kotlin.random.Random.nextInt(4, 7)
-            while (current < filteredTransportDetails.size) {
-                positions.add(current)
-                current += kotlin.random.Random.nextInt(6, 11)
-            }
-        } else if (filteredTransportDetails.isNotEmpty()) {
-            positions.add(filteredTransportDetails.lastIndex)
-        }
-        positions
-    }
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -138,7 +129,7 @@ fun TransportDetailsScreen(
                 onBackClick = { onEvent(TransportEvent.BackClick) }
             )
 
-            com.dv.apna.core.components.AapanGavSearchBar(
+            AapanGavSearchBar(
                 query = searchQuery,
                 onQueryChange = { searchQuery = it }
             )
@@ -169,14 +160,9 @@ fun TransportDetailsScreen(
                                 transport = transport,
                                 onCallClick = { onEvent(TransportEvent.CallClick(transport.contact)) }
                             )
-
-                            if (nativeAd != null && index in adPositions) {
-                                Spacer(modifier = Modifier.height(12.sdp()))
-                                com.dv.apna.core.ads.NativeAdCard(nativeAd = nativeAd)
-                            }
                         }
                         item(key = "banner_ad_item") {
-                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                            BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -401,8 +387,8 @@ fun TransportDetailsScreenPreview() {
                 )
             ),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

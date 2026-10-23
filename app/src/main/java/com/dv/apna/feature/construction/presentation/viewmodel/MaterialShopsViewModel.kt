@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.dv.apna.feature.construction.domain.model.MaterialShopModel
 
 @HiltViewModel
 class MaterialShopsViewModel @Inject constructor(
@@ -45,7 +46,7 @@ class MaterialShopsViewModel @Inject constructor(
                     is Resource.Success<*> -> {
                         _state.update {
                             it.copy(
-                                shops = result.data as? List<com.dv.apna.feature.construction.domain.model.MaterialShopModel> ?: emptyList(),
+                                shops = result.data as? List<MaterialShopModel> ?: emptyList(),
                                 isLoading = false
                             )
                         }

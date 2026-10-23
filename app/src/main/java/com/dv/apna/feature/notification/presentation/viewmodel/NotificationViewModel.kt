@@ -15,6 +15,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.dv.apna.feature.notification.domain.model.NotificationModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -64,7 +65,7 @@ class NotificationViewModel @Inject constructor(
                     is Resource.Success<*> -> {
                         _state.update {
                             it.copy(
-                                notifications = result.data as? List<com.dv.apna.feature.notification.domain.model.NotificationModel>
+                                notifications = result.data as? List<NotificationModel>
                                     ?: emptyList(),
                                 isLoading = false
                             )

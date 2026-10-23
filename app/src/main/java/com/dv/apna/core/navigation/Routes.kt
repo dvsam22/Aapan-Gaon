@@ -116,4 +116,7 @@ sealed interface Route {
 
     @Serializable
     data object TermsAndConditions : Route
+
+    @Serializable
+    data object AddBusiness : Route
 }

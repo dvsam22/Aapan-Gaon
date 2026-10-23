@@ -1,6 +1,5 @@
 package com.dv.apna.core.navigation
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
@@ -18,7 +17,6 @@ import com.dv.apna.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.dv.apna.core.utils.dial
-import com.dv.apna.core.config.ServiceAdCategory
 import com.dv.apna.feature.home.presentation.screen.HomeScreen
 import com.dv.apna.feature.home.presentation.viewmodel.HomeViewModel
 import com.dv.apna.feature.mandi.presentation.screen.MandiHubScreen
@@ -72,11 +70,18 @@ import com.dv.apna.feature.family.presentation.screen.FamilyFunctionScreen
 import com.dv.apna.feature.family.presentation.screen.FamilyFunctionDetailsScreen
 import com.dv.apna.feature.family.presentation.viewmodel.FamilyFunctionViewModel
 import com.dv.apna.feature.family.presentation.effect.FamilyFunctionEffect
+import com.dv.apna.feature.business.presentation.screen.AddBusinessScreen
+import com.dv.apna.feature.business.presentation.viewmodel.AddBusinessViewModel
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.compose.runtime.remember
+import dagger.hilt.android.EntryPointAccessors
 
-private fun android.content.Context.findActivity(): android.app.Activity? {
+private fun Context.findActivity(): Activity? {
     var ctx = this
-    while (ctx is android.content.ContextWrapper) {
-        if (ctx is android.app.Activity) {
+    while (ctx is ContextWrapper) {
+        if (ctx is Activity) {
             return ctx
         }
         ctx = ctx.baseContext
@@ -90,9 +95,9 @@ fun RootNavGraph(
     startDestination: Route = Route.Splash()
 ) {
     val context = LocalContext.current
-    val activity = androidx.compose.runtime.remember(context) { context.findActivity() }
-    val entryPoint = androidx.compose.runtime.remember {
-        dagger.hilt.android.EntryPointAccessors.fromApplication(
+    val activity = remember(context) { context.findActivity() }
+    val entryPoint = remember {
+        EntryPointAccessors.fromApplication(
             context.applicationContext,
             NavGraphEntryPoint::class.java
         )
@@ -131,13 +136,6 @@ fun RootNavGraph(
         composable<Route.Splash> { backStackEntry ->
             val splashRoute: Route.Splash = backStackEntry.toRoute()
             val viewModel: SplashViewModel = hiltViewModel()
-            
-            // Sync the notification data from route to ViewModel
-            LaunchedEffect(splashRoute) {
-                if (splashRoute.notificationId != null) {
-                    Log.d("FCM_DEBUG", "Splash received route data: ${splashRoute.notificationId}")
-                }
-            }
 
             SplashScreen(
                 viewModel = viewModel,
@@ -231,7 +229,7 @@ fun RootNavGraph(
                 onNavigateToFamilyFunction = { navController.navigate(Route.FamilyFunction) },
                 onNavigateToLanguage = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.GENERAL) {
+                        adManager.showInterstitialAd(activity) {
                             navController.navigate(Route.ChangeLanguage)
                         }
                     } else {
@@ -240,7 +238,7 @@ fun RootNavGraph(
                 },
                 onNavigateToChangeVillage = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.GENERAL) {
+                        adManager.showInterstitialAd(activity) {
                             navController.navigate(Route.ChangeVillage)
                         }
                     } else {
@@ -248,6 +246,15 @@ fun RootNavGraph(
                     }
                 },
                 onNavigateToAboutUs = { navController.navigate(Route.AboutUs) },
+                onNavigateToAddBusiness = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity) {
+                            navController.navigate(Route.AddBusiness)
+                        }
+                    } else {
+                        navController.navigate(Route.AddBusiness)
+                    }
+                },
                 onNavigateToPrivacyPolicy = { navController.navigate(Route.PrivacyPolicy) },
                 onNavigateToTerms = { navController.navigate(Route.TermsAndConditions) }
             )
@@ -259,8 +266,8 @@ fun RootNavGraph(
             val state by viewModel.state.collectAsStateWithLifecycle()
             val context = LocalContext.current
 
-            androidx.compose.runtime.LaunchedEffect(Unit) {
-                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.HEALTH)
+            LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext)
             }
 
             HealthHubScreen(
@@ -271,35 +278,35 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToDoctors = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.HEALTH) { navController.navigate(Route.Doctors) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.Doctors) }
                     } else {
                         navController.navigate(Route.Doctors)
                     }
                 },
                 onNavigateToHospitals = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.HEALTH) { navController.navigate(Route.Hospitals) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.Hospitals) }
                     } else {
                         navController.navigate(Route.Hospitals)
                     }
                 },
                 onNavigateToPharmacy = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.HEALTH) { navController.navigate(Route.Pharmacy) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.Pharmacy) }
                     } else {
                         navController.navigate(Route.Pharmacy)
                     }
                 },
                 onNavigateToAmbulance = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.HEALTH) { navController.navigate(Route.Ambulance) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.Ambulance) }
                     } else {
                         navController.navigate(Route.Ambulance)
                     }
                 },
                 onNavigateToPolice = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.HEALTH) { navController.navigate(Route.Police) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.Police) }
                     } else {
                         navController.navigate(Route.Police)
                     }
@@ -383,8 +390,8 @@ fun RootNavGraph(
             val state by viewModel.state.collectAsStateWithLifecycle()
             val context = LocalContext.current
 
-            androidx.compose.runtime.LaunchedEffect(Unit) {
-                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.MANDI)
+            LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext)
             }
 
             MandiHubScreen(
@@ -395,21 +402,21 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToCropPrices = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.MANDI) { navController.navigate(Route.CropPrices) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.CropPrices) }
                     } else {
                         navController.navigate(Route.CropPrices)
                     }
                 },
                 onNavigateToTodayMarket = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.MANDI) { navController.navigate(Route.TodayMarket) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.TodayMarket) }
                     } else {
                         navController.navigate(Route.TodayMarket)
                     }
                 },
                 onNavigateToLocalBuyers = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.MANDI) { navController.navigate(Route.LocalBuyers) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.LocalBuyers) }
                     } else {
                         navController.navigate(Route.LocalBuyers)
                     }
@@ -458,6 +465,15 @@ fun RootNavGraph(
         composable<Route.TermsAndConditions> {
             TermsAndConditionsScreen(onNavigateBack = { navController.popBackStack() })
         }
+        composable<Route.AddBusiness> {
+            val viewModel: AddBusinessViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            AddBusinessScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
         composable<Route.Construction> {
             val viewModel: ConstructionViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
@@ -465,8 +481,8 @@ fun RootNavGraph(
             val linterTitle = stringResource(id = R.string.linter_machine)
             val shutteringTitle = stringResource(id = R.string.shuttering)
 
-            androidx.compose.runtime.LaunchedEffect(Unit) {
-                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.CONSTRUCTION)
+            LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext)
             }
 
             ConstructionHubScreen(
@@ -477,35 +493,35 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToBricks = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.CONSTRUCTION) { navController.navigate(Route.BricksSuppliers) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.BricksSuppliers) }
                     } else {
                         navController.navigate(Route.BricksSuppliers)
                     }
                 },
                 onNavigateToMaterialShops = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.CONSTRUCTION) { navController.navigate(Route.MaterialShops) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.MaterialShops) }
                     } else {
                         navController.navigate(Route.MaterialShops)
                     }
                 },
                 onNavigateToHardwareShops = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.CONSTRUCTION) { navController.navigate(Route.HardwareShops) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.HardwareShops) }
                     } else {
                         navController.navigate(Route.HardwareShops)
                     }
                 },
                 onNavigateToLinterMachine = { 
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.CONSTRUCTION) { navController.navigate(Route.ConstructionDetail("linter_machine", linterTitle)) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.ConstructionDetail("linter_machine", linterTitle)) }
                     } else {
                         navController.navigate(Route.ConstructionDetail("linter_machine", linterTitle)) 
                     }
                 },
                 onNavigateToShuttering = { 
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.CONSTRUCTION) { navController.navigate(Route.ConstructionDetail("shuttering", shutteringTitle)) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.ConstructionDetail("shuttering", shutteringTitle)) }
                     } else {
                         navController.navigate(Route.ConstructionDetail("shuttering", shutteringTitle)) 
                     }
@@ -573,8 +589,8 @@ fun RootNavGraph(
             val state by viewModel.state.collectAsStateWithLifecycle()
             val context = LocalContext.current
 
-            androidx.compose.runtime.LaunchedEffect(Unit) {
-                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.LABOUR)
+            LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext)
             }
 
             LabourBoardScreen(
@@ -585,7 +601,7 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToCategory = { category ->
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.LABOUR) { navController.navigate(Route.LabourDetails(category)) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.LabourDetails(category)) }
                     } else {
                         navController.navigate(Route.LabourDetails(category))
                     }
@@ -609,8 +625,8 @@ fun RootNavGraph(
             val state by viewModel.state.collectAsStateWithLifecycle()
             val context = LocalContext.current
 
-            androidx.compose.runtime.LaunchedEffect(Unit) {
-                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.TRANSPORT)
+            LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext)
             }
 
             TransportBoardScreen(
@@ -621,7 +637,7 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToCategory = { id, name ->
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.TRANSPORT) { navController.navigate(Route.TransportDetails(id, name)) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.TransportDetails(id, name)) }
                     } else {
                         navController.navigate(Route.TransportDetails(id, name))
                     }
@@ -634,7 +650,7 @@ fun RootNavGraph(
             val state by viewModel.state.collectAsStateWithLifecycle()
             val context = LocalContext.current
 
-            androidx.compose.runtime.LaunchedEffect(Unit) {
+            LaunchedEffect(Unit) {
                 viewModel.effect.collectLatest { effect ->
                     when (effect) {
                         is TransportEffect.DialPhone -> context.dial(effect.contact)
@@ -656,8 +672,8 @@ fun RootNavGraph(
             val state by viewModel.state.collectAsStateWithLifecycle()
             val context = LocalContext.current
 
-            androidx.compose.runtime.LaunchedEffect(Unit) {
-                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.NEWS)
+            LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext)
             }
 
             LocalNewsScreen(
@@ -722,8 +738,8 @@ fun RootNavGraph(
         composable<Route.FamilyFunction> {
             val context = LocalContext.current
 
-            androidx.compose.runtime.LaunchedEffect(Unit) {
-                adManager.preloadInterstitialAd(context.applicationContext, ServiceAdCategory.FAMILY)
+            LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext)
             }
 
             FamilyFunctionScreen(
@@ -731,7 +747,7 @@ fun RootNavGraph(
                 onNavigateBack = { navController.popBackStack() },
                 onNavigateToDetails = { categoryId ->
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity, ServiceAdCategory.FAMILY) { navController.navigate(Route.FamilyFunctionDetails(categoryId)) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.FamilyFunctionDetails(categoryId)) }
                     } else {
                         navController.navigate(Route.FamilyFunctionDetails(categoryId))
                     }
@@ -744,7 +760,7 @@ fun RootNavGraph(
             val state by viewModel.state.collectAsStateWithLifecycle()
             val context = LocalContext.current
 
-            androidx.compose.runtime.LaunchedEffect(Unit) {
+            LaunchedEffect(Unit) {
                 viewModel.effect.collectLatest { effect ->
                     when (effect) {
                         is FamilyFunctionEffect.DialPhone -> context.dial(effect.contact)

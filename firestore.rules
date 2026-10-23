@@ -2,6 +2,14 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
+    // Business registration submissions from public users; admin-only read/update/delete
+    match /business_registrations/{document=**} {
+      allow create: if request.resource.data.contactName is string &&
+                       request.resource.data.phoneNumber is string &&
+                       request.resource.data.category is string;
+      allow read, update, delete: if request.auth != null;
+    }
+    
     // Allow public READ access to villages directory so users can select village on language screen
     match /villages/{document=**} {
       allow read: if true;

@@ -28,18 +28,11 @@
       "description": "Enable or disable Interstitial Ads across navigation & call actions",
       "valueType": "BOOLEAN"
     },
-    "native_ads_enabled": {
-      "defaultValue": {
-        "value": "true"
-      },
-      "description": "Enable or disable In-Feed Native Ads across all category screens",
-      "valueType": "BOOLEAN"
-    },
     "ad_show_probability": {
       "defaultValue": {
         "value": "1.0"
       },
-      "description": "Probability threshold (0.0 to 1.0) for displaying ads",
+      "description": "Probability threshold (0.0 to 1.0) for displaying Interstitial Ads",
       "valueType": "NUMBER"
     }
   }

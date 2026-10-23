@@ -41,13 +41,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.platform.LocalContext
 import com.dv.apna.core.utils.dial
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun BricksSuppliersScreen(
     state: BricksState,
     onEvent: (BricksEvent) -> Unit,
     effect: Flow<BricksEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -62,7 +72,7 @@ fun BricksSuppliersScreen(
         }
     }
 
-    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val searchQueryState = rememberSaveable { mutableStateOf("") }
     val query = searchQueryState.value
     val filteredSuppliers = remember(state.suppliers, query) {
         if (query.isBlank()) {
@@ -77,34 +87,15 @@ fun BricksSuppliersScreen(
         }
     }
 
-    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
-        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.CONSTRUCTION),
-        isEnabled = remoteConfigManager.isNativeAdsEnabled()
-    )
-
-    val adPositions = remember(filteredSuppliers.size) {
-        val positions = mutableSetOf<Int>()
-        if (filteredSuppliers.size > 3) {
-            var current = kotlin.random.Random.nextInt(4, 7)
-            while (current < filteredSuppliers.size) {
-                positions.add(current)
-                current += kotlin.random.Random.nextInt(6, 11)
-            }
-        } else if (filteredSuppliers.isNotEmpty()) {
-            positions.add(filteredSuppliers.lastIndex)
-        }
-        positions
-    }
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                androidx.compose.ui.graphics.Brush.verticalGradient(
+                Brush.verticalGradient(
                     listOf(
-                        com.dv.apna.core.theme.MintGradientStart,
-                        com.dv.apna.core.theme.MintGradientMiddle,
-                        com.dv.apna.core.theme.MintGradientEnd
+                        MintGradientStart,
+                        MintGradientMiddle,
+                        MintGradientEnd
                     )
                 )
             )
@@ -141,7 +132,7 @@ fun BricksSuppliersScreen(
                 availableCount = filteredSuppliers.size
             )
 
-            com.dv.apna.core.components.AapanGavSearchBar(
+            AapanGavSearchBar(
                 query = query,
                 onQueryChange = { searchQueryState.value = it }
             )
@@ -167,17 +158,9 @@ fun BricksSuppliersScreen(
                                 supplier = supplier,
                                 onCallClick = { onEvent(BricksEvent.CallClick(supplier.phone)) }
                             )
-
-                            if (nativeAd != null && index in adPositions) {
-                                Spacer(modifier = Modifier.height(10.sdp()))
-                                com.dv.apna.core.ads.NativeAdCard(
-                                    nativeAd = nativeAd,
-                                    modifier = Modifier.padding(horizontal = 16.sdp())
-                                )
-                            }
                         }
                         item(key = "banner_ad_item") {
-                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                            BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -419,8 +402,8 @@ fun BricksSuppliersScreenPreview() {
         BricksSuppliersScreen(
             state = BricksState(),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

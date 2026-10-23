@@ -40,13 +40,23 @@ import com.dv.apna.feature.family.presentation.event.FamilyFunctionEvent
 import com.dv.apna.feature.family.presentation.state.FamilyFunctionState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun FamilyFunctionDetailsScreen(
     state: FamilyFunctionState,
     onEvent: (FamilyFunctionEvent) -> Unit,
     effect: Flow<FamilyFunctionEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit
 ) {
     LaunchedEffect(Unit) {
@@ -58,7 +68,7 @@ fun FamilyFunctionDetailsScreen(
         }
     }
 
-    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val searchQueryState = rememberSaveable { mutableStateOf("") }
     val query = searchQueryState.value
     val filteredFamilyFunctionDetails = remember(state.familyFunctionDetails, query) {
         if (query.isBlank()) {
@@ -74,29 +84,10 @@ fun FamilyFunctionDetailsScreen(
         }
     }
 
-    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
-        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.FAMILY),
-        isEnabled = remoteConfigManager.isNativeAdsEnabled()
-    )
-
-    val adPositions = remember(filteredFamilyFunctionDetails.size) {
-        val positions = mutableSetOf<Int>()
-        if (filteredFamilyFunctionDetails.size > 3) {
-            var current = kotlin.random.Random.nextInt(4, 7)
-            while (current < filteredFamilyFunctionDetails.size) {
-                positions.add(current)
-                current += kotlin.random.Random.nextInt(6, 11)
-            }
-        } else if (filteredFamilyFunctionDetails.isNotEmpty()) {
-            positions.add(filteredFamilyFunctionDetails.lastIndex)
-        }
-        positions
-    }
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -130,7 +121,7 @@ fun FamilyFunctionDetailsScreen(
                 availableCount = filteredFamilyFunctionDetails.size
             ) { onEvent(FamilyFunctionEvent.BackClick) }
 
-            com.dv.apna.core.components.AapanGavSearchBar(
+            AapanGavSearchBar(
                 query = query,
                 onQueryChange = { searchQueryState.value = it }
             )
@@ -161,14 +152,9 @@ fun FamilyFunctionDetailsScreen(
                                 provider = provider,
                                 onCallClick = { onEvent(FamilyFunctionEvent.CallClick(provider.contact)) }
                             )
-
-                            if (nativeAd != null && index in adPositions) {
-                                Spacer(modifier = Modifier.height(16.sdp()))
-                                com.dv.apna.core.ads.NativeAdCard(nativeAd = nativeAd)
-                            }
                         }
                         item(key = "banner_ad_item") {
-                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                            BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -429,8 +415,8 @@ fun FamilyFunctionDetailsScreenPreview() {
                 )
             ),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

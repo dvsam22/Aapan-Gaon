@@ -11,5 +11,7 @@ data class NewsDto(
     val id: String? = null,
     val image: String? = null,
     val title: Any? = null,
-    val villageId: String? = null
+    val villageId: String? = null,
+    val source: String? = null,
+    val url: String? = null
 )

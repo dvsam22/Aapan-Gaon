@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -31,6 +30,14 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import android.content.res.Configuration
 import java.util.Locale
+import android.content.ContextWrapper
+import android.content.Intent
+import android.content.res.AssetManager
+import android.content.res.Resources
+import androidx.navigation.NavHostController
+import com.dv.apna.core.ads.AppOpenAdManager
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.utils.InAppUpdateManager
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -39,21 +46,18 @@ class MainActivity : AppCompatActivity() {
     lateinit var preferenceManager: PreferenceManager
 
     @Inject
-    lateinit var appOpenAdManager: com.dv.apna.core.ads.AppOpenAdManager
+    lateinit var appOpenAdManager: AppOpenAdManager
 
     @Inject
-    lateinit var remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager
+    lateinit var remoteConfigManager: RemoteConfigManager
 
-    private lateinit var inAppUpdateManager: com.dv.apna.core.utils.InAppUpdateManager
+    private lateinit var inAppUpdateManager: InAppUpdateManager
 
-    private var navController: androidx.navigation.NavHostController? = null
+    private var navController: NavHostController? = null
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
-        if (isGranted) {
-            Log.d("MainActivity", "Notification permission granted")
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -64,14 +68,12 @@ class MainActivity : AppCompatActivity() {
         subscribeToSavedVillageTopic()
 
         // Check Google Play Store for App Updates & launch native bottom sheet
-        inAppUpdateManager = com.dv.apna.core.utils.InAppUpdateManager(this)
+        inAppUpdateManager = InAppUpdateManager(this)
         inAppUpdateManager.checkForUpdate()
 
         // Extract notification data from Intent Bundle
         val id = intent?.getStringExtra("id") ?: intent?.getStringExtra("notification_id")
         val type = intent?.getStringExtra("type") ?: intent?.getStringExtra("notification_type")
-        
-        Log.d("FCM_DEBUG", "MainActivity Intent data: id=$id, type=$type")
 
         setContent {
             val languageCodeState = preferenceManager.languageCode.collectAsState(initial = "en")
@@ -86,11 +88,11 @@ class MainActivity : AppCompatActivity() {
             }
             val localizedContext = remember(languageCode) {
                 val configContext = context.createConfigurationContext(config)
-                object : android.content.ContextWrapper(context) {
-                    override fun getResources(): android.content.res.Resources {
+                object : ContextWrapper(context) {
+                    override fun getResources(): Resources {
                         return configContext.resources
                     }
-                    override fun getAssets(): android.content.res.AssetManager {
+                    override fun getAssets(): AssetManager {
                         return configContext.assets
                     }
                 }
@@ -112,12 +114,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onNewIntent(intent: android.content.Intent) {
+    override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
         val id = intent.getStringExtra("id") ?: intent.getStringExtra("notification_id")
         val type = intent.getStringExtra("type") ?: intent.getStringExtra("notification_type")
-        Log.d("FCM_DEBUG", "onNewIntent received: id=$id, type=$type")
         if (!id.isNullOrBlank()) {
             navController?.let { nav ->
                 when (type?.lowercase()) {
@@ -137,6 +138,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun subscribeToSavedVillageTopic() {
+        FirebaseMessaging.getInstance().subscribeToTopic("news")
         lifecycleScope.launch {
             val villageId = preferenceManager.villageId.firstOrNull()
             if (villageId != null) {

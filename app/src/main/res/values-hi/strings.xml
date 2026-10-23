@@ -133,4 +133,39 @@
     <string name="marriage_halls_lawns">मैरिज हॉल व वाटिका</string>
     <string name="starting_price_label">शुरुआती कीमत:</string>
     <string name="no_service_providers">कोई बुकिंग/सुविधा नहीं मिली</string>
+
+    <!-- Search -->
+    <string name="search_placeholder">यहाँ खोजें...</string>
+    <string name="clear_search">सर्च हटाएं</string>
+    <string name="no_results_found">कोई परिणाम नहीं मिला</string>
+
+    <!-- Add Business / Service -->
+    <string name="add_business_service">अपनी दुकान / सेवा जोड़ें</string>
+    <string name="add_business_title">दुकान या सेवा का पंजीकरण</string>
+    <string name="add_business_subtitle">अपने गांव या इलाके में अपनी दुकान, वाहन या कारीगरी को मुफ्त में जोड़ें और ज्यादा ग्राहकों तक पहुंचें।</string>
+    <string name="full_name_label">आपका नाम</string>
+    <string name="full_name_placeholder">जैसे: रमेश कुमार</string>
+    <string name="business_name_label">दुकान / काम / सेवा का नाम</string>
+    <string name="business_name_placeholder">जैसे: शर्मा किराना स्टोर</string>
+    <string name="category_label">कैटेगरी चुनें</string>
+    <string name="select_category_placeholder">कैटेगरी का चयन करें</string>
+    <string name="mobile_number_label">मोबाइल नंबर</string>
+    <string name="mobile_number_placeholder">10 अंकों का मोबाइल नंबर</string>
+    <string name="address_label">गांव / कस्बा / पता</string>
+    <string name="address_placeholder">जैसे: ग्राम रामपुर, मुख्य चौराहे के पास</string>
+    <string name="description_label">अतिरिक्त विवरण / सामान (वैकल्पिक)</string>
+    <string name="description_placeholder">उपलब्ध सामान, समय, अनुभव आदि लिखें</string>
+    <string name="submit_business">विवरण सबमिट करें</string>
+    <string name="submitting">सबमिट हो रहा है...</string>
+    <string name="business_submit_success_title">आवेदन सफलतापूर्वक प्राप्त हुआ!</string>
+    <string name="business_submit_success_desc">धन्यवाद! आपका विवरण सुरक्षित हो गया है। हमारी टीम आपके नंबर को सत्यापित कर जल्द ही इसे ऐप में लाइव कर देगी।</string>
+    <string name="send_on_whatsapp">सीधे WhatsApp पर भेजें</string>
+    <string name="go_to_home">होम पेज पर जाएं</string>
+    <string name="error_name_empty">कृपया अपना नाम दर्ज करें</string>
+    <string name="error_business_name_empty">कृपया दुकान या काम का नाम दर्ज करें</string>
+    <string name="error_category_empty">कृपया एक कैटेगरी चुनें</string>
+    <string name="error_mobile_invalid">कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें</string>
+    <string name="error_address_empty">कृपया अपना गांव या पता दर्ज करें</string>
+    <string name="free_badge">मुफ़्त</string>
+    <string name="read_full_story">पूरी खबर वेब पर पढ़ें</string>
 </resources>

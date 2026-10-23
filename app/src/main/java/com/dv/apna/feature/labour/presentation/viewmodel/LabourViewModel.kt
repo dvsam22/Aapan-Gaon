@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.dv.apna.feature.labour.domain.model.LabourDetails
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -112,7 +113,7 @@ class LabourViewModel @Inject constructor(
                     is Resource.Success<*> -> {
                         _state.update {
                             it.copy(
-                                labourDetails = result.data as? List<com.dv.apna.feature.labour.domain.model.LabourDetails>
+                                labourDetails = result.data as? List<LabourDetails>
                                     ?: emptyList(),
                                 isLoading = false
                             )

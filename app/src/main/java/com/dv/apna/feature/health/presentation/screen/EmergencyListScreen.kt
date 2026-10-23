@@ -38,16 +38,26 @@ import com.dv.apna.feature.health.presentation.event.HealthEvent
 import com.dv.apna.feature.health.presentation.state.HealthState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import com.dv.apna.core.common.UiText
 
 @Composable
 fun EmergencyListScreen(
     title: String,
     list: List<DoctorModel>,
     isLoading: Boolean,
-    error: com.dv.apna.core.common.UiText?,
+    error: UiText?,
     onEvent: (HealthEvent) -> Unit,
     effect: Flow<HealthEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onDialPhone: (String) -> Unit
 ) {
@@ -61,7 +71,7 @@ fun EmergencyListScreen(
         }
     }
 
-    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val searchQueryState = rememberSaveable { mutableStateOf("") }
     val query = searchQueryState.value
     val filteredList = remember(list, query) {
         if (query.isBlank()) {
@@ -79,7 +89,7 @@ fun EmergencyListScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -109,7 +119,7 @@ fun EmergencyListScreen(
                 }
         ) {
             EmergencyTopBar(title = title, onBackClick = { onEvent(HealthEvent.BackClick) })
-            com.dv.apna.core.components.AapanGavSearchBar(
+            AapanGavSearchBar(
                 query = query,
                 onQueryChange = { searchQueryState.value = it }
             )
@@ -142,7 +152,7 @@ fun EmergencyListScreen(
                             )
                         }
                         item {
-                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                            BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }

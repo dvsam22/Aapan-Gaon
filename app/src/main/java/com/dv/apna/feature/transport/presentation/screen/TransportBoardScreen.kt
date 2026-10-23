@@ -55,13 +55,21 @@ import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.painter.Painter
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun TransportBoardScreen(
     state: TransportState,
     onEvent: (TransportEvent) -> Unit,
     effect: Flow<TransportEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onNavigateToCategory: (String, String) -> Unit
 ) {
@@ -83,11 +91,11 @@ fun TransportBoardScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                androidx.compose.ui.graphics.Brush.verticalGradient(
+                Brush.verticalGradient(
                     listOf(
-                        com.dv.apna.core.theme.MintGradientStart,
-                        com.dv.apna.core.theme.MintGradientMiddle,
-                        com.dv.apna.core.theme.MintGradientEnd
+                        MintGradientStart,
+                        MintGradientMiddle,
+                        MintGradientEnd
                     )
                 )
             )
@@ -140,7 +148,7 @@ fun TransportBoardScreen(
                             })
                     }
                     item {
-                        com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                        BannerAdView(remoteConfigManager = remoteConfigManager)
                     }
                 }
             }
@@ -189,7 +197,7 @@ fun TransportTopBar(onBackClick: () -> Unit) {
 
 @Composable
 fun TransportOptionCard(
-    title: String, icon: androidx.compose.ui.graphics.painter.Painter, onClick: () -> Unit
+    title: String, icon: Painter, onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -269,8 +277,8 @@ fun TransportBoardScreenPreview() {
             )
         ),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {},
             onNavigateToCategory = { _, _ -> })
     }

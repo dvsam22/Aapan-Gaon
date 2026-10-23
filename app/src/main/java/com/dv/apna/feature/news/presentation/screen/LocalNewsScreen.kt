@@ -43,13 +43,23 @@ import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun LocalNewsScreen(
     state: NewsState,
     onEvent: (NewsEvent) -> Unit,
     effect: Flow<NewsEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onNavigateToNewsDetails: (String) -> Unit,
     onNavigateToNoticeDetails: (String) -> Unit
@@ -64,7 +74,7 @@ fun LocalNewsScreen(
         }
     }
 
-    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val searchQueryState = rememberSaveable { mutableStateOf("") }
     val query = searchQueryState.value
     val filteredNews = remember(state.news, query) {
         if (query.isBlank()) {
@@ -78,29 +88,10 @@ fun LocalNewsScreen(
         }
     }
 
-    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
-        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.NEWS),
-        isEnabled = remoteConfigManager.isNativeAdsEnabled()
-    )
-
-    val adPositions = remember(filteredNews.size) {
-        val positions = mutableSetOf<Int>()
-        if (filteredNews.size > 3) {
-            var current = kotlin.random.Random.nextInt(4, 7)
-            while (current < filteredNews.size) {
-                positions.add(current)
-                current += kotlin.random.Random.nextInt(6, 11)
-            }
-        } else if (filteredNews.isNotEmpty()) {
-            positions.add(filteredNews.lastIndex)
-        }
-        positions
-    }
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -130,7 +121,7 @@ fun LocalNewsScreen(
                 }
         ) {
             NewsTopBar(title = stringResource(id = R.string.breaking_news), onBackClick = { onEvent(NewsEvent.BackClick) })
-            com.dv.apna.core.components.AapanGavSearchBar(
+            AapanGavSearchBar(
                 query = query,
                 onQueryChange = { searchQueryState.value = it }
             )
@@ -156,13 +147,6 @@ fun LocalNewsScreen(
                                 news = news,
                                 onClick = { onEvent(NewsEvent.NewsClick(news.id)) }
                             )
-
-                            if (nativeAd != null && index in adPositions) {
-                                com.dv.apna.core.ads.NativeAdCard(
-                                    nativeAd = nativeAd,
-                                    modifier = Modifier.padding(horizontal = 16.sdp(), vertical = 6.sdp())
-                                )
-                            }
                         }
                     }
 
@@ -175,7 +159,7 @@ fun LocalNewsScreen(
                         }
                     } else {
                         item(key = "banner_ad_item") {
-                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                            BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -301,6 +285,19 @@ fun NewsItemCard(
                             color = Color.Gray
                         )
                     )
+                    if (news.source.isNotBlank()) {
+                        Spacer(modifier = Modifier.width(8.sdp()))
+                        Text(
+                            text = "•  ${news.source}",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontSize = 10.ssp(),
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0xFF2CA074)
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
         }
@@ -404,8 +401,8 @@ fun LocalNewsScreenPreview() {
         LocalNewsScreen(
             state = NewsState(),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {},
             onNavigateToNewsDetails = {},
             onNavigateToNoticeDetails = {}

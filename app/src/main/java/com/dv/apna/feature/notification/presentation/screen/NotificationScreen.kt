@@ -36,13 +36,21 @@ import com.dv.apna.feature.notification.presentation.effect.NotificationEffect
 import com.dv.apna.feature.notification.presentation.event.NotificationEvent
 import com.dv.apna.feature.notification.presentation.state.NotificationState
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun NotificationScreen(
     state: NotificationState,
     onEvent: (NotificationEvent) -> Unit,
-    effect: kotlinx.coroutines.flow.Flow<NotificationEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    effect: Flow<NotificationEffect>,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateToDetails: (String) -> Unit,
     onNavigateBack: () -> Unit
 ) {
@@ -55,29 +63,10 @@ fun NotificationScreen(
         }
     }
 
-    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
-        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.NOTIFICATION),
-        isEnabled = remoteConfigManager.isNativeAdsEnabled()
-    )
-
-    val adPositions = remember(state.notifications.size) {
-        val positions = mutableSetOf<Int>()
-        if (state.notifications.size > 3) {
-            var current = kotlin.random.Random.nextInt(4, 7)
-            while (current < state.notifications.size) {
-                positions.add(current)
-                current += kotlin.random.Random.nextInt(6, 11)
-            }
-        } else if (state.notifications.isNotEmpty()) {
-            positions.add(state.notifications.lastIndex)
-        }
-        positions
-    }
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent, overlay) = createRefs()
 
@@ -127,7 +116,6 @@ fun NotificationScreen(
                     contentPadding = PaddingValues(16.sdp()),
                     verticalArrangement = Arrangement.spacedBy(8.sdp())
                 ) {
-                    var globalIndex = 0
                     groupedNotifications.forEach { (category, notifications) ->
                         item(key = "header_$category") {
                             Text(
@@ -137,20 +125,14 @@ fun NotificationScreen(
                             )
                         }
                         items(notifications, key = { it.id }) { notification ->
-                            val currentIndex = globalIndex++
                             NotificationCard(
                                 notification = notification,
                                 onClick = { onEvent(NotificationEvent.SelectNotification(notification.id)) }
                             )
-
-                            if (nativeAd != null && currentIndex in adPositions) {
-                                Spacer(modifier = Modifier.height(8.sdp()))
-                                com.dv.apna.core.ads.NativeAdCard(nativeAd = nativeAd)
-                            }
                         }
                     }
                     item(key = "banner_ad_item") {
-                        com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                        BannerAdView(remoteConfigManager = remoteConfigManager)
                     }
                 }
             }
@@ -309,8 +291,8 @@ fun NotificationScreenPreview() {
             )
         ),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateToDetails = {},
             onNavigateBack = {})
     }

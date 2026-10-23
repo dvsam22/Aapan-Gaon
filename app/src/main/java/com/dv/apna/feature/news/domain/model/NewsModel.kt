@@ -7,5 +7,7 @@ data class NewsModel(
     val date: Long,
     val image: String,
     val category: String,
-    val villageId: String
+    val villageId: String,
+    val source: String = "",
+    val url: String = ""
 )

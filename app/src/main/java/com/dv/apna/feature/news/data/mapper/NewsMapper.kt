@@ -12,7 +12,9 @@ fun NewsDto.toDomain(languageCode: String): NewsModel {
         date = date ?: 0L,
         image = image ?: "",
         category = type ?: category ?: "",
-        villageId = villageId ?: ""
+        villageId = villageId ?: "",
+        source = source ?: "",
+        url = url ?: ""
     )
 }
 

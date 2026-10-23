@@ -35,13 +35,20 @@ import com.dv.apna.feature.language.presentation.event.LanguageEvent
 import com.dv.apna.feature.language.presentation.state.LanguageState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun ChangeLanguageScreen(
     state: LanguageState,
     onEvent: (LanguageEvent) -> Unit,
     effect: Flow<LanguageEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit,
 ) {
     LaunchedEffect(Unit) {
@@ -59,7 +66,7 @@ fun ChangeLanguageScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent, btnSave) = createRefs()
 
@@ -113,7 +120,7 @@ fun ChangeLanguageScreen(
                         }
                     }
                     Spacer(modifier = Modifier.height(24.sdp()))
-                    com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                    BannerAdView(remoteConfigManager = remoteConfigManager)
                 }
             }
         }
@@ -181,8 +188,8 @@ fun ChangeLanguageScreenPreview() {
         ChangeLanguageScreen(
             state = LanguageState(),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

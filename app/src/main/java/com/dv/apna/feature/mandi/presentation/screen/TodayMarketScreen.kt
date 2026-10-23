@@ -39,13 +39,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import com.dv.apna.core.components.AapanGavEmptyData
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun TodayMarketScreen(
     state: MandiState,
     onEvent: (MandiEvent) -> Unit,
     effect: Flow<MandiEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit,
 ) {
     LaunchedEffect(Unit) {
@@ -57,7 +67,7 @@ fun TodayMarketScreen(
         }
     }
 
-    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val searchQueryState = rememberSaveable { mutableStateOf("") }
     val query = searchQueryState.value
     val filteredMarketPrices = remember(state.marketPrices, query) {
         if (query.isBlank()) {
@@ -74,7 +84,7 @@ fun TodayMarketScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -104,7 +114,7 @@ fun TodayMarketScreen(
                 }
         ) {
             MandiTopBar(title = stringResource(id = R.string.today_market), onBackClick = { onEvent(MandiEvent.BackClick) })
-            com.dv.apna.core.components.AapanGavSearchBar(
+            AapanGavSearchBar(
                 query = query,
                 onQueryChange = { searchQueryState.value = it }
             )
@@ -227,7 +237,7 @@ fun TodayMarketScreen(
                                 }
                             }
                             item {
-                                com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                                BannerAdView(remoteConfigManager = remoteConfigManager)
                             }
                         }
                     }
@@ -244,8 +254,8 @@ fun TodayMarketScreenPreview() {
         TodayMarketScreen(
             state = MandiState(),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

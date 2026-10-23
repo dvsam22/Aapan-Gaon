@@ -40,13 +40,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.platform.LocalContext
 import com.dv.apna.core.utils.dial
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Brush
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun LabourDetailsScreen(
     state: LabourState,
     onEvent: (LabourEvent) -> Unit,
     effect: Flow<LabourEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -59,7 +69,7 @@ fun LabourDetailsScreen(
         }
     }
 
-    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val searchQueryState = rememberSaveable { mutableStateOf("") }
     val query = searchQueryState.value
     val filteredLabourDetails = remember(state.labourDetails, query) {
         if (query.isBlank()) {
@@ -75,30 +85,10 @@ fun LabourDetailsScreen(
         }
     }
 
-    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
-        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.LABOUR),
-        isEnabled = remoteConfigManager.isNativeAdsEnabled()
-    )
-
-    // Calculate dynamic random ad positions (e.g. after 5, 8, 10 cards)
-    val adPositions = remember(filteredLabourDetails.size) {
-        val positions = mutableSetOf<Int>()
-        if (filteredLabourDetails.size > 3) {
-            var current = kotlin.random.Random.nextInt(4, 7) // First ad after 4-6 cards
-            while (current < filteredLabourDetails.size) {
-                positions.add(current)
-                current += kotlin.random.Random.nextInt(6, 11) // Next ad after 6-10 cards (e.g. 7, 8, 10)
-            }
-        } else if (filteredLabourDetails.isNotEmpty()) {
-            positions.add(filteredLabourDetails.lastIndex) // End of list if small
-        }
-        positions
-    }
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -119,6 +109,7 @@ fun LabourDetailsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .navigationBarsPadding()
                 .constrainAs(mainContent) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -132,7 +123,7 @@ fun LabourDetailsScreen(
                 availableCount = filteredLabourDetails.size
             ) { onEvent(LabourEvent.BackClick) }
 
-            com.dv.apna.core.components.AapanGavSearchBar(
+            AapanGavSearchBar(
                 query = query,
                 onQueryChange = { searchQueryState.value = it }
             )
@@ -163,15 +154,9 @@ fun LabourDetailsScreen(
                                 labour = labour,
                                 onCallClick = { context.dial(labour.contact) }
                             )
-
-                            // Display Native Ad Card randomly (e.g. after 5, 8, 10 items)
-                            if (nativeAd != null && index in adPositions) {
-                                Spacer(modifier = Modifier.height(16.sdp()))
-                                com.dv.apna.core.ads.NativeAdCard(nativeAd = nativeAd)
-                            }
                         }
                         item(key = "banner_ad_item") {
-                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                            BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -418,8 +403,8 @@ fun LabourDetailsScreenPreview() {
         LabourDetailsScreen(
             state = LabourState(),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {}
         )
     }

@@ -1,11 +1,15 @@
 package com.dv.apna.feature.news.presentation.screen
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -13,8 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -22,10 +28,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
 import com.dv.apna.R
+import com.dv.apna.core.components.NewsDetailsSkeleton
 import com.dv.apna.core.theme.AapanGavTheme
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
-import com.dv.apna.core.components.NewsDetailsSkeleton
 import com.dv.apna.feature.news.presentation.state.NewsState
 
 @Composable
@@ -40,7 +49,7 @@ fun NewsDetailsScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -110,6 +119,16 @@ fun NewsDetailsScreen(
                             ),
                             color = Color.Gray
                         )
+                        if (news.source.isNotBlank()) {
+                            Text(
+                                text = "•  ${news.source}",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 12.ssp(),
+                                    fontWeight = FontWeight.SemiBold
+                                ),
+                                color = Color(0xFF2CA074)
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(16.sdp()))
@@ -136,6 +155,37 @@ fun NewsDetailsScreen(
                         ),
                         color = Color(0xFF4A4A4A)
                     )
+
+                    if (news.url.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(24.sdp()))
+                        val context = LocalContext.current
+                        Button(
+                            onClick = {
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(news.url))
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF2CA074),
+                                contentColor = Color.White
+                            ),
+                            shape = RoundedCornerShape(10.sdp()),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.sdp())
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.read_full_story),
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 14.ssp()
+                                )
+                            )
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(100.sdp()))
                 }

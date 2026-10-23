@@ -3,7 +3,6 @@ package com.dv.apna.core.ads
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
-import android.util.Log
 import com.dv.apna.core.config.RemoteConfigManager
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -13,7 +12,6 @@ import com.google.android.gms.ads.appopen.AppOpenAd
 import java.util.Date
 import javax.inject.Inject
 import javax.inject.Singleton
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 @Singleton
 class AppOpenAdManager @Inject constructor(
@@ -28,10 +26,6 @@ class AppOpenAdManager @Inject constructor(
     private var myApplication: Application? = null
 
     private var hasShownAdOnLaunch = false
-
-    companion object {
-        private const val TAG = "AppOpenAdManager"
-    }
 
     fun initialize(application: Application) {
         this.myApplication = application
@@ -60,8 +54,6 @@ class AppOpenAdManager @Inject constructor(
                     appOpenAd = ad
                     isLoadingAd = false
                     loadTime = Date().time
-                    Log.d(TAG, "App Open Ad Loaded successfully")
-                    FirebaseCrashlytics.getInstance().log("AdMob: App Open Ad loaded successfully")
 
                     // Show ad ONLY ONCE on cold start
                     if (!hasShownAdOnLaunch) {
@@ -75,8 +67,6 @@ class AppOpenAdManager @Inject constructor(
 
                 override fun onAdFailedToLoad(loadAdError: LoadAdError) {
                     isLoadingAd = false
-                    Log.e(TAG, "App Open Ad Failed to Load: ${loadAdError.message}")
-                    FirebaseCrashlytics.getInstance().log("AdMob: App Open Ad Failed to Load: ${loadAdError.message} [code=${loadAdError.code}]")
                 }
             }
         )
@@ -111,23 +101,17 @@ class AppOpenAdManager @Inject constructor(
         if (!isShowingAd && isAdAvailable()) {
             appOpenAd?.fullScreenContentCallback = object : FullScreenContentCallback() {
                 override fun onAdDismissedFullScreenContent() {
-                    Log.d(TAG, "App Open Ad dismissed")
-                    FirebaseCrashlytics.getInstance().log("AdMob: App Open Ad dismissed")
                     appOpenAd = null
                     isShowingAd = false
                 }
 
                 override fun onAdFailedToShowFullScreenContent(adError: AdError) {
-                    Log.e(TAG, "App Open Ad failed to show: ${adError.message}")
-                    FirebaseCrashlytics.getInstance().log("AdMob: App Open Ad failed to show: ${adError.message}")
                     appOpenAd = null
                     isShowingAd = false
                 }
 
                 override fun onAdShowedFullScreenContent() {
                     isShowingAd = true
-                    Log.d(TAG, "App Open Ad showed successfully")
-                    FirebaseCrashlytics.getInstance().log("AdMob: App Open Ad showed successfully")
                 }
             }
             isShowingAd = true

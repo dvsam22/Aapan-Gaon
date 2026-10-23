@@ -15,7 +15,6 @@ import com.dv.apna.feature.language.domain.usecase.SaveVillageSelectionUseCase
 import com.dv.apna.feature.language.presentation.effect.LanguageEffect
 import com.dv.apna.feature.language.presentation.event.LanguageEvent
 import com.dv.apna.feature.language.presentation.state.LanguageState
-import android.util.Log
 import com.dv.apna.R
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,6 +29,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.dv.apna.feature.language.domain.model.LanguageModel
+import com.dv.apna.feature.language.domain.model.VillageModel
 
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
@@ -65,8 +66,8 @@ class LanguageViewModel @Inject constructor(
                 UiText.DynamicString(villageResult.message ?: "Unknown Error")
             } else null
 
-            val languages = (langResult as? Resource.Success<*>)?.data as? List<com.dv.apna.feature.language.domain.model.LanguageModel> ?: _state.value.languages
-            val villages = (villageResult as? Resource.Success<*>)?.data as? List<com.dv.apna.feature.language.domain.model.VillageModel> ?: _state.value.villages
+            val languages = (langResult as? Resource.Success<*>)?.data as? List<LanguageModel> ?: _state.value.languages
+            val villages = (villageResult as? Resource.Success<*>)?.data as? List<VillageModel> ?: _state.value.villages
 
             val selectedLanguageId = if (_state.value.selectedLanguageId == null) {
                 languages.find { it.code == savedLanguageCode }?.id
@@ -128,18 +129,9 @@ class LanguageViewModel @Inject constructor(
                             val currentSavedVillageId = preferenceManager.villageId.firstOrNull()
                             if (currentSavedVillageId != null && currentSavedVillageId != villageId) {
                                 val oldTopic = "village_$currentSavedVillageId"
-                                Log.d("FCM_DEBUG", "Unsubscribing from old topic: $oldTopic")
                                 FirebaseMessaging.getInstance().unsubscribeFromTopic(oldTopic)
-                                    .addOnCompleteListener { task ->
-                                        if (task.isSuccessful) {
-                                            Log.d("FCM_DEBUG", "Successfully unsubscribed from: $oldTopic")
-                                        } else {
-                                            Log.e("FCM_DEBUG", "Failed to unsubscribe from: $oldTopic", task.exception)
-                                        }
-                                    }
                             }
                         } catch (e: Exception) {
-                            Log.e("FCM_DEBUG", "FCM Unsubscribe logic error", e)
                         }
 
                         // 2. Save everything and WAIT (Atomic)
@@ -149,17 +141,8 @@ class LanguageViewModel @Inject constructor(
                         // 3. Subscribe to new topic
                         try {
                             val newTopic = "village_$villageId"
-                            Log.d("FCM_DEBUG", "Subscribing to new topic: $newTopic")
                             FirebaseMessaging.getInstance().subscribeToTopic(newTopic)
-                                .addOnCompleteListener { task ->
-                                    if (task.isSuccessful) {
-                                        Log.d("FCM_DEBUG", "Successfully subscribed to: $newTopic")
-                                    } else {
-                                        Log.e("FCM_DEBUG", "Failed to subscribe to: $newTopic", task.exception)
-                                    }
-                                }
                         } catch (e: Exception) {
-                            Log.e("FCM_DEBUG", "FCM Subscribe logic error", e)
                         }
 
                         // 4. Trigger navigation and let CompositionLocalProvider update the language dynamically (no recreation).

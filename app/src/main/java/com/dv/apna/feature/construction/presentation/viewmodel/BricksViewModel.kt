@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.dv.apna.feature.construction.domain.model.BricksSupplierModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -60,7 +61,7 @@ class BricksViewModel @Inject constructor(
                     is Resource.Success<*> -> {
                         _state.update {
                             it.copy(
-                                suppliers = result.data as? List<com.dv.apna.feature.construction.domain.model.BricksSupplierModel>
+                                suppliers = result.data as? List<BricksSupplierModel>
                                     ?: emptyList(),
                                 isLoading = false
                             )

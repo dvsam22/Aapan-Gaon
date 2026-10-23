@@ -1,6 +1,5 @@
 package com.dv.apna.feature.splash.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -51,8 +50,6 @@ class SplashViewModel @Inject constructor(
             
             val notificationId = splashRoute?.notificationId
             val notificationType = splashRoute?.notificationType
-
-            Log.d("FCM_DEBUG", "Splash detected notification from Route: id=$notificationId, type=$notificationType")
 
             if (villageId != null) {
                 if (!notificationId.isNullOrBlank()) {

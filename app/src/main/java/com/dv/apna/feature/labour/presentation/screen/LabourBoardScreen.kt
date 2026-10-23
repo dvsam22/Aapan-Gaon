@@ -51,13 +51,22 @@ import com.dv.apna.feature.labour.presentation.event.LabourEvent
 import com.dv.apna.feature.labour.presentation.state.LabourState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
+import kotlinx.coroutines.flow.emptyFlow
 
 @Composable
 fun LabourBoardScreen(
     state: LabourState,
     onEvent: (LabourEvent) -> Unit,
     effect: Flow<LabourEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onNavigateToCategory: (String) -> Unit
 ) {
@@ -70,17 +79,17 @@ fun LabourBoardScreen(
         }
     }
 
-    val context = androidx.compose.ui.platform.LocalContext.current
+    val context = LocalContext.current
 
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                androidx.compose.ui.graphics.Brush.verticalGradient(
+                Brush.verticalGradient(
                     listOf(
-                        com.dv.apna.core.theme.MintGradientStart,
-                        com.dv.apna.core.theme.MintGradientMiddle,
-                        com.dv.apna.core.theme.MintGradientEnd
+                        MintGradientStart,
+                        MintGradientMiddle,
+                        MintGradientEnd
                     )
                 )
             )
@@ -128,7 +137,7 @@ fun LabourBoardScreen(
                         )
                     }
                     item {
-                        com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                        BannerAdView(remoteConfigManager = remoteConfigManager)
                     }
                 }
             }
@@ -177,7 +186,7 @@ fun LabourTopBar(onBackClick: () -> Unit) {
 
 @Composable
 fun LabourOptionCard(
-    title: String, icon: androidx.compose.ui.graphics.painter.Painter, onClick: () -> Unit
+    title: String, icon: Painter, onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -253,8 +262,8 @@ fun LabourBoardScreenPreview() {
             )
         ),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {},
             onNavigateToCategory = {})
     }

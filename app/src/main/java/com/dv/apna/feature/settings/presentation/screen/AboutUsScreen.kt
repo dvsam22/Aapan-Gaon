@@ -30,6 +30,11 @@ import androidx.compose.material3.Text
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
 import com.dv.apna.core.utils.getHtmlAssetUrl
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.tooling.preview.Preview
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
 
 @Composable
 fun AboutUsScreen(
@@ -38,7 +43,7 @@ fun AboutUsScreen(
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -89,7 +94,7 @@ fun AboutUsScreen(
     }
 }
 
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun AboutUsScreenPreview() {
     AapanGavTheme {

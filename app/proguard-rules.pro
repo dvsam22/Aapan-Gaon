@@ -126,9 +126,6 @@
 -keep public class com.google.ads.** {
     public *;
 }
--keep class com.google.android.gms.ads.nativead.NativeAdView { *; }
--keep class com.google.android.gms.ads.nativead.MediaView { *; }
--keep class com.google.android.gms.ads.nativead.NativeAd { *; }
 -keep class com.google.android.gms.ads.appopen.AppOpenAd { *; }
 -keep class com.google.android.gms.ads.interstitial.InterstitialAd { *; }
 -dontwarn com.google.android.gms.ads.**

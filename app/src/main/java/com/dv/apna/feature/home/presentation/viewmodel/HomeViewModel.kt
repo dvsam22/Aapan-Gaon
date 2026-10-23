@@ -28,6 +28,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import com.dv.apna.R
 import javax.inject.Inject
+import com.dv.apna.feature.language.domain.model.VillageModel
+import kotlinx.coroutines.flow.flowOf
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -57,7 +59,7 @@ class HomeViewModel @Inject constructor(
                 preferenceManager.villageLng,
                 getVillagesUseCase()
             ) { villageId, savedName, savedLat, savedLng, villagesResource ->
-                val villages = (villagesResource as? Resource.Success<*>)?.data as? List<com.dv.apna.feature.language.domain.model.VillageModel>
+                val villages = (villagesResource as? Resource.Success<*>)?.data as? List<VillageModel>
                 val village = villages?.find { it.id == villageId }
                 if (village != null) {
                     Triple(village.villageName, village.lat, village.lng)
@@ -89,7 +91,7 @@ class HomeViewModel @Inject constructor(
                 if (villageId != null) {
                     getBannersUseCase(villageId)
                 } else {
-                    kotlinx.coroutines.flow.flowOf(Resource.Error("Village not selected"))
+                    flowOf(Resource.Error("Village not selected"))
                 }
             }.collectLatest { result ->
                 when (result) {

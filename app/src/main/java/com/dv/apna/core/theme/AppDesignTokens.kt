@@ -10,6 +10,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.dv.apna.R
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
+import androidx.compose.material3.Shapes
 
 val Poppins = FontFamily(
     Font(R.font.poppins_light, FontWeight.Light),
@@ -77,7 +78,7 @@ fun appTypography(): Typography {
 }
 
 @Composable
-fun appShapes() = androidx.compose.material3.Shapes(
+fun appShapes() = Shapes(
     extraSmall = RoundedCornerShape(4.sdp()),
     small = RoundedCornerShape(8.sdp()),
     medium = RoundedCornerShape(12.sdp()),

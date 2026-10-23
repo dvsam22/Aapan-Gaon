@@ -5,7 +5,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.dv.apna.MainActivity
 import com.dv.apna.R
@@ -39,11 +38,9 @@ class NotificationHelper @Inject constructor(
             description = "Used for Apna app notifications"
         }
         notificationManager.createNotificationChannel(channel)
-        Log.d("NotificationHelper", "Notification channel created")
     }
 
     fun showNotification(title: String, message: String, notificationId: String? = null, type: String? = null) {
-        Log.d("NotificationHelper", "Showing notification: $title - $message, id: $notificationId, type: $type")
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             if (!notificationId.isNullOrEmpty()) {
@@ -72,6 +69,5 @@ class NotificationHelper @Inject constructor(
             .build()
 
         notificationManager.notify(requestCode, notification)
-        Log.d("NotificationHelper", "notificationManager.notify() called with requestCode=$requestCode")
     }
 }

@@ -7,7 +7,6 @@ import com.dv.apna.feature.language.data.mapper.toDomain
 import com.dv.apna.feature.language.domain.model.LanguageModel
 import com.dv.apna.feature.language.domain.model.VillageModel
 import com.dv.apna.feature.language.domain.repository.LanguageRepository
-import android.util.Log
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -34,15 +33,11 @@ class LanguageRepositoryImpl @Inject constructor(
             emit(Resource.Loading())
             try {
                 val currentLang = languageCode ?: "en"
-                Log.d("LanguageRepo", "Fetching villages for language: $currentLang")
                 val villagesDto = dataSource.getVillages()
-                Log.d("LanguageRepo", "Fetched ${villagesDto.size} villages from DataSource")
                 val activeVillages = villagesDto.filter { it.isCurrentlyActive }
-                Log.d("LanguageRepo", "Filtered ${activeVillages.size} active villages")
                 val villages = activeVillages.map { it.toDomain(currentLang) }
                 emit(Resource.Success(villages))
             } catch (e: Exception) {
-                Log.e("LanguageRepo", "Error fetching villages: ${e.message}", e)
                 emit(Resource.Error(e.message ?: "Unknown Error"))
             }
         }

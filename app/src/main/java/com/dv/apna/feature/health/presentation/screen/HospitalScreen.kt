@@ -38,13 +38,23 @@ import com.dv.apna.feature.health.presentation.state.HealthState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.emptyFlow
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.tooling.preview.Preview
+import com.dv.apna.core.ads.BannerAdView
+import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.MintGradientEnd
+import com.dv.apna.core.theme.MintGradientMiddle
+import com.dv.apna.core.theme.MintGradientStart
 
 @Composable
 fun HospitalScreen(
     state: HealthState,
     onEvent: (HealthEvent) -> Unit,
     effect: Flow<HealthEffect>,
-    remoteConfigManager: com.dv.apna.core.config.RemoteConfigManager,
+    remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit,
     onDialPhone: (String) -> Unit
 ) {
@@ -58,7 +68,7 @@ fun HospitalScreen(
         }
     }
 
-    val searchQueryState = androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+    val searchQueryState = rememberSaveable { mutableStateOf("") }
     val query = searchQueryState.value
     val filteredHospitals = remember(state.hospitals, query) {
         if (query.isBlank()) {
@@ -74,29 +84,10 @@ fun HospitalScreen(
         }
     }
 
-    val nativeAd = com.dv.apna.core.ads.rememberNativeAd(
-        adUnitId = remoteConfigManager.getNativeAdUnitId(com.dv.apna.core.config.ServiceAdCategory.HEALTH),
-        isEnabled = remoteConfigManager.isNativeAdsEnabled()
-    )
-
-    val adPositions = remember(filteredHospitals.size) {
-        val positions = mutableSetOf<Int>()
-        if (filteredHospitals.size > 3) {
-            var current = kotlin.random.Random.nextInt(4, 7)
-            while (current < filteredHospitals.size) {
-                positions.add(current)
-                current += kotlin.random.Random.nextInt(6, 11)
-            }
-        } else if (filteredHospitals.isNotEmpty()) {
-            positions.add(filteredHospitals.lastIndex)
-        }
-        positions
-    }
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(com.dv.apna.core.theme.MintGradientStart, com.dv.apna.core.theme.MintGradientMiddle, com.dv.apna.core.theme.MintGradientEnd)))
+            .background(Brush.verticalGradient(listOf(MintGradientStart, MintGradientMiddle, MintGradientEnd)))
     ) {
         val (bottomImage, mainContent) = createRefs()
 
@@ -126,7 +117,7 @@ fun HospitalScreen(
                 }
         ) {
             HospitalTopBar(onBackClick = { onEvent(HealthEvent.BackClick) })
-            com.dv.apna.core.components.AapanGavSearchBar(
+            AapanGavSearchBar(
                 query = query,
                 onQueryChange = { searchQueryState.value = it }
             )
@@ -154,14 +145,9 @@ fun HospitalScreen(
                             key = { index, hospital -> if (hospital.id.isNotBlank()) hospital.id else "${hospital.name}_$index" }
                         ) { index, hospital ->
                             HospitalItemCard(hospital = hospital, onCallClick = { onEvent(HealthEvent.CallClick(hospital.phone)) })
-
-                            if (nativeAd != null && index in adPositions) {
-                                Spacer(modifier = Modifier.height(12.sdp()))
-                                com.dv.apna.core.ads.NativeAdCard(nativeAd = nativeAd)
-                            }
                         }
                         item(key = "banner_ad_item") {
-                            com.dv.apna.core.ads.BannerAdView(remoteConfigManager = remoteConfigManager)
+                            BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }
                 }
@@ -385,19 +371,19 @@ fun HospitalItemCard(
     }
 }
 
-@androidx.compose.runtime.Composable
-@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+@Preview(showBackground = true)
 fun HospitalScreenPreview() {
-    com.dv.apna.core.theme.AapanGavTheme {
+    AapanGavTheme {
         HospitalScreen(
-            state = com.dv.apna.feature.health.presentation.state.HealthState(
+            state = HealthState(
                 hospitals = listOf(
-                    com.dv.apna.feature.health.domain.model.HospitalModel("1", "Rampur Hospital", "Rampur Village", "Multi Speciality", "OPD, ICU", "Open: 24 Hours", "1234567890")
+                    HospitalModel("1", "Rampur Hospital", "Rampur Village", "Multi Speciality", "OPD, ICU", "Open: 24 Hours", "1234567890")
                 )
             ),
             onEvent = {},
-            effect = kotlinx.coroutines.flow.emptyFlow(),
-            remoteConfigManager = com.dv.apna.core.config.RemoteConfigManager(),
+            effect = emptyFlow(),
+            remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {},
             onDialPhone = {}
         )

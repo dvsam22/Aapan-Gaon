@@ -138,4 +138,34 @@
     <string name="search_placeholder">Search Here...</string>
     <string name="clear_search">Clear search</string>
     <string name="no_results_found">No matching search results found</string>
+
+    <!-- Add Business / Service -->
+    <string name="add_business_service">Add Shop / Service</string>
+    <string name="add_business_title">Register Shop / Service</string>
+    <string name="add_business_subtitle">List your shop, transport, or skill for free to connect with customers in your village &amp; area.</string>
+    <string name="full_name_label">Your Name</string>
+    <string name="full_name_placeholder">e.g., Ramesh Kumar</string>
+    <string name="business_name_label">Shop / Business / Work Name</string>
+    <string name="business_name_placeholder">e.g., Sharma Kirana Store</string>
+    <string name="category_label">Select Category</string>
+    <string name="select_category_placeholder">Choose category</string>
+    <string name="mobile_number_label">Mobile Number</string>
+    <string name="mobile_number_placeholder">10-digit mobile number</string>
+    <string name="address_label">Village / Town / Address</string>
+    <string name="address_placeholder">e.g., Village Rampur, Near Main Chauraha</string>
+    <string name="description_label">Work Description / Details (Optional)</string>
+    <string name="description_placeholder">Available items, timing, experience, etc.</string>
+    <string name="submit_business">Submit Details</string>
+    <string name="submitting">Submitting...</string>
+    <string name="business_submit_success_title">Application Submitted Successfully!</string>
+    <string name="read_full_story">Read Full Story on Web</string>
+    <string name="business_submit_success_desc">Thank you! Your details have been received. Our team will verify your contact and list it in the app shortly.</string>
+    <string name="send_on_whatsapp">Send Details on WhatsApp</string>
+    <string name="go_to_home">Go to Home</string>
+    <string name="error_name_empty">Please enter your name</string>
+    <string name="error_business_name_empty">Please enter your shop or work name</string>
+    <string name="error_category_empty">Please select a category</string>
+    <string name="error_mobile_invalid">Please enter a valid 10-digit mobile number</string>
+    <string name="error_address_empty">Please enter your village or address</string>
+    <string name="free_badge">FREE</string>
 </resources>
