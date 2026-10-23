@@ -41,6 +41,7 @@ import com.dv.apna.feature.news.presentation.state.NewsState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import androidx.compose.runtime.mutableStateOf
@@ -270,11 +271,14 @@ fun NewsItemCard(
 
                 Spacer(modifier = Modifier.height(8.sdp()))
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(
                         painter = painterResource(id = R.drawable.clock),
                         contentDescription = null,
-                        modifier = Modifier.size(14.sdp()),
+                        modifier = Modifier.size(13.sdp()),
                         tint = Color(0xFF2CA074)
                     )
                     Spacer(modifier = Modifier.width(4.sdp()))
@@ -283,15 +287,16 @@ fun NewsItemCard(
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontSize = 10.ssp(),
                             color = Color.Gray
-                        )
+                        ),
+                        maxLines = 1
                     )
                     if (news.source.isNotBlank()) {
-                        Spacer(modifier = Modifier.width(8.sdp()))
+                        Spacer(modifier = Modifier.width(6.sdp()))
                         Text(
                             text = "•  ${news.source}",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontSize = 10.ssp(),
-                                fontWeight = FontWeight.Medium,
+                                fontWeight = FontWeight.SemiBold,
                                 color = Color(0xFF2CA074)
                             ),
                             maxLines = 1,
@@ -388,10 +393,24 @@ fun NoticeItemCard(
     }
 }
 
+@Composable
 fun formatDate(timestamp: Long): String {
     if (timestamp == 0L) return ""
-    val sdf = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
-    return sdf.format(Date(timestamp))
+    val now = Calendar.getInstance()
+    val itemCal = Calendar.getInstance().apply { timeInMillis = timestamp }
+
+    val isSameYear = now.get(Calendar.YEAR) == itemCal.get(Calendar.YEAR)
+    val isToday = isSameYear && now.get(Calendar.DAY_OF_YEAR) == itemCal.get(Calendar.DAY_OF_YEAR)
+    val isYesterday = isSameYear && (now.get(Calendar.DAY_OF_YEAR) - itemCal.get(Calendar.DAY_OF_YEAR) == 1)
+
+    val timeFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
+    val timeStr = timeFormat.format(Date(timestamp))
+
+    return when {
+        isToday -> "${stringResource(id = R.string.today)}, $timeStr"
+        isYesterday -> "${stringResource(id = R.string.yesterday)}, $timeStr"
+        else -> SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(Date(timestamp))
+    }
 }
 
 @Preview(showBackground = true)
