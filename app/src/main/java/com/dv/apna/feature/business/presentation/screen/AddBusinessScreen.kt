@@ -819,7 +819,7 @@ private fun sendBusinessViaWhatsApp(context: Context, state: AddBusinessState) {
         📝 विवरण: ${state.description.ifBlank { "लागू नहीं" }}
     """.trimIndent()
 
-    val adminNumber = "918534865222"
+    val adminNumber = "918418931780"
     val encoded = URLEncoder.encode(message, "UTF-8")
     val url = "https://api.whatsapp.com/send?phone=$adminNumber&text=$encoded"
     try {
