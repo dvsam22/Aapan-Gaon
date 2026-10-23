@@ -82,7 +82,7 @@ fun SplashScreen(
 
 @Composable
 fun SplashContent() {
-    val logoSize = 175.sdp()
+    val logoSize = 250.sdp()
 
     // Animation states
     val alpha = remember { Animatable(0f) }
@@ -169,11 +169,11 @@ fun SplashContent() {
             )
         }
 
-        val appNameMargin = 10.sdp()
-        val taglineMargin = 6.sdp()
-        val featurePillsMargin = 14.sdp()
+        val appNameMargin = 4.sdp()
+        val taglineMargin = 4.sdp()
+        val featurePillsMargin = 12.sdp()
         val loaderMargin = 16.sdp()
-        val footerMargin = 18.sdp()
+        val footerMargin = 16.sdp()
 
         ConstraintLayout(
             modifier = Modifier
@@ -181,7 +181,7 @@ fun SplashContent() {
                 .systemBarsPadding()
         ) {
             val (bottomImage, aura, logo, appName, tagline, featurePills, loader, footer) = createRefs()
-            val topGuideline = createGuidelineFromTop(0.14f)
+            val topGuideline = createGuidelineFromTop(0.08f)
 
             // Bottom Village Silhouette
             Image(
@@ -201,7 +201,7 @@ fun SplashContent() {
             // Glowing Breathing Aura behind logo
             Box(
                 modifier = Modifier
-                    .size(logoSize * 1.30f)
+                    .size(logoSize * 1.10f)
                     .graphicsLayer(
                         scaleX = pulseScale,
                         scaleY = pulseScale,
