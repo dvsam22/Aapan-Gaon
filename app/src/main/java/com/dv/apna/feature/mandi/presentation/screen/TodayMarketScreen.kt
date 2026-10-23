@@ -133,48 +133,34 @@ fun TodayMarketScreen(
                 val latestDate = filteredMarketPrices.maxOfOrNull { it.date } ?: 0L
                 val dateLabel = formatMandiDate(latestDate)
 
-                Row(
+                Surface(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.sdp(), vertical = 6.sdp()),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .padding(horizontal = 16.sdp(), vertical = 4.sdp()),
+                    shape = RoundedCornerShape(8.sdp()),
+                    color = Color(0xFFEFFAF6),
+                    border = BorderStroke(1.sdp(), Color(0xFF2CA074).copy(alpha = 0.3f))
                 ) {
-                    Surface(
-                        shape = RoundedCornerShape(8.sdp()),
-                        color = Color(0xFFEFFAF6),
-                        border = BorderStroke(1.sdp(), Color(0xFF2CA074).copy(alpha = 0.3f))
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.sdp(), vertical = 7.sdp()),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.sdp())
                     ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 10.sdp(), vertical = 6.sdp()),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.sdp())
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.clock),
-                                contentDescription = null,
-                                modifier = Modifier.size(13.sdp()),
-                                tint = Color(0xFF2CA074)
-                            )
-                            Text(
-                                text = "${stringResource(id = R.string.rates_updated)}: $dateLabel",
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontSize = 12.ssp()
-                                ),
-                                color = Color(0xFF2CA074)
-                            )
-                        }
+                        Icon(
+                            painter = painterResource(id = R.drawable.clock),
+                            contentDescription = null,
+                            modifier = Modifier.size(14.sdp()),
+                            tint = Color(0xFF2CA074)
+                        )
+                        Text(
+                            text = "${stringResource(id = R.string.rates_updated)}: $dateLabel",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 12.ssp()
+                            ),
+                            color = Color(0xFF2CA074)
+                        )
                     }
-
-                    Text(
-                        text = stringResource(id = R.string.available, filteredMarketPrices.size),
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            fontSize = 11.ssp(),
-                            fontWeight = FontWeight.Medium
-                        ),
-                        color = Color.Gray
-                    )
                 }
 
                 Card(
