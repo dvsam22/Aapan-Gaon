@@ -17,8 +17,8 @@ android {
         applicationId = "com.dv.apna"
         minSdk = 26
         targetSdk = 37
-        versionCode = 14
-        versionName = "2.2"
+        versionCode = 16
+        versionName = "4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
