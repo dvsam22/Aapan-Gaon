@@ -40,7 +40,7 @@ class HomeRepositoryImpl @Inject constructor(
                 id = "def_mandi",
                 imageUrl = "",
                 title = if (isHi) "आज का मंडी रेट देखें 🌾" else "Today's Mandi Rates 🌾",
-                discountText = if (isHi) "खलीलाबाद व नौगढ़ मंडी" else "Khalilabad & Naugarh Mandi",
+                discountText = if (isHi) "आज के ताज़ा बाजार भाव" else "Daily Fresh Market Rates",
                 link = "today_market",
                 villageId = villageId,
                 drawableRes = R.drawable.banner_mandi_rates
