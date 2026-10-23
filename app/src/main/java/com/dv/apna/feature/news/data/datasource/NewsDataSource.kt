@@ -17,7 +17,7 @@ class NewsDataSource @Inject constructor(
                 .document(villageId)
                 .collection("news")
                 .orderBy("date", Query.Direction.DESCENDING)
-                .limit(30)
+                .limit(20)
                 .get()
                 .await()
                 .documents.mapNotNull { doc ->
@@ -27,12 +27,7 @@ class NewsDataSource @Inject constructor(
             emptyList()
         }
 
-        if (villageNews.isNotEmpty()) {
-            return villageNews
-        }
-
-        // Fallback to central news collection if village-specific collection is empty
-        return try {
+        val centralNews = try {
             getCollection("news")
                 .orderBy("date", Query.Direction.DESCENDING)
                 .limit(30)
@@ -44,5 +39,20 @@ class NewsDataSource @Inject constructor(
         } catch (e: Exception) {
             emptyList()
         }
+
+        // Merge both village-level and district news, deduplicate by ID, and sort newest first
+        val combinedMap = linkedMapOf<String, NewsDto>()
+        villageNews.forEach { item ->
+            val id = item.id ?: item.url ?: return@forEach
+            combinedMap[id] = item
+        }
+        centralNews.forEach { item ->
+            val id = item.id ?: item.url ?: return@forEach
+            if (!combinedMap.containsKey(id)) {
+                combinedMap[id] = item
+            }
+        }
+
+        return combinedMap.values.sortedByDescending { it.date ?: 0L }
     }
 }
