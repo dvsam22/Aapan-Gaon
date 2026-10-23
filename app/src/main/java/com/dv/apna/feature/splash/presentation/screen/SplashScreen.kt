@@ -39,10 +39,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -243,13 +245,30 @@ fun SplashContent() {
                     }
             )
 
-            // App Name: "अपना गाँव"
+            // Title gradient brush (Deep Forest Green -> Vibrant Emerald -> Mint)
+            val titleGradient = Brush.horizontalGradient(
+                colors = listOf(
+                    Color(0xFF09432B),
+                    Color(0xFF137A4B),
+                    Color(0xFF1EAE70)
+                )
+            )
+
+            // App Name: "अपना गाँव" with 3D Emerald Gradient & Shadow
             Text(
                 text = stringResource(id = R.string.splash_text_part2),
-                fontSize = 30.ssp(),
-                fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFF165D47),
-                fontFamily = NotoSansHindi,
+                style = TextStyle(
+                    brush = titleGradient,
+                    fontSize = 34.ssp(),
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = NotoSansHindi,
+                    letterSpacing = 0.5.sp,
+                    shadow = Shadow(
+                        color = Color(0x33000000),
+                        offset = Offset(0f, 3.5f),
+                        blurRadius = 6f
+                    )
+                ),
                 modifier = Modifier
                     .graphicsLayer(
                         alpha = textAlpha.value,
@@ -262,14 +281,14 @@ fun SplashContent() {
                     }
             )
 
-            // Tagline: "अपने गाँव का अपना ऐप"
+            // Tagline: "— अपने गाँव का अपना ऐप —" with letter-spacing
             Text(
-                text = stringResource(id = R.string.splash_text_part1),
-                fontSize = 15.ssp(),
-                fontWeight = FontWeight.Medium,
-                color = Color(0xFF2E7D63),
+                text = "—  ${stringResource(id = R.string.splash_text_part1)}  —",
+                fontSize = 14.ssp(),
+                fontWeight = FontWeight.SemiBold,
+                color = Color(0xFF267356),
                 fontFamily = NotoSansHindi,
-                letterSpacing = 0.5.sp,
+                letterSpacing = 0.8.sp,
                 modifier = Modifier
                     .graphicsLayer(
                         alpha = textAlpha.value,
