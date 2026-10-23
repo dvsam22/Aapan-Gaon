@@ -1,5 +1,6 @@
 package com.dv.apna.feature.home.data.mapper
 
+import com.dv.apna.R
 import com.dv.apna.core.utils.toLocalizedSafeString
 import com.dv.apna.feature.home.data.model.BannerDto
 import com.dv.apna.feature.home.data.model.HomeDto
@@ -15,17 +16,29 @@ fun HomeDto.toDomain(languageCode: String): HomeModel {
 }
 
 fun BannerDto.toDomain(languageCode: String): BannerModel {
-    val finalImageUrl = if (id == "banner_buyers" || link == "local_buyers" || link == "buyers" || (imageUrl?.contains("photo-1500937386664") == true)) {
-        "https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=800&auto=format&fit=crop"
-    } else {
-        imageUrl ?: ""
+    val matchedDrawable = when (id) {
+        "banner_mandi", "def_mandi" -> R.drawable.banner_mandi_rates
+        "banner_news", "def_news" -> R.drawable.banner_local_news
+        "banner_business", "def_business" -> R.drawable.banner_register_business
+        "banner_buyers", "def_buyers" -> R.drawable.banner_fresh_produce
+        "banner_emergency", "def_emergency" -> R.drawable.banner_emergency_health
+        else -> when (link?.lowercase()?.trim()) {
+            "today_market", "mandi" -> R.drawable.banner_mandi_rates
+            "news" -> R.drawable.banner_local_news
+            "add_business" -> R.drawable.banner_register_business
+            "local_buyers" -> R.drawable.banner_fresh_produce
+            "health", "emergency" -> R.drawable.banner_emergency_health
+            else -> null
+        }
     }
+
     return BannerModel(
         id = id ?: "",
-        imageUrl = finalImageUrl,
+        imageUrl = imageUrl ?: "",
         title = title.toLocalizedSafeString(languageCode),
         discountText = discountText ?: "",
         link = link ?: "",
-        villageId = villageId ?: ""
+        villageId = villageId ?: "",
+        drawableRes = matchedDrawable
     )
 }

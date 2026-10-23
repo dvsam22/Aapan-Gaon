@@ -514,7 +514,7 @@ fun BannerCarousel(
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     AsyncImage(
-                        model = banner.imageUrl,
+                        model = banner.drawableRes ?: banner.imageUrl,
                         contentDescription = banner.title,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,

@@ -6,5 +6,6 @@ data class BannerModel(
     val title: String,
     val discountText: String,
     val link: String,
-    val villageId: String
+    val villageId: String,
+    val drawableRes: Int? = null
 )
