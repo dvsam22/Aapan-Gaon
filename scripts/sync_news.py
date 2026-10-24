@@ -7,7 +7,7 @@ Features:
 2. Deduplicates and saves new articles to Firestore `news` collection.
 3. Automatically deletes articles older than 7 days (7-day retention policy).
 4. Sends an FCM push notification to topic 'news' when a new top article is found.
-5. Runs via GitHub Actions cron twice a day (consuming only 2 requests/day of the 100/day free quota).
+5. Runs via GitHub Actions cron 10 times a day (consuming only 10 requests/day of the 100/day free quota).
 """
 
 import os

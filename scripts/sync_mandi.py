@@ -15,7 +15,7 @@ Features:
 4. Calculates trends (up, down, stable) from min/max/modal prices.
 5. Saves into Firestore `mandi` collection.
 6. Cleans up expired mandi prices older than 7 days.
-7. Can run via GitHub Actions daily at 03:00 UTC (8:30 AM IST).
+7. Runs via GitHub Actions 4 times a day (07:45 AM, 11:45 AM, 03:45 PM, 07:45 PM IST).
 """
 
 import os

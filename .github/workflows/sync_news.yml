@@ -2,8 +2,10 @@ name: Sync Local News to Firestore
 
 on:
   schedule:
-    # Runs 3 times every day: 07:30 AM IST (02:00 UTC), 01:30 PM IST (08:00 UTC), and 07:30 PM IST (14:00 UTC)
-    - cron: '0 2,8,14 * * *'
+    # Runs 10 times every day: every 2 hours from 06:50 AM IST to 12:50 AM IST
+    # 06:50 AM, 08:50 AM, 10:50 AM, 12:50 PM, 02:50 PM, 04:50 PM, 06:50 PM, 08:50 PM, 10:50 PM, 12:50 AM IST
+    # Using minute 20 to avoid GitHub Actions top-of-the-hour queue drops
+    - cron: '20 1,3,5,7,9,11,13,15,17,19 * * *'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
 jobs:

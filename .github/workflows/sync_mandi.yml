@@ -2,8 +2,9 @@ name: Sync Daily Mandi Prices to Firestore
 
 on:
   schedule:
-    # Runs daily at 03:00 UTC (8:30 AM IST), after morning mandi arrival reporting
-    - cron: '0 3 * * *'
+    # Runs 4 times a day: 07:45 AM IST (02:15 UTC), 11:45 AM IST (06:15 UTC), 03:45 PM IST (10:15 UTC), 07:45 PM IST (14:15 UTC)
+    # Using minute 15 to avoid GitHub Actions top-of-the-hour queue drops
+    - cron: '15 2,6,10,14 * * *'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab anytime
 
 jobs:
