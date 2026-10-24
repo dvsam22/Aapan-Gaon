@@ -628,3 +628,165 @@ def sync_mandi_http(req: https_fn.Request) -> https_fn.Response:
         mimetype="application/json",
         headers=cors_headers
     )
+
+
+# ==============================================================================
+# Local News Sync (GNews API -> Firestore `news` + FCM topic `news`)
+# ==============================================================================
+
+DEFAULT_NEWS_QUERY = "Maharajganj"
+DEFAULT_NEWS_LANG = "hi"
+DEFAULT_NEWS_COUNTRY = "in"
+DEFAULT_NEWS_MAX = 15
+
+
+def parse_iso_to_epoch_ms(iso_str: str) -> int:
+    if not iso_str:
+        return int(datetime.now(timezone.utc).timestamp() * 1000)
+    try:
+        cleaned = iso_str.replace("Z", "+00:00")
+        dt = datetime.fromisoformat(cleaned)
+        return int(dt.timestamp() * 1000)
+    except Exception:
+        return int(datetime.now(timezone.utc).timestamp() * 1000)
+
+
+def fetch_gnews_articles(api_key: str = DEFAULT_GNEWS_KEY, query: str = DEFAULT_NEWS_QUERY, max_results: int = DEFAULT_NEWS_MAX):
+    encoded_query = urllib.parse.quote(query)
+    url = f"{GNEWS_API_URL}?q={encoded_query}&lang={DEFAULT_NEWS_LANG}&country={DEFAULT_NEWS_COUNTRY}&max={max_results}&apikey={api_key}"
+    print(f"[INFO] Requesting GNews API for query: '{query}'...")
+    req = urllib.request.Request(url, headers={"User-Agent": "ApnaGaon-NewsSync/1.0"})
+    ctx = ssl.create_default_context()
+    try:
+        with urllib.request.urlopen(req, timeout=25, context=ctx) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+            articles = payload.get("articles", [])
+            print(f"[INFO] Fetched {len(articles)} articles from GNews API.")
+            return articles
+    except Exception as e:
+        print(f"[ERROR] Failed to fetch news from GNews: {e}", file=sys.stderr)
+        return []
+
+
+def send_news_fcm_notification(top_article):
+    try:
+        title = top_article.get("title", "महराजगंज की ताज़ा खबर")
+        if len(title) > 60:
+            title = title[:57] + "..."
+        body = top_article.get("description", "खबर विस्तार से पढ़ने के लिए टैप करें")
+        if len(body) > 120:
+            body = body[:117] + "..."
+        image_url = top_article.get("image") or None
+
+        msg = messaging.Message(
+            notification=messaging.Notification(
+                title=f"ताज़ा खबर: {title}",
+                body=body,
+                image=image_url
+            ),
+            data={
+                "id": str(top_article.get("id")),
+                "type": "news"
+            },
+            topic="news"
+        )
+        resp = messaging.send(msg)
+        print(f"[INFO] FCM notification sent for news: {resp}")
+    except Exception as e:
+        print(f"[ERROR] Failed to send news FCM: {e}", file=sys.stderr)
+
+
+def execute_news_sync(query: str = DEFAULT_NEWS_QUERY, force_notify: bool = False):
+    db = firestore.client()
+    articles = fetch_gnews_articles(query=query)
+    if not articles:
+        return 0, 0, "No articles returned from GNews"
+
+    news_col = db.collection("news")
+    new_articles = []
+
+    for item in articles:
+        url = item.get("url", "").strip()
+        raw_id = item.get("id") or hashlib.md5(url.encode("utf-8")).hexdigest()
+        article_id = str(raw_id)
+        title = item.get("title", "").strip()
+        description = item.get("description", "").strip()
+        content = item.get("content", "").strip()
+        image = item.get("image", "").strip()
+        source_name = item.get("source", {}).get("name", "Local News").strip()
+        date_ms = parse_iso_to_epoch_ms(item.get("publishedAt", ""))
+
+        doc_ref = news_col.document(article_id)
+        doc_snap = doc_ref.get()
+        if not doc_snap.exists:
+            news_data = {
+                "id": article_id,
+                "title": title,
+                "description": description or content,
+                "image": image,
+                "source": source_name,
+                "url": url,
+                "date": date_ms,
+                "createdAt": firestore.SERVER_TIMESTAMP
+            }
+            doc_ref.set(news_data)
+            new_articles.append(news_data)
+
+    # 7-day retention cleanup
+    cutoff_ms = int((datetime.now(timezone.utc) - timedelta(days=NEWS_RETENTION_DAYS)).timestamp() * 1000)
+    deleted_count = 0
+    try:
+        for doc in news_col.where("date", "<", cutoff_ms).stream():
+            doc.reference.delete()
+            deleted_count += 1
+    except Exception as e:
+        print(f"[WARNING] News cleanup error: {e}")
+
+    # Send FCM notification if new article was added
+    if new_articles:
+        send_news_fcm_notification(new_articles[0])
+    elif force_notify and articles:
+        top = articles[0]
+        raw_id = top.get("id") or hashlib.md5(top.get("url", "").encode("utf-8")).hexdigest()
+        send_news_fcm_notification({"id": str(raw_id), **top})
+
+    return len(new_articles), deleted_count, "success"
+
+
+@scheduler_fn.on_schedule(
+    schedule="50 0,6,8,10,12,14,16,18,20,22 * * *",
+    region="asia-south1",
+    timezone="Asia/Kolkata"
+)
+def sync_news_scheduled(event: scheduler_fn.ScheduledEvent) -> None:
+    """Runs 10 times daily (every 2 hours) in Mumbai."""
+    added, deleted, status = execute_news_sync()
+    print(f"[NEWS SCHEDULED SUCCESS] Added: {added}, Deleted: {deleted}, Status: {status}")
+
+
+@https_fn.on_request(region="asia-south1")
+def sync_news_http(req: https_fn.Request) -> https_fn.Response:
+    """On-demand trigger for news sync via GET or POST."""
+    cors_headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+    }
+    if req.method == "OPTIONS":
+        return https_fn.Response("", status=204, headers=cors_headers)
+
+    query = req.args.get("q", DEFAULT_NEWS_QUERY)
+    force = req.args.get("force", "false").lower() == "true"
+    added, deleted, status = execute_news_sync(query=query, force_notify=force)
+    return https_fn.Response(
+        json.dumps({
+            "status": status,
+            "added": added,
+            "deleted": deleted,
+            "query": query,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }, indent=2),
+        status=200,
+        mimetype="application/json",
+        headers=cors_headers
+    )
