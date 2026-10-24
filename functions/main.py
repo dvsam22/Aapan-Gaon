@@ -1,0 +1,338 @@
+"""
+Apna Gaon - 2nd Gen Firebase Cloud Functions (Mumbai Region: asia-south1)
+Automated Daily Mandi & Market Prices Sync + Local News Sync.
+"""
+
+import os
+import sys
+import json
+import hashlib
+import ssl
+import urllib.request
+import urllib.parse
+from datetime import datetime, timezone, timedelta
+
+from firebase_functions import scheduler_fn, https_fn
+from firebase_admin import initialize_app, firestore, messaging
+
+# Initialize Firebase Admin using default in-cloud credentials
+initialize_app()
+
+DATA_GOV_API_URL = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070"
+DEFAULT_DATA_GOV_KEY = "579b464db66ec23bdd000001d53e0115502e4a9f65f1012b123ada90"
+TARGET_DISTRICTS = ["Sant Kabir Nagar", "Siddharth Nagar"]
+MANDI_RETENTION_DAYS = 7
+
+GNEWS_API_URL = "https://gnews.io/api/v4/search"
+DEFAULT_GNEWS_KEY = "7f3a60695976d579cb056394df4743fb"
+NEWS_RETENTION_DAYS = 7
+
+# Commodity Hindi Translation Mapping
+COMMODITY_TRANSLATIONS = {
+    "potato": {"hi": "आलू (Potato)", "en": "Potato"},
+    "onion": {"hi": "प्याज (Onion)", "en": "Onion"},
+    "tomato": {"hi": "टमाटर (Tomato)", "en": "Tomato"},
+    "brinjal": {"hi": "बैंगन (Brinjal)", "en": "Brinjal"},
+    "bottle gourd": {"hi": "लौकी (Bottle Gourd)", "en": "Bottle Gourd"},
+    "bitter gourd": {"hi": "करेला (Bitter Gourd)", "en": "Bitter Gourd"},
+    "pumpkin": {"hi": "कद्दू / कोहड़ा (Pumpkin)", "en": "Pumpkin"},
+    "cauliflower": {"hi": "फूलगोभी (Cauliflower)", "en": "Cauliflower"},
+    "cabbage": {"hi": "पत्तागोभी (Cabbage)", "en": "Cabbage"},
+    "bhindi(ladies finger)": {"hi": "भिंडी (Bhindi)", "en": "Lady Finger"},
+    "pointed gourd(parval)": {"hi": "परवल (Parval)", "en": "Pointed Gourd (Parval)"},
+    "apple": {"hi": "सेब (Apple)", "en": "Apple"},
+    "banana": {"hi": "केला (Banana)", "en": "Banana"},
+    "banana - green": {"hi": "कच्चा केला (Green Banana)", "en": "Green Banana"},
+    "pomegranate": {"hi": "अनार (Pomegranate)", "en": "Pomegranate"},
+    "mousambi(sweet lime)": {"hi": "मौसमी (Sweet Lime)", "en": "Sweet Lime"},
+    "capsicum": {"hi": "शिमला मिर्च (Capsicum)", "en": "Capsicum"},
+    "carrot": {"hi": "गाजर (Carrot)", "en": "Carrot"},
+    "cucumbar(kheera)": {"hi": "खीरा (Cucumber)", "en": "Cucumber"},
+    "green chilli": {"hi": "हरी मिर्च (Green Chilli)", "en": "Green Chilli"},
+    "garlic": {"hi": "लहसुन (Garlic)", "en": "Garlic"},
+    "ginger(green)": {"hi": "अदरक (Ginger)", "en": "Ginger"},
+    "lemon": {"hi": "नींबू (Lemon)", "en": "Lemon"},
+    "papaya": {"hi": "पपीता (Papaya)", "en": "Papaya"},
+    "radish": {"hi": "मूली (Radish)", "en": "Radish"},
+    "raddish": {"hi": "मूली (Radish)", "en": "Radish"},
+    "sponge gourd": {"hi": "नेनुआ / तोरई (Sponge Gourd)", "en": "Sponge Gourd"},
+    "ridgeguard(tori)": {"hi": "तोरई (Ridge Gourd)", "en": "Ridge Gourd"},
+    "sweet potato": {"hi": "शकरकंद (Sweet Potato)", "en": "Sweet Potato"},
+    "wheat": {"hi": "गेहूं (Wheat)", "en": "Wheat"},
+    "paddy(common)": {"hi": "धान साधारण (Paddy)", "en": "Paddy (Common)"},
+    "paddy(basmati)": {"hi": "धान बासमती (Paddy)", "en": "Paddy (Basmati)"},
+    "paddy(dhan)(common)": {"hi": "धान (Paddy/Dhan)", "en": "Paddy (Common)"},
+    "bajra(pearl millet/cumbu)": {"hi": "बाजरा (Bajra)", "en": "Bajra"},
+    "maize": {"hi": "मक्का (Maize)", "en": "Maize"},
+    "mustard": {"hi": "सरसों (Mustard)", "en": "Mustard"},
+    "gram raw(chholia)": {"hi": "हरा चना (Chana)", "en": "Gram"},
+    "bengal gram(gram)(whole)": {"hi": "चना (Bengal Gram)", "en": "Bengal Gram"},
+    "arhar (tur/red gram)(whole)": {"hi": "अरहर / तुअर (Arhar)", "en": "Arhar/Tur"},
+    "masur(whole)": {"hi": "मसूर (Masur)", "en": "Masur"},
+    "moong(whole)": {"hi": "मूंग (Moong)", "en": "Moong"},
+    "urad(whole)": {"hi": "उड़द (Urad)", "en": "Urad"},
+    "peas(dry)": {"hi": "सूखा मटर (Dry Peas)", "en": "Dry Peas"},
+    "peas wet": {"hi": "हरी मटर (Green Peas)", "en": "Green Peas"},
+    "sugarcane": {"hi": "गन्ना (Sugarcane)", "en": "Sugarcane"},
+}
+
+CROP_KEYWORDS = [
+    "wheat", "paddy", "dhan", "rice", "maize", "mustard", "bajra", 
+    "gram", "arhar", "tur", "masur", "moong", "urad", "barley", 
+    "jowar", "sugarcane", "cotton", "soyabean", "sesamum", "linseed"
+]
+
+BULK_STAPLE_KEYWORDS = ["potato", "pumpkin", "bottle gourd", "cauliflower", "onion"]
+
+
+def get_localized_commodity(commodity_raw: str):
+    clean = commodity_raw.strip().lower()
+    if clean in COMMODITY_TRANSLATIONS:
+        return COMMODITY_TRANSLATIONS[clean]
+    title = commodity_raw.strip()
+    return {"hi": title, "en": title}
+
+
+def parse_arrival_date(arrival_date_str: str) -> int:
+    try:
+        cleaned = arrival_date_str.strip().replace("\\", "")
+        dt = datetime.strptime(cleaned, "%d/%m/%Y").replace(tzinfo=timezone.utc)
+        return int(dt.timestamp() * 1000)
+    except Exception:
+        return int(datetime.now(timezone.utc).timestamp() * 1000)
+
+
+def calculate_trend(min_p, max_p, modal_p) -> str:
+    try:
+        min_p = float(min_p)
+        max_p = float(max_p)
+        modal_p = float(modal_p)
+        if max_p > min_p:
+            mid = (min_p + max_p) / 2.0
+            if modal_p > mid:
+                return "up"
+            elif modal_p < mid:
+                return "down"
+    except Exception:
+        pass
+    return "stable"
+
+
+def _query_data_gov_api(api_key: str, district: str):
+    encoded_district = urllib.parse.quote(district)
+    url = f"{DATA_GOV_API_URL}?api-key={api_key}&format=json&limit=100&filters%5Bstate.keyword%5D=Uttar%20Pradesh&filters%5Bdistrict%5D={encoded_district}"
+    print(f"[INFO] Fetching Mandi data for district: '{district}'...")
+
+    req = urllib.request.Request(
+        url,
+        headers={"User-Agent": "Mozilla/5.0 (ApnaGaon-MandiSync/1.0)"}
+    )
+
+    ctx = ssl.create_default_context()
+    try:
+        with urllib.request.urlopen(req, timeout=30, context=ctx) as r:
+            payload = json.loads(r.read().decode("utf-8"))
+            if "error" in payload:
+                print(f"[ERROR] API returned error for {district}: {payload.get('error')}", file=sys.stderr)
+                return []
+            records = payload.get("records", [])
+            print(f"[INFO] Fetched {len(records)} records for {district}.")
+            return records
+    except urllib.error.URLError as e:
+        if "CERTIFICATE_VERIFY_FAILED" in str(e):
+            unverified_ctx = ssl._create_unverified_context()
+            try:
+                with urllib.request.urlopen(req, timeout=30, context=unverified_ctx) as r:
+                    payload = json.loads(r.read().decode("utf-8"))
+                    if "error" in payload:
+                        print(f"[ERROR] API returned error for {district}: {payload.get('error')}", file=sys.stderr)
+                        return []
+                    records = payload.get("records", [])
+                    print(f"[INFO] Fetched {len(records)} records for {district} (unverified SSL).")
+                    return records
+            except Exception as e2:
+                print(f"[ERROR] Failed to fetch data for {district} (unverified SSL): {e2}", file=sys.stderr)
+                return []
+        print(f"[ERROR] Failed to fetch data for {district}: {e}", file=sys.stderr)
+        return []
+    except Exception as e:
+        print(f"[ERROR] Failed to fetch data for {district}: {e}", file=sys.stderr)
+        return []
+
+
+def fetch_district_mandi(api_key: str, district: str):
+    clean_key = api_key.strip() if api_key and api_key.strip().lower() not in ("", "true", "none", "null") else DEFAULT_DATA_GOV_KEY
+    records = _query_data_gov_api(clean_key, district)
+    if not records and clean_key != DEFAULT_DATA_GOV_KEY:
+        print(f"[WARNING] Key '{clean_key[:8]}...' returned 0 records. Retrying with default...")
+        records = _query_data_gov_api(DEFAULT_DATA_GOV_KEY, district)
+    return records
+
+
+def process_mandi_records(all_records):
+    seen_keys = set()
+    processed_items = []
+
+    for rec in all_records:
+        district = rec.get("district", "").strip()
+        market = rec.get("market", "").strip()
+        commodity_raw = rec.get("commodity", "").strip()
+        variety = rec.get("variety", "").strip()
+        arrival_date = rec.get("arrival_date", "").strip()
+        modal_price = float(rec.get("modal_price", 0))
+        min_price = float(rec.get("min_price", modal_price))
+        max_price = float(rec.get("max_price", modal_price))
+
+        if modal_price <= 0:
+            continue
+
+        dedup_key = f"{district}_{market}_{commodity_raw}_{arrival_date}".lower()
+        if dedup_key in seen_keys:
+            continue
+        seen_keys.add(dedup_key)
+
+        date_ms = parse_arrival_date(arrival_date)
+        trend = calculate_trend(min_price, max_price, modal_price)
+        crop_name = get_localized_commodity(commodity_raw)
+        unit = {"hi": "1 क्विंटल", "en": "1 Quintal"}
+        market_localized = {"hi": market, "en": market}
+
+        is_crop = any(kw in commodity_raw.lower() for kw in CROP_KEYWORDS)
+        is_bulk_staple = any(kw in commodity_raw.lower() for kw in BULK_STAPLE_KEYWORDS)
+
+        # 1. Market (Vegetables & Fruits)
+        if not is_crop:
+            doc_id_market = hashlib.md5(f"market_{dedup_key}".encode("utf-8")).hexdigest()
+            processed_items.append({
+                "id": doc_id_market,
+                "categoryId": "market",
+                "cropName": crop_name,
+                "price": modal_price,
+                "unit": unit,
+                "trend": trend,
+                "date": date_ms,
+                "market": market_localized,
+                "district": district,
+                "variety": variety
+            })
+
+        # 2. Prices (Crops & Bulk Produce)
+        if is_crop or is_bulk_staple:
+            doc_id_price = hashlib.md5(f"prices_{dedup_key}".encode("utf-8")).hexdigest()
+            processed_items.append({
+                "id": doc_id_price,
+                "categoryId": "prices",
+                "cropName": crop_name,
+                "price": modal_price,
+                "unit": unit,
+                "trend": trend,
+                "date": date_ms,
+                "market": market_localized,
+                "district": district,
+                "variety": variety
+            })
+
+    return processed_items
+
+
+def send_mandi_fcm_notification(db, arrival_date_str: str, force: bool = False):
+    meta_ref = db.collection("settings").document("mandi_sync_meta")
+    if not force:
+        try:
+            meta_doc = meta_ref.get()
+            if meta_doc.exists and meta_doc.to_dict().get("last_notified_date") == arrival_date_str:
+                print(f"[INFO] FCM notification already sent today for '{arrival_date_str}'.")
+                return
+        except Exception as e:
+            print(f"[WARNING] Could not check meta: {e}")
+
+    try:
+        msg = messaging.Message(
+            notification=messaging.Notification(
+                title="🌾 आज का ताज़ा मंडी भाव अपडेट हो गया है!",
+                body="खलीलाबाद व नौगढ़ मंडी के आलू, टमाटर, बैंगन, गोभी व फसलों के नए रेट देखने के लिए टैप करें।"
+            ),
+            data={"id": "mandi", "type": "mandi"},
+            topic="mandi"
+        )
+        resp = messaging.send(msg)
+        print(f"[INFO] FCM Notification sent: {resp}")
+        meta_ref.set({
+            "last_notified_date": arrival_date_str,
+            "last_notification_sent_at": firestore.SERVER_TIMESTAMP
+        }, merge=True)
+    except Exception as e:
+        print(f"[ERROR] Failed to send FCM: {e}", file=sys.stderr)
+
+
+def execute_mandi_sync(force_notify=False):
+    db = firestore.client()
+    all_records = []
+    for dist in TARGET_DISTRICTS:
+        recs = fetch_district_mandi(DEFAULT_DATA_GOV_KEY, dist)
+        all_records.extend(recs)
+
+    if not all_records:
+        return 0, 0, "No records returned from data.gov.in"
+
+    items = process_mandi_records(all_records)
+    mandi_col = db.collection("mandi")
+    saved_count = 0
+
+    for it in items:
+        doc_ref = mandi_col.document(it["id"])
+        data = dict(it)
+        data["updatedAt"] = firestore.SERVER_TIMESTAMP
+        doc_ref.set(data)
+        saved_count += 1
+
+    # Purge expired > 7 days
+    cutoff_ms = int((datetime.now(timezone.utc) - timedelta(days=MANDI_RETENTION_DAYS)).timestamp() * 1000)
+    deleted_count = 0
+    try:
+        for doc in mandi_col.where("date", "<", cutoff_ms).stream():
+            doc.reference.delete()
+            deleted_count += 1
+    except Exception as e:
+        print(f"[WARNING] Cleanup error: {e}")
+
+    arrival_dates = [r.get("arrival_date", "").replace("\\", "").strip() for r in all_records if r.get("arrival_date")]
+    latest_date = arrival_dates[0] if arrival_dates else datetime.now(timezone.utc).strftime("%d/%m/%Y")
+
+    if saved_count > 0 or force_notify:
+        send_mandi_fcm_notification(db, latest_date, force=force_notify)
+
+    return saved_count, deleted_count, latest_date
+
+
+# ==============================================================================
+# Cloud Functions 2nd Gen - Deployed in Mumbai (asia-south1)
+# ==============================================================================
+
+@scheduler_fn.on_schedule(
+    schedule="45 7,11,15,19 * * *",
+    region="asia-south1",
+    timezone="Asia/Kolkata"
+)
+def sync_mandi_scheduled(event: scheduler_fn.ScheduledEvent) -> None:
+    """Runs 4 times daily at 07:45 AM, 11:45 AM, 03:45 PM, 07:45 PM IST."""
+    saved, deleted, arrival_date = execute_mandi_sync()
+    print(f"[SCHEDULED SUCCESS] Saved: {saved}, Deleted: {deleted}, Date: {arrival_date}")
+
+
+@https_fn.on_request(region="asia-south1")
+def sync_mandi_http(req: https_fn.Request) -> https_fn.Response:
+    """Manual on-demand trigger accessible from any phone browser via HTTPS."""
+    force = req.args.get("force", "false").lower() == "true"
+    saved, deleted, arrival_date = execute_mandi_sync(force_notify=force)
+    return https_fn.Response(
+        json.dumps({
+            "status": "success",
+            "saved": saved,
+            "deleted": deleted,
+            "arrival_date": arrival_date,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }, indent=2),
+        status=200,
+        mimetype="application/json"
+    )
