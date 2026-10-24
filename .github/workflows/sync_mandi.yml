@@ -5,6 +5,12 @@ on:
     # Runs 4 times a day: 07:45 AM IST (02:15 UTC), 11:45 AM IST (06:15 UTC), 03:45 PM IST (10:15 UTC), 07:45 PM IST (14:15 UTC)
     # Using minute 15 to avoid GitHub Actions top-of-the-hour queue drops
     - cron: '15 2,6,10,14 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/sync_mandi.py'
+      - '.github/workflows/sync_mandi.yml'
   workflow_dispatch: # Allows manual trigger from GitHub Actions tab anytime
 
 jobs:

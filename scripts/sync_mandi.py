@@ -137,13 +137,17 @@ def calculate_trend(min_p, max_p, modal_p) -> str:
     return "stable"
 
 
+DEFAULT_SCRAPINGANT_KEY = "2cb696ad7ca040be83bdec1966d7ed5e"
+
+
 def _fetch_via_proxy_gateway(target_url: str):
     """Fallback to Indian proxy gateway when direct cloud connection is blocked by NIC firewall."""
-    scrapingant_key = os.getenv("SCRAPINGANT_API_KEY", "").strip()
+    raw_key = os.getenv("SCRAPINGANT_API_KEY", "").strip()
+    scrapingant_key = raw_key if raw_key and raw_key.lower() not in ("none", "null", "false") else DEFAULT_SCRAPINGANT_KEY
     scraperapi_key = os.getenv("SCRAPERAPI_KEY", "").strip()
 
     # 1. Try ScrapingAnt with Indian residential IP
-    if scrapingant_key and scrapingant_key.lower() not in ("none", "null", "false"):
+    if scrapingant_key:
         print(f"[INFO] Routing via ScrapingAnt gateway (India proxy)...")
         proxy_url = f"https://api.scrapingant.com/v2/general?url={urllib.parse.quote(target_url)}&x-api-key={scrapingant_key}&proxy_country=IN&browser=false"
         try:
