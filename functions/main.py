@@ -123,50 +123,55 @@ def _query_data_gov_api(api_key: str, district: str):
     url = f"{DATA_GOV_API_URL}?api-key={api_key}&format=json&limit=100&filters%5Bstate.keyword%5D=Uttar%20Pradesh&filters%5Bdistrict%5D={encoded_district}"
     print(f"[INFO] Fetching Mandi data for district: '{district}'...")
 
-    req = urllib.request.Request(
-        url,
-        headers={"User-Agent": "Mozilla/5.0 (ApnaGaon-MandiSync/1.0)"}
-    )
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-IN,en-GB;q=0.9,en-US;q=0.8,en;q=0.7,hi;q=0.6",
+        "Connection": "keep-alive"
+    }
+    req = urllib.request.Request(url, headers=headers)
 
     ctx = ssl.create_default_context()
     try:
-        with urllib.request.urlopen(req, timeout=30, context=ctx) as r:
+        with urllib.request.urlopen(req, timeout=10, context=ctx) as r:
             payload = json.loads(r.read().decode("utf-8"))
             if "error" in payload:
-                print(f"[ERROR] API returned error for {district}: {payload.get('error')}", file=sys.stderr)
-                return []
+                err = f"API error for {district}: {payload.get('error')}"
+                print(f"[ERROR] {err}", file=sys.stderr)
+                return [], err
             records = payload.get("records", [])
             print(f"[INFO] Fetched {len(records)} records for {district}.")
-            return records
+            return records, None
     except urllib.error.URLError as e:
         if "CERTIFICATE_VERIFY_FAILED" in str(e):
             unverified_ctx = ssl._create_unverified_context()
             try:
-                with urllib.request.urlopen(req, timeout=30, context=unverified_ctx) as r:
+                with urllib.request.urlopen(req, timeout=10, context=unverified_ctx) as r:
                     payload = json.loads(r.read().decode("utf-8"))
                     if "error" in payload:
-                        print(f"[ERROR] API returned error for {district}: {payload.get('error')}", file=sys.stderr)
-                        return []
+                        err = f"API error for {district} (unverified SSL): {payload.get('error')}"
+                        return [], err
                     records = payload.get("records", [])
-                    print(f"[INFO] Fetched {len(records)} records for {district} (unverified SSL).")
-                    return records
+                    return records, None
             except Exception as e2:
-                print(f"[ERROR] Failed to fetch data for {district} (unverified SSL): {e2}", file=sys.stderr)
-                return []
-        print(f"[ERROR] Failed to fetch data for {district}: {e}", file=sys.stderr)
-        return []
+                err = f"Failed for {district} (unverified SSL): {e2}"
+                return [], err
+        err = f"Failed for {district}: {e}"
+        print(f"[ERROR] {err}", file=sys.stderr)
+        return [], err
     except Exception as e:
-        print(f"[ERROR] Failed to fetch data for {district}: {e}", file=sys.stderr)
-        return []
+        err = f"Failed for {district}: {e}"
+        print(f"[ERROR] {err}", file=sys.stderr)
+        return [], err
 
 
 def fetch_district_mandi(api_key: str, district: str):
     clean_key = api_key.strip() if api_key and api_key.strip().lower() not in ("", "true", "none", "null") else DEFAULT_DATA_GOV_KEY
-    records = _query_data_gov_api(clean_key, district)
+    records, err = _query_data_gov_api(clean_key, district)
     if not records and clean_key != DEFAULT_DATA_GOV_KEY:
         print(f"[WARNING] Key '{clean_key[:8]}...' returned 0 records. Retrying with default...")
-        records = _query_data_gov_api(DEFAULT_DATA_GOV_KEY, district)
-    return records
+        records, err = _query_data_gov_api(DEFAULT_DATA_GOV_KEY, district)
+    return records, err
 
 
 def process_mandi_records(all_records):
@@ -268,12 +273,16 @@ def send_mandi_fcm_notification(db, arrival_date_str: str, force: bool = False):
 def execute_mandi_sync(force_notify=False):
     db = firestore.client()
     all_records = []
+    errors = []
     for dist in TARGET_DISTRICTS:
-        recs = fetch_district_mandi(DEFAULT_DATA_GOV_KEY, dist)
+        recs, err = fetch_district_mandi(DEFAULT_DATA_GOV_KEY, dist)
+        if err:
+            errors.append(err)
         all_records.extend(recs)
 
     if not all_records:
-        return 0, 0, "No records returned from data.gov.in"
+        err_summary = "; ".join(errors) if errors else "No records returned from data.gov.in"
+        return 0, 0, err_summary
 
     items = process_mandi_records(all_records)
     mandi_col = db.collection("mandi")
@@ -322,12 +331,42 @@ def sync_mandi_scheduled(event: scheduler_fn.ScheduledEvent) -> None:
 
 @https_fn.on_request(region="asia-south1")
 def sync_mandi_http(req: https_fn.Request) -> https_fn.Response:
-    """Manual on-demand trigger accessible from any phone browser via HTTPS."""
+    """Trigger sync via GET, or accept pre-fetched records via POST from phone/laptop."""
+    if req.method == "POST" and req.is_json:
+        body = req.get_json(silent=True) or {}
+        records = body.get("records", [])
+        if records:
+            db = firestore.client()
+            items = process_mandi_records(records)
+            mandi_col = db.collection("mandi")
+            saved_count = 0
+            for it in items:
+                doc_ref = mandi_col.document(it["id"])
+                data = dict(it)
+                data["updatedAt"] = firestore.SERVER_TIMESTAMP
+                doc_ref.set(data)
+                saved_count += 1
+            
+            arrival_dates = [r.get("arrival_date", "").replace("\\", "").strip() for r in records if r.get("arrival_date")]
+            latest_date = arrival_dates[0] if arrival_dates else datetime.now(timezone.utc).strftime("%d/%m/%Y")
+            send_mandi_fcm_notification(db, latest_date, force=True)
+            return https_fn.Response(
+                json.dumps({
+                    "status": "success",
+                    "saved": saved_count,
+                    "source": "device_direct",
+                    "arrival_date": latest_date,
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }, indent=2),
+                status=200,
+                mimetype="application/json"
+            )
+
     force = req.args.get("force", "false").lower() == "true"
     saved, deleted, arrival_date = execute_mandi_sync(force_notify=force)
     return https_fn.Response(
         json.dumps({
-            "status": "success",
+            "status": "success" if saved > 0 else "warning",
             "saved": saved,
             "deleted": deleted,
             "arrival_date": arrival_date,
