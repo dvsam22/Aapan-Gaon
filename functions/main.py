@@ -329,10 +329,188 @@ def sync_mandi_scheduled(event: scheduler_fn.ScheduledEvent) -> None:
     print(f"[SCHEDULED SUCCESS] Saved: {saved}, Deleted: {deleted}, Date: {arrival_date}")
 
 
+HTML_SYNC_PAGE = """<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🌾 आपन गांव - मंडी सिंक</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f0f4f0;
+      color: #1b381e;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 28px 24px;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: #e8f5e9;
+      color: #2e7d32;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 8px 0 16px;
+      color: #1b5e20;
+    }
+    p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.5;
+      margin: 0 0 20px;
+    }
+    .status-box {
+      background: #f9fbf9;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      line-height: 1.4;
+      text-align: center;
+    }
+    .btn {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      width: 100%;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(46,125,50,0.25);
+      transition: all 0.2s ease;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { background: #a5d6a7; cursor: not-allowed; }
+    .footer {
+      margin-top: 18px;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">📡 मोबाइल सिंक नेटवर्क</div>
+    <h1>🌾 आपन गांव - मंडी भाव सिंक</h1>
+    <p>यह पेज आपके फोन के नेटवर्क (Jio/Airtel/Wi-Fi) से सरकारी पोर्टल से आज का ताज़ा भाव लेकर Google Cloud पर अपडेट करता है।</p>
+    
+    <div id="statusBox" class="status-box">
+      <span>⏳ शुरू हो रहा है...</span>
+    </div>
+
+    <button id="syncBtn" class="btn" onclick="startSync()">🔄 अभी सिंक करें (Sync Now)</button>
+    <div class="footer">संत कबीर नगर (खलीलाबाद) व सिद्धार्थ नगर (नौगढ़)</div>
+  </div>
+
+  <script>
+    const API_KEY = "579b464db66ec23bdd000001d53e0115502e4a9f65f1012b123ada90";
+    const RESOURCE_ID = "9ef84268-d588-465a-a308-a864a43d0070";
+    const DISTRICTS = ["Sant Kabir Nagar", "Siddharth Nagar"];
+
+    async function startSync() {
+      const btn = document.getElementById("syncBtn");
+      const box = document.getElementById("statusBox");
+      btn.disabled = true;
+      box.style.borderColor = "#81c784";
+      box.innerHTML = "<span>⏳ सरकारी पोर्टल (data.gov.in) से भाव प्राप्त किया जा रहा है...</span>";
+
+      let allRecords = [];
+      let errors = [];
+
+      for (const dist of DISTRICTS) {
+        try {
+          const url = `https://api.data.gov.in/resource/${RESOURCE_ID}?api-key=${API_KEY}&format=json&limit=100&filters[state]=Uttar%20Pradesh&filters[district]=${encodeURIComponent(dist)}`;
+          const resp = await fetch(url);
+          if (!resp.ok) {
+            errors.push(`${dist}: HTTP ${resp.status}`);
+            continue;
+          }
+          const json = await resp.json();
+          if (json.records && json.records.length > 0) {
+            allRecords.push(...json.records);
+          }
+        } catch (e) {
+          errors.push(`${dist}: ${e.message}`);
+        }
+      }
+
+      if (allRecords.length === 0) {
+        box.style.borderColor = "#ffb74d";
+        box.innerHTML = `<span style="color:#e65100;">⚠️ आज का कोई नया डेटा नहीं मिला।<br><small>${errors.join("; ") || "0 records"}</small></span>`;
+        btn.disabled = false;
+        return;
+      }
+
+      box.innerHTML = `<span>📥 ${allRecords.length} रिकॉर्ड मिले!<br>Google Cloud पर सुरक्षित सेव किया जा रहा है...</span>`;
+
+      try {
+        const postResp = await fetch(window.location.origin + window.location.pathname, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ records: allRecords })
+        });
+        const result = await postResp.json();
+        box.style.borderColor = "#4caf50";
+        box.innerHTML = `<span style="color:#2e7d32; font-weight:600;">🎉 सफलतापूर्वक सिंक हुआ!<br>✅ ${result.saved} मंडी भाव सेव हुए (${result.arrival_date})<br>🔔 सभी ग्रामीणों को नोटिफिकेशन भेज दिया गया।</span>`;
+      } catch (err) {
+        box.style.borderColor = "#ef5350";
+        box.innerHTML = `<span style="color:#c62828;">❌ Cloud Save त्रुटि: ${err.message}</span>`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Auto-run on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      startSync();
+    });
+  </script>
+</body>
+</html>
+"""
+
+
 @https_fn.on_request(region="asia-south1")
 def sync_mandi_http(req: https_fn.Request) -> https_fn.Response:
-    """Trigger sync via GET, or accept pre-fetched records via POST from phone/laptop."""
-    if req.method == "POST" and req.is_json:
+    """Handles browser visits with auto-client sync UI, or direct POST records, or server GET."""
+    cors_headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    }
+
+    # Handle CORS preflight
+    if req.method == "OPTIONS":
+        return https_fn.Response("", status=204, headers=cors_headers)
+
+    # 1. POST from phone browser / Android app / script with pre-fetched records
+    if req.method == "POST":
         body = req.get_json(silent=True) or {}
         records = body.get("records", [])
         if records:
@@ -346,7 +524,17 @@ def sync_mandi_http(req: https_fn.Request) -> https_fn.Response:
                 data["updatedAt"] = firestore.SERVER_TIMESTAMP
                 doc_ref.set(data)
                 saved_count += 1
-            
+
+            # Purge expired > 7 days
+            cutoff_ms = int((datetime.now(timezone.utc) - timedelta(days=MANDI_RETENTION_DAYS)).timestamp() * 1000)
+            deleted_count = 0
+            try:
+                for doc in mandi_col.where("date", "<", cutoff_ms).stream():
+                    doc.reference.delete()
+                    deleted_count += 1
+            except Exception as e:
+                print(f"[WARNING] Cleanup error: {e}")
+
             arrival_dates = [r.get("arrival_date", "").replace("\\", "").strip() for r in records if r.get("arrival_date")]
             latest_date = arrival_dates[0] if arrival_dates else datetime.now(timezone.utc).strftime("%d/%m/%Y")
             send_mandi_fcm_notification(db, latest_date, force=True)
@@ -354,14 +542,28 @@ def sync_mandi_http(req: https_fn.Request) -> https_fn.Response:
                 json.dumps({
                     "status": "success",
                     "saved": saved_count,
+                    "deleted": deleted_count,
                     "source": "device_direct",
                     "arrival_date": latest_date,
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 }, indent=2),
                 status=200,
-                mimetype="application/json"
+                mimetype="application/json",
+                headers=cors_headers
             )
 
+    # 2. Browser GET request -> serve interactive 1-click Auto-Sync Web UI
+    accept_header = req.headers.get("Accept", "")
+    is_browser = "text/html" in accept_header and not req.args.get("raw")
+    if is_browser and req.method == "GET":
+        return https_fn.Response(
+            HTML_SYNC_PAGE,
+            status=200,
+            mimetype="text/html; charset=utf-8",
+            headers=cors_headers
+        )
+
+    # 3. Server-side fetch fallback (for curl / automated triggers)
     force = req.args.get("force", "false").lower() == "true"
     saved, deleted, arrival_date = execute_mandi_sync(force_notify=force)
     return https_fn.Response(
@@ -373,5 +575,6 @@ def sync_mandi_http(req: https_fn.Request) -> https_fn.Response:
             "timestamp": datetime.now(timezone.utc).isoformat()
         }, indent=2),
         status=200,
-        mimetype="application/json"
+        mimetype="application/json",
+        headers=cors_headers
     )

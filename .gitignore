@@ -34,3 +34,8 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Firebase Functions Python venv
+functions/venv/
+functions/__pycache__/
+
