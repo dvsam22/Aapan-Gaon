@@ -137,6 +137,36 @@ def calculate_trend(min_p, max_p, modal_p) -> str:
     return "stable"
 
 
+def _fetch_via_proxy_gateway(target_url: str):
+    """Fallback to Indian proxy gateway when direct cloud connection is blocked by NIC firewall."""
+    scrapingant_key = os.getenv("SCRAPINGANT_API_KEY", "").strip()
+    scraperapi_key = os.getenv("SCRAPERAPI_KEY", "").strip()
+
+    # 1. Try ScrapingAnt with Indian residential IP
+    if scrapingant_key and scrapingant_key.lower() not in ("none", "null", "false"):
+        print(f"[INFO] Routing via ScrapingAnt gateway (India proxy)...")
+        proxy_url = f"https://api.scrapingant.com/v2/general?url={urllib.parse.quote(target_url)}&x-api-key={scrapingant_key}&proxy_country=IN&browser=false"
+        try:
+            req = urllib.request.Request(proxy_url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=35) as r:
+                return json.loads(r.read().decode("utf-8"))
+        except Exception as e:
+            print(f"[WARNING] ScrapingAnt gateway error: {e}", file=sys.stderr)
+
+    # 2. Try ScraperAPI with Indian IP
+    if scraperapi_key and scraperapi_key.lower() not in ("none", "null", "false"):
+        print(f"[INFO] Routing via ScraperAPI gateway (India proxy)...")
+        proxy_url = f"https://api.scraperapi.com?api_key={scraperapi_key}&url={urllib.parse.quote(target_url)}&country_code=in"
+        try:
+            req = urllib.request.Request(proxy_url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=35) as r:
+                return json.loads(r.read().decode("utf-8"))
+        except Exception as e:
+            print(f"[WARNING] ScraperAPI gateway error: {e}", file=sys.stderr)
+
+    return None
+
+
 def _query_data_gov_api(api_key: str, district: str):
     encoded_district = urllib.parse.quote(district)
     url = f"{DATA_GOV_API_URL}?api-key={api_key}&format=json&limit=100&filters%5Bstate.keyword%5D=Uttar%20Pradesh&filters%5Bdistrict%5D={encoded_district}"
@@ -158,6 +188,13 @@ def _query_data_gov_api(api_key: str, district: str):
             print(f"[INFO] Fetched {len(records)} records for {district}.")
             return records
     except urllib.error.URLError as e:
+        print(f"[WARNING] Direct connection failed ({e}). Checking proxy gateway fallback...", file=sys.stderr)
+        gateway_data = _fetch_via_proxy_gateway(url)
+        if gateway_data and "records" in gateway_data:
+            recs = gateway_data.get("records", [])
+            print(f"[INFO] Fetched {len(recs)} records for {district} via Indian proxy gateway.")
+            return recs
+
         if "CERTIFICATE_VERIFY_FAILED" in str(e):
             unverified_ctx = ssl._create_unverified_context()
             try:
@@ -175,6 +212,11 @@ def _query_data_gov_api(api_key: str, district: str):
         print(f"[ERROR] Failed to fetch data for {district}: {e}", file=sys.stderr)
         return []
     except Exception as e:
+        gateway_data = _fetch_via_proxy_gateway(url)
+        if gateway_data and "records" in gateway_data:
+            recs = gateway_data.get("records", [])
+            print(f"[INFO] Fetched {len(recs)} records for {district} via Indian proxy gateway.")
+            return recs
         print(f"[ERROR] Failed to fetch data for {district}: {e}", file=sys.stderr)
         return []
 

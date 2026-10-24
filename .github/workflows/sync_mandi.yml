@@ -29,5 +29,7 @@ jobs:
         env:
           DATA_GOV_API_KEY: ${{ secrets.DATA_GOV_API_KEY }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          SCRAPINGANT_API_KEY: ${{ secrets.SCRAPINGANT_API_KEY }}
+          SCRAPERAPI_KEY: ${{ secrets.SCRAPERAPI_KEY }}
         run: |
           python scripts/sync_mandi.py
