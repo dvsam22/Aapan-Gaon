@@ -19,13 +19,23 @@
     "template": "remote_config.json"
   },
   "hosting": {
-    "public": "website",
+    "public": "web/out",
+    "cleanUrls": true,
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
     "headers": [
+      {
+        "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|js|css)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "max-age=31536000, immutable"
+          }
+        ]
+      },
       {
         "source": "/app-ads.txt",
         "headers": [

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
+    "deploy": "next build --webpack && (cd .. && ./web/node_modules/.bin/firebase deploy --only hosting)",
     "start": "next start",
     "lint": "eslint"
   },
@@ -21,6 +22,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
+    "firebase-tools": "^15.34.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
