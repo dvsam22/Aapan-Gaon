@@ -137,36 +137,55 @@ def calculate_trend(min_p, max_p, modal_p) -> str:
     return "stable"
 
 
-def fetch_district_mandi(api_key: str, district: str):
+def _query_data_gov_api(api_key: str, district: str):
     encoded_district = urllib.parse.quote(district)
     url = f"{DATA_GOV_API_URL}?api-key={api_key}&format=json&limit=100&filters%5Bstate.keyword%5D=Uttar%20Pradesh&filters%5Bdistrict%5D={encoded_district}"
     print(f"[INFO] Fetching Mandi data for district: '{district}'...")
 
     req = urllib.request.Request(
         url,
-        headers={"User-Agent": "ApnaGaon-MandiSync/1.0"}
+        headers={"User-Agent": "Mozilla/5.0 (ApnaGaon-MandiSync/1.0)"}
     )
 
     ctx = ssl.create_default_context()
     try:
         with urllib.request.urlopen(req, timeout=30, context=ctx) as r:
             payload = json.loads(r.read().decode("utf-8"))
+            if "error" in payload:
+                print(f"[ERROR] API returned error for {district}: {payload.get('error')}", file=sys.stderr)
+                return []
             records = payload.get("records", [])
             print(f"[INFO] Fetched {len(records)} records for {district}.")
             return records
     except urllib.error.URLError as e:
         if "CERTIFICATE_VERIFY_FAILED" in str(e):
             unverified_ctx = ssl._create_unverified_context()
-            with urllib.request.urlopen(req, timeout=30, context=unverified_ctx) as r:
-                payload = json.loads(r.read().decode("utf-8"))
-                records = payload.get("records", [])
-                print(f"[INFO] Fetched {len(records)} records for {district} (unverified SSL).")
-                return records
+            try:
+                with urllib.request.urlopen(req, timeout=30, context=unverified_ctx) as r:
+                    payload = json.loads(r.read().decode("utf-8"))
+                    if "error" in payload:
+                        print(f"[ERROR] API returned error for {district}: {payload.get('error')}", file=sys.stderr)
+                        return []
+                    records = payload.get("records", [])
+                    print(f"[INFO] Fetched {len(records)} records for {district} (unverified SSL).")
+                    return records
+            except Exception as e2:
+                print(f"[ERROR] Failed to fetch data for {district} (unverified SSL): {e2}", file=sys.stderr)
+                return []
         print(f"[ERROR] Failed to fetch data for {district}: {e}", file=sys.stderr)
         return []
     except Exception as e:
         print(f"[ERROR] Failed to fetch data for {district}: {e}", file=sys.stderr)
         return []
+
+
+def fetch_district_mandi(api_key: str, district: str):
+    clean_key = api_key.strip() if api_key and api_key.strip().lower() not in ("", "true", "none", "null") else DEFAULT_API_KEY
+    records = _query_data_gov_api(clean_key, district)
+    if not records and clean_key != DEFAULT_API_KEY:
+        print(f"[WARNING] API key '{clean_key[:8]}...' returned 0 records. Retrying with DEFAULT_API_KEY...")
+        records = _query_data_gov_api(DEFAULT_API_KEY, district)
+    return records
 
 
 def init_firebase():
@@ -369,13 +388,13 @@ def send_mandi_notification(db, arrival_date_str: str, force: bool = False, dry_
 def main():
     parser = argparse.ArgumentParser(description="Sync daily Mandi prices for Sant Kabir Nagar & Siddharth Nagar.")
     env_key = os.environ.get("DATA_GOV_API_KEY", "").strip()
-    default_key = env_key if env_key else DEFAULT_API_KEY
+    default_key = env_key if env_key and env_key.lower() not in ("true", "false", "none", "null") else DEFAULT_API_KEY
     parser.add_argument("--api-key", default=default_key, help="data.gov.in API Key")
     parser.add_argument("--dry-run", action="store_true", help="Run without writing to Firebase")
     parser.add_argument("--force-notify", action="store_true", help="Force send FCM notification even if already sent today")
     args = parser.parse_args()
 
-    api_key = args.api_key.strip() if args.api_key and args.api_key.strip() else DEFAULT_API_KEY
+    api_key = args.api_key.strip() if args.api_key and args.api_key.strip().lower() not in ("true", "false", "none", "null") else DEFAULT_API_KEY
 
     print("==========================================")
     print("   Apna Gaon - Daily Mandi Sync Service   ")
@@ -389,8 +408,8 @@ def main():
         all_records.extend(recs)
 
     if not all_records:
-        print("[WARNING] No records returned for target districts. Exiting.")
-        return
+        print("[ERROR] No records returned for target districts. Exiting with failure.", file=sys.stderr)
+        sys.exit(1)
 
     processed_items = process_records(all_records)
     print(f"[INFO] Processed {len(processed_items)} total mandi entries across categories.")
