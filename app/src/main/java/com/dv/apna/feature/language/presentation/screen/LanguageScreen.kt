@@ -32,10 +32,6 @@ import com.dv.apna.feature.language.domain.model.LanguageModel
 import com.dv.apna.feature.language.domain.model.VillageModel
 import com.dv.apna.feature.language.presentation.effect.LanguageEffect
 import com.dv.apna.R
-import android.Manifest
-import android.os.Build
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import com.dv.apna.feature.language.presentation.event.LanguageEvent
 import com.dv.apna.feature.language.presentation.state.LanguageState
 import kotlinx.coroutines.flow.collectLatest
@@ -53,17 +49,6 @@ fun LanguageScreen(
     effect: Flow<LanguageEffect>,
     onNavigateToHome: () -> Unit
 ) {
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted -> }
-    )
-
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        }
-    }
-
     LaunchedEffect(Unit) {
         effect.collectLatest { effect ->
             when (effect) {

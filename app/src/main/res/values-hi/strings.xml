@@ -177,4 +177,17 @@
     <string name="action_view_buyers">खरीदार देखें</string>
     <string name="action_helpline">हेल्पलाइन</string>
     <string name="action_view">देखें</string>
+
+    <!-- Notification Permission Dialog & Banner -->
+    <string name="notif_dialog_title">गांव के ज़रूरी अपडेट्स न छूटें! 🌾</string>
+    <string name="notif_dialog_subtitle">समय पर सही जानकारी, ताज़ा मंडी भाव, गांव की खबरें व ज़रूरी सेवाएं पाने के लिए सूचनाएं चालू करें।</string>
+    <string name="notif_turn_on_btn">सूचनाएं चालू करें</string>
+    <string name="notif_later_btn">अभी नहीं</string>
+    <string name="notif_open_settings_toast">कृपया सेटिंग्स में जाकर नोटिफिकेशन चालू करें</string>
+
+    <!-- Exit Confirmation Dialog -->
+    <string name="exit_dialog_title">हमारे साथ रहें या जल्द वापस आएं! 👋</string>
+    <string name="exit_dialog_subtitle">क्या आप सच में बाहर जाना चाहते हैं? आपके गांव के ताज़ा मंडी भाव, खबरें व जरूरी सेवाएं हमेशा यहीं मिलेंगी।</string>
+    <string name="exit_dialog_feedback_btn">फीडबैक दें</string>
+    <string name="exit_dialog_exit_btn">Exit, Sure?</string>
 </resources>

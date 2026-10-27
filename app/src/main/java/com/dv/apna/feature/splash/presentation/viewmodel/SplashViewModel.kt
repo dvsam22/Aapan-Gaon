@@ -52,8 +52,10 @@ class SplashViewModel @Inject constructor(
             val notificationType = splashRoute?.notificationType
 
             if (villageId != null) {
-                if (!notificationId.isNullOrBlank()) {
-                    _effect.emit(SplashEffect.NavigateToNotificationDetails(notificationId, notificationType))
+                if (notificationType?.lowercase() == "home" || notificationType?.lowercase() == "bounce") {
+                    _effect.emit(SplashEffect.NavigateToHome)
+                } else if (!notificationId.isNullOrBlank() || !notificationType.isNullOrBlank()) {
+                    _effect.emit(SplashEffect.NavigateToNotificationDetails(notificationId ?: "", notificationType))
                 } else {
                     _effect.emit(SplashEffect.NavigateToHome)
                 }

@@ -177,4 +177,17 @@
     <string name="action_view_buyers">View Buyers</string>
     <string name="action_helpline">Helpline</string>
     <string name="action_view">View</string>
+
+    <!-- Notification Permission Dialog & Banner -->
+    <string name="notif_dialog_title">Don\'t Miss Village Updates! 🌾</string>
+    <string name="notif_dialog_subtitle">Turn on notifications to get daily mandi rates, village news, transport &amp; emergency services right on time.</string>
+    <string name="notif_turn_on_btn">Turn On Notifications</string>
+    <string name="notif_later_btn">Later</string>
+    <string name="notif_open_settings_toast">Please allow notifications in Settings</string>
+
+    <!-- Exit Confirmation Dialog -->
+    <string name="exit_dialog_title">Stay with us or come back soon! 👋</string>
+    <string name="exit_dialog_subtitle">Are you sure you want to exit? Your daily village updates, mandi rates &amp; services are always right here.</string>
+    <string name="exit_dialog_feedback_btn">Feedback</string>
+    <string name="exit_dialog_exit_btn">Exit, Sure?</string>
 </resources>

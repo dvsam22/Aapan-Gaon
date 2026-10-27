@@ -40,7 +40,22 @@ class NotificationHelper @Inject constructor(
         notificationManager.createNotificationChannel(channel)
     }
 
+    private fun cleanNewsNotificationText(text: String): String {
+        if (text.isBlank()) return text
+        return text
+            .replace(Regex("(?i)maharajganj\\s*news\\s*[:\\-\\|]\\s*"), "")
+            .replace(Regex("(?i)maharajganj\\s*[:\\-\\|]\\s*"), "")
+            .replace(Regex("महराजगंज\\s*(न्यूज़|समाचार)?\\s*[:\\-\\|]\\s*"), "")
+            .replace(Regex("(?i)read\\s+(latest\\s+)?maharajganj\\s+news\\s+(today\\s+)?in\\s+hindi\\s*[-—–]?\\s*"), "")
+            .replace(Regex("(?i)read\\s+latest\\s+news\\s+in\\s+hindi\\s*[-—–]?\\s*"), "")
+            .replace(Regex("^(महराजगंज|महाराजगंज)\\s*[।|:\\-—–]\\s*"), "")
+            .trim()
+    }
+
     fun showNotification(title: String, message: String, notificationId: String? = null, type: String? = null) {
+        val cleanTitle = cleanNewsNotificationText(title)
+        val cleanMessage = cleanNewsNotificationText(message)
+
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             if (!notificationId.isNullOrEmpty()) {
@@ -61,9 +76,11 @@ class NotificationHelper @Inject constructor(
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.trasparent_logo)
-            .setContentTitle(title)
-            .setContentText(message)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentTitle(cleanTitle)
+            .setContentText(cleanMessage)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(cleanMessage))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
             .setAutoCancel(true)
             .setContentIntent(pendingIntent)
             .build()

@@ -668,20 +668,38 @@ def fetch_gnews_articles(api_key: str = DEFAULT_GNEWS_KEY, query: str = DEFAULT_
         return []
 
 
+def clean_news_text(text: str) -> str:
+    if not text:
+        return ""
+    import re
+    # Remove 'Maharajganj News:' or similar redundant publisher prefixes
+    text = re.sub(r'(?i)maharajganj\s*news\s*[:\-\|]\s*', '', text)
+    text = re.sub(r'(?i)maharajganj\s*[:\-\|]\s*', '', text)
+    text = re.sub(r'महराजगंज\s*(न्यूज़|समाचार)?\s*[:\-\|]\s*', '', text)
+    text = re.sub(r'(?i)read\s+(latest\s+)?maharajganj\s+news\s+(today\s+)?in\s+hindi\s*[-—–]?\s*', '', text)
+    text = re.sub(r'(?i)read\s+latest\s+news\s+in\s+hindi\s*[-—–]?\s*', '', text)
+    text = re.sub(r'^(महराजगंज|महाराजगंज)\s*[।|:\-—–]\s*', '', text)
+    return text.strip()
+
+
 def send_news_fcm_notification(top_article):
     try:
-        title = top_article.get("title", "महराजगंज की ताज़ा खबर")
-        if len(title) > 60:
-            title = title[:57] + "..."
-        body = top_article.get("description", "खबर विस्तार से पढ़ने के लिए टैप करें")
-        if len(body) > 120:
-            body = body[:117] + "..."
+        raw_title = top_article.get("title", "ताज़ा खबर")
+        clean_title = clean_news_text(raw_title)
+        if len(clean_title) > 60:
+            clean_title = clean_title[:57] + "..."
+
+        raw_body = top_article.get("description", "खबर विस्तार से पढ़ने के लिए टैप करें")
+        clean_body = clean_news_text(raw_body)
+        if len(clean_body) > 120:
+            clean_body = clean_body[:117] + "..."
+
         image_url = top_article.get("image") or None
 
         msg = messaging.Message(
             notification=messaging.Notification(
-                title=f"ताज़ा खबर: {title}",
-                body=body,
+                title=f"ताज़ा खबर: {clean_title}",
+                body=clean_body,
                 image=image_url
             ),
             data={

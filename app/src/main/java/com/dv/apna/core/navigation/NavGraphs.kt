@@ -154,10 +154,17 @@ fun RootNavGraph(
                         popUpTo(Route.Splash()) { inclusive = true }
                     }
                     when (type?.lowercase()) {
-                        "news" -> navController.navigate(Route.NewsDetails(id))
-                        "notice" -> navController.navigate(Route.NoticeDetails(id))
-                        "mandi" -> navController.navigate(Route.TodayMarket)
-                        else -> navController.navigate(Route.NotificationDetails(id))
+                        "news" -> if (id.isNotBlank()) navController.navigate(Route.NewsDetails(id)) else navController.navigate(Route.News)
+                        "notice" -> if (id.isNotBlank()) navController.navigate(Route.NoticeDetails(id)) else navController.navigate(Route.News)
+                        "mandi", "mandi_buyers" -> navController.navigate(Route.TodayMarket)
+                        "family", "family_tent", "family_catering", "family_dj", "family_halls" -> navController.navigate(Route.FamilyFunction)
+                        "labour" -> navController.navigate(Route.LabourBoard)
+                        "construction" -> navController.navigate(Route.Construction)
+                        "transport" -> navController.navigate(Route.Transport)
+                        "health" -> navController.navigate(Route.Health)
+                        "add_business" -> navController.navigate(Route.AddBusiness)
+                        "home", "bounce" -> { /* Open Home Dashboard directly */ }
+                        else -> if (id.isNotBlank()) navController.navigate(Route.NotificationDetails(id)) else navController.navigate(Route.Home)
                     }
                 }
             )

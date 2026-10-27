@@ -8,7 +8,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -54,11 +53,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var inAppUpdateManager: InAppUpdateManager
 
     private var navController: NavHostController? = null
-
-    private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -119,13 +113,20 @@ class MainActivity : AppCompatActivity() {
         setIntent(intent)
         val id = intent.getStringExtra("id") ?: intent.getStringExtra("notification_id")
         val type = intent.getStringExtra("type") ?: intent.getStringExtra("notification_type")
-        if (!id.isNullOrBlank()) {
+        if (!type.isNullOrBlank() || !id.isNullOrBlank()) {
             navController?.let { nav ->
                 when (type?.lowercase()) {
-                    "news" -> nav.navigate(Route.NewsDetails(id))
-                    "notice" -> nav.navigate(Route.NoticeDetails(id))
-                    "mandi" -> nav.navigate(Route.TodayMarket)
-                    else -> nav.navigate(Route.NotificationDetails(id))
+                    "news" -> if (!id.isNullOrBlank()) nav.navigate(Route.NewsDetails(id)) else nav.navigate(Route.News)
+                    "notice" -> if (!id.isNullOrBlank()) nav.navigate(Route.NoticeDetails(id)) else nav.navigate(Route.News)
+                    "mandi", "mandi_buyers" -> nav.navigate(Route.TodayMarket)
+                    "family", "family_tent", "family_catering", "family_dj", "family_halls" -> nav.navigate(Route.FamilyFunction)
+                    "labour" -> nav.navigate(Route.LabourBoard)
+                    "construction" -> nav.navigate(Route.Construction)
+                    "transport" -> nav.navigate(Route.Transport)
+                    "health" -> nav.navigate(Route.Health)
+                    "add_business" -> nav.navigate(Route.AddBusiness)
+                    "home", "bounce" -> nav.navigate(Route.Home)
+                    else -> if (!id.isNullOrBlank()) nav.navigate(Route.NotificationDetails(id)) else nav.navigate(Route.Home)
                 }
             }
         }

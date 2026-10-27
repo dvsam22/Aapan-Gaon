@@ -33,6 +33,16 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
 import com.dv.apna.core.components.AapanGavErrorScreen
 import com.dv.apna.core.components.BannerSkeleton
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.runtime.saveable.rememberSaveable
+import kotlinx.coroutines.delay
+import androidx.activity.compose.BackHandler
+import com.dv.apna.feature.home.presentation.component.ExitConfirmationDialog
+import com.dv.apna.feature.home.presentation.component.findActivity
+import com.dv.apna.feature.home.presentation.component.NotificationPermissionDialog
+import com.dv.apna.feature.home.presentation.component.isNotificationPermissionGranted
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
@@ -77,6 +87,81 @@ fun HomeScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    var isPermissionGranted by remember { mutableStateOf(isNotificationPermissionGranted(context)) }
+    var showPermissionDialog by rememberSaveable { mutableStateOf(false) }
+    var hasDismissedDialog by rememberSaveable { mutableStateOf(false) }
+    var showExitDialog by remember { mutableStateOf(false) }
+
+    // Intercept back button on Home Screen to show modern exit confirmation dialog
+    BackHandler(enabled = true) {
+        if (drawerState.isOpen) {
+            scope.launch { drawerState.close() }
+        } else if (showPermissionDialog) {
+            showPermissionDialog = false
+            hasDismissedDialog = true
+        } else {
+            showExitDialog = true
+        }
+    }
+
+    if (showExitDialog) {
+        ExitConfirmationDialog(
+            onDismiss = {
+                showExitDialog = false
+            },
+            onExit = {
+                showExitDialog = false
+                context.findActivity()?.finishAffinity()
+            },
+            onFeedback = {
+                showExitDialog = false
+                context.rateApp()
+            }
+        )
+    }
+
+    // Show permission dialog with a 2-second delay after opening Home
+    LaunchedEffect(Unit) {
+        if (!isPermissionGranted && !hasDismissedDialog) {
+            delay(2000L)
+            if (!isPermissionGranted && !hasDismissedDialog) {
+                showPermissionDialog = true
+            }
+        }
+    }
+
+    // Re-check permission whenever activity regains focus (e.g. user toggles in Android settings)
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val granted = isNotificationPermissionGranted(context)
+                isPermissionGranted = granted
+                if (granted) {
+                    showPermissionDialog = false
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    if (showPermissionDialog && !isPermissionGranted) {
+        NotificationPermissionDialog(
+            onDismiss = {
+                showPermissionDialog = false
+                hasDismissedDialog = true
+            },
+            onPermissionResult = { granted ->
+                isPermissionGranted = granted
+                showPermissionDialog = false
+                hasDismissedDialog = true
+            }
+        )
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
