@@ -76,6 +76,8 @@ fun HomeScreen(
     onNavigateToNews: () -> Unit,
     onNavigateToHealth: () -> Unit,
     onNavigateToFamilyFunction: () -> Unit,
+    onNavigateToEducation: () -> Unit,
+    onNavigateToDignitaries: () -> Unit,
     onNavigateToLanguage: () -> Unit,
     onNavigateToChangeVillage: () -> Unit,
     onNavigateToAddBusiness: () -> Unit,
@@ -250,6 +252,8 @@ fun HomeScreen(
                         onNewsClick = onNavigateToNews,
                         onHealthClick = onNavigateToHealth,
                         onFamilyFunctionClick = onNavigateToFamilyFunction,
+                        onEducationClick = onNavigateToEducation,
+                        onDignitariesClick = onNavigateToDignitaries,
                         onBannerClick = onBannerClick
                     )
                 }
@@ -496,6 +500,8 @@ fun HomeContent(
     onNewsClick: () -> Unit,
     onHealthClick: () -> Unit,
     onFamilyFunctionClick: () -> Unit,
+    onEducationClick: () -> Unit,
+    onDignitariesClick: () -> Unit,
     onBannerClick: (BannerModel) -> Unit = {}
 ) {
     LazyColumn(
@@ -532,7 +538,9 @@ fun HomeContent(
                 onMandiClick = onMandiClick,
                 onNewsClick = onNewsClick,
                 onHealthClick = onHealthClick,
-                onFamilyFunctionClick = onFamilyFunctionClick
+                onFamilyFunctionClick = onFamilyFunctionClick,
+                onEducationClick = onEducationClick,
+                onDignitariesClick = onDignitariesClick
             )
         }
     }
@@ -673,6 +681,8 @@ fun BannerCarousel(
                                         "add_business", "register_shop", "business" -> stringResource(id = R.string.action_add_free)
                                         "local_buyers", "buyers" -> stringResource(id = R.string.action_view_buyers)
                                         "health", "emergency" -> stringResource(id = R.string.action_helpline)
+                                        "education", "school", "teachers" -> stringResource(id = R.string.action_view)
+                                        "dignitaries", "leaders", "panchayat" -> stringResource(id = R.string.action_view)
                                         else -> stringResource(id = R.string.action_view)
                                     }
                                     Text(
@@ -729,7 +739,9 @@ fun ServicesGrid(
     onMandiClick: () -> Unit,
     onNewsClick: () -> Unit,
     onHealthClick: () -> Unit,
-    onFamilyFunctionClick: () -> Unit
+    onFamilyFunctionClick: () -> Unit,
+    onEducationClick: () -> Unit,
+    onDignitariesClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -813,6 +825,31 @@ fun ServicesGrid(
                 onClick = onFamilyFunctionClick
             )
         }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.sdp())
+        ) {
+            // School & Education Hub
+            ServiceCard(
+                title = stringResource(id = R.string.education_school_hub),
+                icon = R.drawable.ic_school,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(150.sdp()),
+                onClick = onEducationClick
+            )
+
+            // Village Dignitaries & Leaders
+            ServiceCard(
+                title = stringResource(id = R.string.village_dignitaries_leaders),
+                icon = R.drawable.ic_village_leaders,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(150.sdp()),
+                onClick = onDignitariesClick
+            )
+        }
     }
 }
 
@@ -880,6 +917,8 @@ fun HomeScreenPreview() {
             onNavigateToNews = {},
             onNavigateToHealth = {},
             onNavigateToFamilyFunction = {},
+            onNavigateToEducation = {},
+            onNavigateToDignitaries = {},
             onNavigateToLanguage = {},
             onNavigateToChangeVillage = {},
             onNavigateToAboutUs = {},

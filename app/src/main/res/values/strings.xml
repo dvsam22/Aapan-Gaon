@@ -190,4 +190,32 @@
     <string name="exit_dialog_subtitle">Are you sure you want to exit? Your daily village updates, mandi rates &amp; services are always right here.</string>
     <string name="exit_dialog_feedback_btn">Feedback</string>
     <string name="exit_dialog_exit_btn">Exit, Sure?</string>
+
+    <!-- School & Education -->
+    <string name="education_school_hub">Schools &amp; Education</string>
+    <string name="schools_colleges">Schools &amp; Colleges</string>
+    <string name="schools_colleges_desc">Primary, High School, Inter &amp; Degree Colleges</string>
+    <string name="teachers_tutors">Teachers &amp; Tutors</string>
+    <string name="teachers_tutors_desc">Subject specialist tutors &amp; coaching teachers</string>
+    <string name="study_notes_materials">Notes &amp; Study Material</string>
+    <string name="study_notes_materials_desc">Class-wise notes, model papers &amp; books</string>
+    <string name="scholarships_exams">Scholarships &amp; Exams</string>
+    <string name="scholarships_exams_desc">Navodaya, UP Board &amp; scholarship updates</string>
+    <string name="stationery_cyber_cafe">Stationery &amp; Cyber Cafe</string>
+    <string name="stationery_cyber_cafe_desc">Photocopy, form filling &amp; notebook centers</string>
+    <string name="no_education_data">No educational listings found</string>
+
+    <!-- Village Dignitaries & Leaders -->
+    <string name="village_dignitaries_leaders">Village Dignitaries &amp; Leaders</string>
+    <string name="legal_advisors_lawyers">Lawyers &amp; Legal Advisors</string>
+    <string name="legal_advisors_lawyers_desc">Tehsil &amp; Court advocates, land &amp; registry</string>
+    <string name="village_representatives">Panchayat &amp; Govt Leaders</string>
+    <string name="village_representatives_desc">Gram Pradhan, BDC, Secretary, Lekhpal, Kotedar</string>
+    <string name="veterans_elders">Respected Elders &amp; Veterans</string>
+    <string name="veterans_elders_desc">Ex-servicemen, retired teachers &amp; advisors</string>
+    <string name="document_writers_csc">Document Writers &amp; CSC</string>
+    <string name="document_writers_csc_desc">Deed writers, stamp vendors, caste/income cert</string>
+    <string name="bank_mitr_financial">Bank Mitr &amp; Financial Services</string>
+    <string name="bank_mitr_financial_desc">CSP, pension, insurance &amp; Kisan Samman Nidhi</string>
+    <string name="no_dignitaries_data">No dignitaries or advisors found</string>
 </resources>

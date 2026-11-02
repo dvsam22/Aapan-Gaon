@@ -72,6 +72,14 @@ import com.dv.apna.feature.family.presentation.viewmodel.FamilyFunctionViewModel
 import com.dv.apna.feature.family.presentation.effect.FamilyFunctionEffect
 import com.dv.apna.feature.business.presentation.screen.AddBusinessScreen
 import com.dv.apna.feature.business.presentation.viewmodel.AddBusinessViewModel
+import com.dv.apna.feature.education.presentation.screen.EducationHubScreen
+import com.dv.apna.feature.education.presentation.screen.EducationDetailsScreen
+import com.dv.apna.feature.education.presentation.viewmodel.EducationViewModel
+import com.dv.apna.feature.education.presentation.effect.EducationEffect
+import com.dv.apna.feature.dignitaries.presentation.screen.DignitariesHubScreen
+import com.dv.apna.feature.dignitaries.presentation.screen.DignitariesDetailsScreen
+import com.dv.apna.feature.dignitaries.presentation.viewmodel.DignitariesViewModel
+import com.dv.apna.feature.dignitaries.presentation.effect.DignitariesEffect
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -235,6 +243,20 @@ fun RootNavGraph(
                 onNavigateToNews = { navController.navigate(Route.News) },
                 onNavigateToHealth = { navController.navigate(Route.Health) },
                 onNavigateToFamilyFunction = { navController.navigate(Route.FamilyFunction) },
+                onNavigateToEducation = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.EducationHub) }
+                    } else {
+                        navController.navigate(Route.EducationHub)
+                    }
+                },
+                onNavigateToDignitaries = {
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.DignitariesHub) }
+                    } else {
+                        navController.navigate(Route.DignitariesHub)
+                    }
+                },
                 onNavigateToLanguage = {
                     if (activity != null) {
                         adManager.showInterstitialAd(activity) {
@@ -281,6 +303,12 @@ fun RootNavGraph(
                         }
                         "health", "emergency", "ambulance", "police" -> {
                             navController.navigate(Route.Health)
+                        }
+                        "education", "school", "schools", "teachers", "notes" -> {
+                            navController.navigate(Route.EducationHub)
+                        }
+                        "dignitaries", "leaders", "pradhan", "panchayat", "lawyer" -> {
+                            navController.navigate(Route.DignitariesHub)
                         }
                         else -> {
                             if (banner.link.startsWith("http://") || banner.link.startsWith("https://")) {
@@ -807,6 +835,96 @@ fun RootNavGraph(
             }
 
             FamilyFunctionDetailsScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Route.EducationHub> {
+            val context = LocalContext.current
+
+            LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext)
+            }
+
+            EducationHubScreen(
+                remoteConfigManager = remoteConfigManager,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToDetails = { categoryId, categoryName ->
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity) {
+                            navController.navigate(Route.EducationDetails(categoryId, categoryName))
+                        }
+                    } else {
+                        navController.navigate(Route.EducationDetails(categoryId, categoryName))
+                    }
+                }
+            )
+        }
+
+        composable<Route.EducationDetails> {
+            val viewModel: EducationViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+
+            LaunchedEffect(Unit) {
+                viewModel.effect.collectLatest { effect ->
+                    when (effect) {
+                        is EducationEffect.DialPhone -> context.dial(effect.contact)
+                        else -> {}
+                    }
+                }
+            }
+
+            EducationDetailsScreen(
+                state = state,
+                onEvent = viewModel::onEvent,
+                effect = viewModel.effect,
+                remoteConfigManager = remoteConfigManager,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Route.DignitariesHub> {
+            val context = LocalContext.current
+
+            LaunchedEffect(Unit) {
+                adManager.preloadInterstitialAd(context.applicationContext)
+            }
+
+            DignitariesHubScreen(
+                remoteConfigManager = remoteConfigManager,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToDetails = { categoryId, categoryName ->
+                    if (activity != null) {
+                        adManager.showInterstitialAd(activity) {
+                            navController.navigate(Route.DignitariesDetails(categoryId, categoryName))
+                        }
+                    } else {
+                        navController.navigate(Route.DignitariesDetails(categoryId, categoryName))
+                    }
+                }
+            )
+        }
+
+        composable<Route.DignitariesDetails> {
+            val viewModel: DignitariesViewModel = hiltViewModel()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            val context = LocalContext.current
+
+            LaunchedEffect(Unit) {
+                viewModel.effect.collectLatest { effect ->
+                    when (effect) {
+                        is DignitariesEffect.DialPhone -> context.dial(effect.contact)
+                        else -> {}
+                    }
+                }
+            }
+
+            DignitariesDetailsScreen(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,

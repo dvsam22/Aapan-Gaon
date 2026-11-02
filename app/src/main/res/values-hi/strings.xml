@@ -190,4 +190,32 @@
     <string name="exit_dialog_subtitle">क्या आप सच में बाहर जाना चाहते हैं? आपके गांव के ताज़ा मंडी भाव, खबरें व जरूरी सेवाएं हमेशा यहीं मिलेंगी।</string>
     <string name="exit_dialog_feedback_btn">फीडबैक दें</string>
     <string name="exit_dialog_exit_btn">Exit, Sure?</string>
+
+    <!-- School & Education -->
+    <string name="education_school_hub">शिक्षा एवं विद्यालय</string>
+    <string name="schools_colleges">विद्यालय व कॉलेज</string>
+    <string name="schools_colleges_desc">प्राथमिक विद्यालय, हाई स्कूल, इंटर व डिग्री कॉलेज</string>
+    <string name="teachers_tutors">शिक्षक व होम ट्यूटर</string>
+    <string name="teachers_tutors_desc">विषय अनुसार प्राइवेट ट्यूटर व कोचिंग शिक्षक</string>
+    <string name="study_notes_materials">नोट्स व अध्ययन सामग्री</string>
+    <string name="study_notes_materials_desc">कक्षा अनुसार नोट्स, मॉडल पेपर व पुरानी किताबें</string>
+    <string name="scholarships_exams">प्रवेश परीक्षा व छात्रवृत्ति</string>
+    <string name="scholarships_exams_desc">नवोदय, सैनिक स्कूल व UP छात्रवृत्ति अलर्ट</string>
+    <string name="stationery_cyber_cafe">स्टेशनरी व साइबर कैफे</string>
+    <string name="stationery_cyber_cafe_desc">फोटोकॉपी, ऑनलाइन फॉर्म व कॉपी-किताब केंद्र</string>
+    <string name="no_education_data">कोई विद्यालय या शिक्षक उपलब्ध नहीं है</string>
+
+    <!-- Village Dignitaries & Leaders -->
+    <string name="village_dignitaries_leaders">गाँव के वरिष्ठ व मार्गदर्शक</string>
+    <string name="legal_advisors_lawyers">कानूनी सलाहकार व वकील</string>
+    <string name="legal_advisors_lawyers_desc">तहसील व कचहरी के वकील, ज़मीन व रजिस्ट्री विशेषज्ञ</string>
+    <string name="village_representatives">ग्राम प्रतिनिधि व जनसेवक</string>
+    <string name="village_representatives_desc">ग्राम प्रधान, बीडीसी, सचिव, लेखपाल, कोटेदार</string>
+    <string name="veterans_elders">वरिष्ठ मार्गदर्शक व पूर्व सैनिक</string>
+    <string name="veterans_elders_desc">पूर्व सैनिक (फौजी), रिटायर्ड शिक्षक व वरिष्ठ नागरिक</string>
+    <string name="document_writers_csc">दस्तावेज़ लेखक व सीएससी</string>
+    <string name="document_writers_csc_desc">कातिब/मुंशी, स्टाम्प वेंडर, आय/जाति/निवास केंद्र</string>
+    <string name="bank_mitr_financial">बैंक मित्र व वित्तीय सलाहकार</string>
+    <string name="bank_mitr_financial_desc">ग्राहक सेवा केंद्र (CSP), पेंशन व बीमा सलाहकार</string>
+    <string name="no_dignitaries_data">कोई वरिष्ठ नागरिक या सलाहकार उपलब्ध नहीं है</string>
 </resources>
