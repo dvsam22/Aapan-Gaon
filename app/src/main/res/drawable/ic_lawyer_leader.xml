@@ -1,0 +1,55 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="60dp"
+    android:height="60dp"
+    android:viewportWidth="60"
+    android:viewportHeight="60">
+
+  <!-- Central Finial / Top Knob -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M30,5 A3,3 0 1,0 30,11 A3,3 0 1,0 30,5 Z"/>
+
+  <!-- Horizontal Balance Beam -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M11,13 C11,11.8 12,11 13.2,11 L46.8,11 C48,11 49,11.8 49,13 C49,14.2 48,15 46.8,15 L13.2,15 C12,15 11,14.2 11,13 Z"/>
+
+  <!-- Central Pillar Stem -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M28.5,14 L31.5,14 L31.5,49 L28.5,49 Z"/>
+
+  <!-- Decorative Pillar Ring -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M26,30 L34,30 C34.6,30 35,30.7 35,31.5 C35,32.3 34.6,33 34,33 L26,33 C25.4,33 25,32.3 25,31.5 C25,30.7 25.4,30 26,30 Z"/>
+
+  <!-- Sturdy Pedestal Base -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M20,49 L40,49 L43,55 L17,55 Z"/>
+
+  <!-- Left Scale Chains -->
+  <path
+      android:strokeColor="#2CA074"
+      android:strokeWidth="1.8"
+      android:strokeLineCap="round"
+      android:pathData="M14,15 L7,29 M14,15 L21,29"/>
+
+  <!-- Left Scale Pan -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M6,29 C6,34 9.5,36 14,36 C18.5,36 22,34 22,29 Z"/>
+
+  <!-- Right Scale Chains -->
+  <path
+      android:strokeColor="#2CA074"
+      android:strokeWidth="1.8"
+      android:strokeLineCap="round"
+      android:pathData="M46,15 L39,29 M46,15 L53,29"/>
+
+  <!-- Right Scale Pan -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M38,29 C38,34 41.5,36 46,36 C50.5,36 54,34 54,29 Z"/>
+</vector>

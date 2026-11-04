@@ -35,6 +35,9 @@ fun BannerAdView(
                         adUnitId = remoteConfigManager.getBannerAdUnitId()
                         loadAd(AdRequest.Builder().build())
                     }
+                },
+                onRelease = { adView ->
+                    adView.destroy()
                 }
             )
         }

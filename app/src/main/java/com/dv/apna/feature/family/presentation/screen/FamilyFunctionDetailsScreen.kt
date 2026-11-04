@@ -57,7 +57,8 @@ fun FamilyFunctionDetailsScreen(
     onEvent: (FamilyFunctionEvent) -> Unit,
     effect: Flow<FamilyFunctionEffect>,
     remoteConfigManager: RemoteConfigManager,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
+    onNavigateToAddBusiness: (() -> Unit)? = null
 ) {
     LaunchedEffect(Unit) {
         effect.collectLatest { effect ->
@@ -131,7 +132,8 @@ fun FamilyFunctionDetailsScreen(
             } else {
                 if (filteredFamilyFunctionDetails.isEmpty() && state.error == null) {
                     AapanGavEmptyData(
-                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_service_providers)
+                        message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_service_providers),
+                        onActionClick = onNavigateToAddBusiness
                     )
                 } else {
                     LazyColumn(

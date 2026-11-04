@@ -4,7 +4,7 @@ import com.dv.apna.core.common.UiText
 import com.dv.apna.feature.construction.domain.model.BricksSupplierModel
 
 data class BricksState(
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val suppliers: List<BricksSupplierModel> = emptyList(),
     val error: UiText? = null
 )

@@ -5,7 +5,7 @@ import com.dv.apna.feature.transport.domain.model.TransportDetails
 import com.dv.apna.feature.transport.domain.model.TransportService
 
 data class TransportState(
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val error: UiText? = null,
     val services: List<TransportService> = emptyList(),
     val selectedCategory: String = "",

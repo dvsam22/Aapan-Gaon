@@ -1,10 +1,26 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="48dp"
-    android:height="48dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
-  <!-- Graduation cap & school book icon -->
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <!-- School roof triangle / gable -->
   <path
       android:fillColor="#2CA074"
-      android:pathData="M12,3L1,9L12,15L21,10.09V17H23V9M5,13.18V17.18C5,19.94 8.13,22 12,22C15.87,22 19,19.94 19,17.18V13.18L12,17L5,13.18Z"/>
+      android:pathData="M16,3 L3,11 L7,11 L7,28 L25,28 L25,11 L29,11 Z M16,6.5 L24,11.5 L8,11.5 Z"/>
+  <!-- School bell tower / flag pole -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M15,2 L17,2 L17,4 L15,4 Z"/>
+  <!-- Windows -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M9,14 L12,14 L12,17 L9,17 Z M20,14 L23,14 L23,17 L20,17 Z"/>
+  <!-- Front Double Doors -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M14,21 L18,21 L18,28 L14,28 Z"/>
+  <!-- School Steps / Foundation -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M5,28 L27,28 L27,30 L5,30 Z"/>
 </vector>

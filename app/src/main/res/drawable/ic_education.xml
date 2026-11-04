@@ -1,0 +1,39 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="60dp"
+    android:height="60dp"
+    android:viewportWidth="60"
+    android:viewportHeight="60">
+
+  <!-- Graduation Mortarboard / Student & Teacher Cap -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M30,7 L54,18 L30,29 L6,18 Z"/>
+
+  <!-- Cap Crown / Skullcap -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M16,23.5 L16,33 C16,38 22,41 30,41 C38,41 44,38 44,33 L44,23.5 L30,30 Z"/>
+
+  <!-- Tassel / Hanging Cord -->
+  <path
+      android:strokeColor="#2CA074"
+      android:strokeWidth="2"
+      android:strokeLineCap="round"
+      android:pathData="M48,21 L48,34 C48,36 49,38 51,38 C53,38 54,36 54,34 L54,32"/>
+
+  <!-- Open Book (Learning & Coaching) -->
+  <!-- Left Page -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M29,44.5 C24,42 16,42 10,43.5 C9.4,43.7 9,44.2 9,44.8 L9,54.2 C9,55 9.7,55.6 10.5,55.4 C16,54 23.5,54 28,56.5 C28.6,56.8 29,56.5 29,56 Z"/>
+
+  <!-- Right Page -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M31,44.5 C36,42 44,42 50,43.5 C50.6,43.7 51,44.2 51,44.8 L51,54.2 C51,55 50.3,55.6 49.5,55.4 C44,54 36.5,54 32,56.5 C31.4,56.8 31,56.5 31,56 Z"/>
+
+  <!-- Center Spine Bookmark -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M28.8,44 L31.2,44 L31.2,56 L28.8,56 Z"/>
+</vector>

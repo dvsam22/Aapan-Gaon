@@ -2,29 +2,18 @@ package com.dv.apna.feature.education.data.mapper
 
 import com.dv.apna.core.utils.toLocalizedSafeString
 import com.dv.apna.feature.education.data.model.EducationDto
-import com.dv.apna.feature.education.domain.model.EducationItemModel
+import com.dv.apna.feature.education.domain.model.EducationDetails
 
-fun EducationDto.toDomain(languageCode: String): EducationItemModel {
-    val loc = location?.toLocalizedSafeString(languageCode)?.ifBlank {
-        address.toLocalizedSafeString(languageCode)
-    } ?: address.toLocalizedSafeString(languageCode)
-
-    val desc = description?.toLocalizedSafeString(languageCode)?.ifBlank {
-        subjects.toLocalizedSafeString(languageCode)
-    } ?: subjects.toLocalizedSafeString(languageCode)
-
-    return EducationItemModel(
+fun EducationDto.toDomain(languageCode: String): EducationDetails {
+    return EducationDetails(
         id = id ?: "",
         name = name.toLocalizedSafeString(languageCode),
         categoryId = categoryId ?: "",
-        roleOrType = roleOrType.toLocalizedSafeString(languageCode),
         contact = contact ?: "",
-        whatsapp = whatsapp ?: contact ?: "",
-        location = loc,
-        description = desc,
+        details = details.toLocalizedSafeString(languageCode),
+        location = address.toLocalizedSafeString(languageCode),
         extraInfo = extraInfo.toLocalizedSafeString(languageCode),
         image = image ?: "",
-        fileUrl = fileUrl ?: "",
         villageId = villageId ?: ""
     )
 }

@@ -91,16 +91,16 @@ sealed interface Route {
     data class FamilyFunctionDetails(val categoryId: String) : Route
 
     @Serializable
-    data object EducationHub : Route
+    data object Education : Route
 
     @Serializable
-    data class EducationDetails(val categoryId: String, val categoryName: String) : Route
+    data class EducationDetails(val categoryId: String, val title: String) : Route
 
     @Serializable
-    data object DignitariesHub : Route
+    data object LegalPanchayat : Route
 
     @Serializable
-    data class DignitariesDetails(val categoryId: String, val categoryName: String) : Route
+    data class LegalPanchayatDetails(val categoryId: String, val title: String) : Route
 
     @Serializable
     data object News : Route

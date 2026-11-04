@@ -4,26 +4,28 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build --webpack",
-    "deploy": "next build --webpack && (cd .. && ./web/node_modules/.bin/firebase deploy --only hosting)",
+    "build": "next build",
+    "deploy": "next build && (cd .. && ./web/node_modules/.bin/firebase deploy --only hosting)",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "firebase": "^10.14.1",
     "lucide-react": "^1.61.0",
     "next": "16.4.3",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
   "devDependencies": {
-    "@tailwindcss/turbopack": "^4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.3",
     "firebase-tools": "^15.34.1",
-    "tailwindcss": "^4",
     "typescript": "^5"
   }
 }

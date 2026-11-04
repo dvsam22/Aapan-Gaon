@@ -89,6 +89,9 @@
 
     <!-- General -->
     <string name="no_records_found">No records found</string>
+    <string name="no_data_found_title">No Data Found</string>
+    <string name="no_data_found_subtitle">You can support us. If you know someone, please click the button below to add information to help others. Thank you!</string>
+    <string name="add_information">Add Information</string>
     <string name="info_label">Info:</string>
     <string name="news_notices">News &amp; Notices</string>
     <string name="breaking_news">Breaking News</string>
@@ -129,6 +132,29 @@
 
     <!-- Family Functions -->
     <string name="family_functions">Weddings &amp; Events</string>
+    <string name="education_hub">School, Coaching &amp; Teachers</string>
+    <string name="legal_panchayat_hub">Lawyer &amp; Village Leaders</string>
+    <string name="coming_soon">Coming soon in your area</string>
+
+    <!-- Education Hub Subcategories -->
+    <string name="education_private_schools">Private Schools &amp; Convent</string>
+    <string name="education_private_schools_desc">Classes 1st to 12th (Hindi &amp; English Medium)</string>
+    <string name="education_coaching_centers">Coaching &amp; Tuition Centers</string>
+    <string name="education_coaching_centers_desc">Board Exams, Navodaya &amp; Sainik School Prep</string>
+    <string name="education_home_tutors">Teachers &amp; Private Tutors</string>
+    <string name="education_home_tutors_desc">Private tutors &amp; coaching teachers in your area</string>
+    <string name="education_skill_centers">Computer &amp; Skill Centers</string>
+    <string name="education_skill_centers_desc">CCC, DCA, Sewing &amp; Vocational Training</string>
+
+    <!-- Legal & Panchayat Hub Subcategories -->
+    <string name="legal_court_lawyers">Tehsil &amp; Court Lawyers</string>
+    <string name="legal_court_lawyers_desc">Legal consultation, civil &amp; revenue matters</string>
+    <string name="legal_document_writers">Document Writers &amp; Notary</string>
+    <string name="legal_document_writers_desc">Deeds, agreements, affidavits &amp; stamps</string>
+    <string name="legal_panchayat_officials">Panchayat Leaders &amp; Officials</string>
+    <string name="legal_panchayat_officials_desc">Pradhan, Panchayat Sahayak, Secretary, Lekhpal</string>
+    <string name="legal_senior_citizens">Respected Village Elders</string>
+    <string name="legal_senior_citizens_desc">Senior citizens, retired soldiers &amp; social workers</string>
     <string name="tent_pandal_decor">Tent House &amp; Decor</string>
     <string name="catering_halwai">Halwai &amp; Catering</string>
     <string name="photo_videography">Photo &amp; Videography</string>
@@ -191,31 +217,9 @@
     <string name="exit_dialog_feedback_btn">Feedback</string>
     <string name="exit_dialog_exit_btn">Exit, Sure?</string>
 
-    <!-- School & Education -->
-    <string name="education_school_hub">Schools &amp; Education</string>
-    <string name="schools_colleges">Schools &amp; Colleges</string>
-    <string name="schools_colleges_desc">Primary, High School, Inter &amp; Degree Colleges</string>
-    <string name="teachers_tutors">Teachers &amp; Tutors</string>
-    <string name="teachers_tutors_desc">Subject specialist tutors &amp; coaching teachers</string>
-    <string name="study_notes_materials">Notes &amp; Study Material</string>
-    <string name="study_notes_materials_desc">Class-wise notes, model papers &amp; books</string>
-    <string name="scholarships_exams">Scholarships &amp; Exams</string>
-    <string name="scholarships_exams_desc">Navodaya, UP Board &amp; scholarship updates</string>
-    <string name="stationery_cyber_cafe">Stationery &amp; Cyber Cafe</string>
-    <string name="stationery_cyber_cafe_desc">Photocopy, form filling &amp; notebook centers</string>
-    <string name="no_education_data">No educational listings found</string>
-
-    <!-- Village Dignitaries & Leaders -->
-    <string name="village_dignitaries_leaders">Village Dignitaries &amp; Leaders</string>
-    <string name="legal_advisors_lawyers">Lawyers &amp; Legal Advisors</string>
-    <string name="legal_advisors_lawyers_desc">Tehsil &amp; Court advocates, land &amp; registry</string>
-    <string name="village_representatives">Panchayat &amp; Govt Leaders</string>
-    <string name="village_representatives_desc">Gram Pradhan, BDC, Secretary, Lekhpal, Kotedar</string>
-    <string name="veterans_elders">Respected Elders &amp; Veterans</string>
-    <string name="veterans_elders_desc">Ex-servicemen, retired teachers &amp; advisors</string>
-    <string name="document_writers_csc">Document Writers &amp; CSC</string>
-    <string name="document_writers_csc_desc">Deed writers, stamp vendors, caste/income cert</string>
-    <string name="bank_mitr_financial">Bank Mitr &amp; Financial Services</string>
-    <string name="bank_mitr_financial_desc">CSP, pension, insurance &amp; Kisan Samman Nidhi</string>
-    <string name="no_dignitaries_data">No dignitaries or advisors found</string>
+    <!-- In-App Update -->
+    <string name="update_downloaded_title">Update Ready to Install</string>
+    <string name="update_downloaded_message">A new update has been downloaded. Restart the app now to apply the latest features and improvements.</string>
+    <string name="update_restart_btn">Restart Now</string>
+    <string name="update_later_btn">Later</string>
 </resources>

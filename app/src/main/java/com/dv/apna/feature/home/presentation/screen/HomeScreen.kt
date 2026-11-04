@@ -76,8 +76,8 @@ fun HomeScreen(
     onNavigateToNews: () -> Unit,
     onNavigateToHealth: () -> Unit,
     onNavigateToFamilyFunction: () -> Unit,
-    onNavigateToEducation: () -> Unit,
-    onNavigateToDignitaries: () -> Unit,
+    onNavigateToEducation: () -> Unit = {},
+    onNavigateToLegalPanchayat: () -> Unit = {},
     onNavigateToLanguage: () -> Unit,
     onNavigateToChangeVillage: () -> Unit,
     onNavigateToAddBusiness: () -> Unit,
@@ -253,7 +253,7 @@ fun HomeScreen(
                         onHealthClick = onNavigateToHealth,
                         onFamilyFunctionClick = onNavigateToFamilyFunction,
                         onEducationClick = onNavigateToEducation,
-                        onDignitariesClick = onNavigateToDignitaries,
+                        onLegalPanchayatClick = onNavigateToLegalPanchayat,
                         onBannerClick = onBannerClick
                     )
                 }
@@ -500,8 +500,8 @@ fun HomeContent(
     onNewsClick: () -> Unit,
     onHealthClick: () -> Unit,
     onFamilyFunctionClick: () -> Unit,
-    onEducationClick: () -> Unit,
-    onDignitariesClick: () -> Unit,
+    onEducationClick: () -> Unit = {},
+    onLegalPanchayatClick: () -> Unit = {},
     onBannerClick: (BannerModel) -> Unit = {}
 ) {
     LazyColumn(
@@ -540,7 +540,7 @@ fun HomeContent(
                 onHealthClick = onHealthClick,
                 onFamilyFunctionClick = onFamilyFunctionClick,
                 onEducationClick = onEducationClick,
-                onDignitariesClick = onDignitariesClick
+                onLegalPanchayatClick = onLegalPanchayatClick
             )
         }
     }
@@ -681,8 +681,6 @@ fun BannerCarousel(
                                         "add_business", "register_shop", "business" -> stringResource(id = R.string.action_add_free)
                                         "local_buyers", "buyers" -> stringResource(id = R.string.action_view_buyers)
                                         "health", "emergency" -> stringResource(id = R.string.action_helpline)
-                                        "education", "school", "teachers" -> stringResource(id = R.string.action_view)
-                                        "dignitaries", "leaders", "panchayat" -> stringResource(id = R.string.action_view)
                                         else -> stringResource(id = R.string.action_view)
                                     }
                                     Text(
@@ -740,8 +738,8 @@ fun ServicesGrid(
     onNewsClick: () -> Unit,
     onHealthClick: () -> Unit,
     onFamilyFunctionClick: () -> Unit,
-    onEducationClick: () -> Unit,
-    onDignitariesClick: () -> Unit
+    onEducationClick: () -> Unit = {},
+    onLegalPanchayatClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -759,6 +757,7 @@ fun ServicesGrid(
             onClick = onConstructionClick
         )
 
+        // Upper Pair of 4 Cards (Labour, Transport | Mandi, News)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.sdp())
@@ -801,54 +800,47 @@ fun ServicesGrid(
             }
         }
 
+        // Lower Pair of 4 Cards (Health, Education | Family Function, Legal & Leaders)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.sdp())
         ) {
-            // Health & Emergency
-            ServiceCard(
-                title = stringResource(id = R.string.health_emergency),
-                icon = R.drawable.health,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(150.sdp()),
-                onClick = onHealthClick
-            )
-
-            // Family Function
-            ServiceCard(
-                title = stringResource(id = R.string.family_functions),
-                icon = R.drawable.mandi, // TODO: Replace with family function icon
-                modifier = Modifier
-                    .weight(1f)
-                    .height(150.sdp()),
-                onClick = onFamilyFunctionClick
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.sdp())
-        ) {
-            // School & Education Hub
-            ServiceCard(
-                title = stringResource(id = R.string.education_school_hub),
-                icon = R.drawable.ic_school,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(150.sdp()),
-                onClick = onEducationClick
-            )
-
-            // Village Dignitaries & Leaders
-            ServiceCard(
-                title = stringResource(id = R.string.village_dignitaries_leaders),
-                icon = R.drawable.ic_village_leaders,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(150.sdp()),
-                onClick = onDignitariesClick
-            )
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.sdp())) {
+                ServiceCard(
+                    title = stringResource(id = R.string.health_emergency),
+                    icon = R.drawable.health,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.sdp()),
+                    onClick = onHealthClick
+                )
+                ServiceCard(
+                    title = stringResource(id = R.string.education_hub),
+                    icon = R.drawable.ic_education,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.sdp()),
+                    onClick = onEducationClick
+                )
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.sdp())) {
+                ServiceCard(
+                    title = stringResource(id = R.string.family_functions),
+                    icon = R.drawable.ic_family_function,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(180.sdp()),
+                    onClick = onFamilyFunctionClick
+                )
+                ServiceCard(
+                    title = stringResource(id = R.string.legal_panchayat_hub),
+                    icon = R.drawable.ic_lawyer_leader,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.sdp()),
+                    onClick = onLegalPanchayatClick
+                )
+            }
         }
     }
 }
@@ -917,8 +909,6 @@ fun HomeScreenPreview() {
             onNavigateToNews = {},
             onNavigateToHealth = {},
             onNavigateToFamilyFunction = {},
-            onNavigateToEducation = {},
-            onNavigateToDignitaries = {},
             onNavigateToLanguage = {},
             onNavigateToChangeVillage = {},
             onNavigateToAboutUs = {},

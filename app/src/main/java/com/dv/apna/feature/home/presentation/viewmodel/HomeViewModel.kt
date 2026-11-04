@@ -13,6 +13,7 @@ import com.dv.apna.feature.home.presentation.state.HomeState
 import com.dv.apna.feature.language.domain.usecase.GetVillagesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -44,6 +45,8 @@ class HomeViewModel @Inject constructor(
 
     private val _effect = MutableSharedFlow<HomeEffect>()
     val effect = _effect.asSharedFlow()
+
+    private var bannerJob: Job? = null
 
     init {
         observeVillage()
@@ -81,7 +84,8 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun fetchBanners() {
-        viewModelScope.launch {
+        bannerJob?.cancel()
+        bannerJob = viewModelScope.launch {
             combine(
                 preferenceManager.villageId,
                 preferenceManager.languageCode

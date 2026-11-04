@@ -20,11 +20,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
 import com.dv.apna.core.ads.BannerAdView
 import com.dv.apna.core.config.RemoteConfigManager
+import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.theme.MintGradientEnd
 import com.dv.apna.core.theme.MintGradientMiddle
 import com.dv.apna.core.theme.MintGradientStart
@@ -35,7 +37,7 @@ import com.dv.apna.core.utils.ssp
 fun EducationHubScreen(
     remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit,
-    onNavigateToDetails: (categoryId: String, categoryName: String) -> Unit
+    onNavigateToDetails: (categoryId: String, title: String) -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier
@@ -44,6 +46,7 @@ fun EducationHubScreen(
     ) {
         val (bottomImage, mainContent) = createRefs()
 
+        // Bottom Decoration Image
         Image(
             painter = painterResource(id = R.drawable.iv_bottomview),
             contentDescription = null,
@@ -61,6 +64,7 @@ fun EducationHubScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
+                .navigationBarsPadding()
                 .constrainAs(mainContent) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
@@ -70,101 +74,100 @@ fun EducationHubScreen(
         ) {
             EducationTopBar(onBackClick = onNavigateBack)
 
+            val privateSchoolTitle = stringResource(id = R.string.education_private_schools)
+            val coachingTitle = stringResource(id = R.string.education_coaching_centers)
+            val tutorsTitle = stringResource(id = R.string.education_home_tutors)
+            val skillTitle = stringResource(id = R.string.education_skill_centers)
+
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
+                modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(horizontal = 16.sdp(), vertical = 8.sdp()),
                 verticalArrangement = Arrangement.spacedBy(12.sdp())
             ) {
                 item {
-                    val catName = stringResource(id = R.string.schools_colleges)
                     EducationOptionCard(
-                        title = catName,
-                        subtitle = stringResource(id = R.string.schools_colleges_desc),
-                        icon = painterResource(id = R.drawable.ic_school_building),
-                        onClick = { onNavigateToDetails("schools", catName) }
+                        title = privateSchoolTitle,
+                        subtitle = stringResource(id = R.string.education_private_schools_desc),
+                        icon = painterResource(id = R.drawable.ic_school),
+                        onClick = { onNavigateToDetails("private_schools", privateSchoolTitle) }
                     )
                 }
                 item {
-                    val catName = stringResource(id = R.string.teachers_tutors)
                     EducationOptionCard(
-                        title = catName,
-                        subtitle = stringResource(id = R.string.teachers_tutors_desc),
+                        title = coachingTitle,
+                        subtitle = stringResource(id = R.string.education_coaching_centers_desc),
+                        icon = painterResource(id = R.drawable.ic_coaching),
+                        onClick = { onNavigateToDetails("coaching_centers", coachingTitle) }
+                    )
+                }
+                item {
+                    EducationOptionCard(
+                        title = tutorsTitle,
+                        subtitle = stringResource(id = R.string.education_home_tutors_desc),
                         icon = painterResource(id = R.drawable.ic_teacher),
-                        onClick = { onNavigateToDetails("teachers", catName) }
+                        onClick = { onNavigateToDetails("home_tutors", tutorsTitle) }
                     )
                 }
                 item {
-                    val catName = stringResource(id = R.string.study_notes_materials)
                     EducationOptionCard(
-                        title = catName,
-                        subtitle = stringResource(id = R.string.study_notes_materials_desc),
-                        icon = painterResource(id = R.drawable.ic_notes),
-                        onClick = { onNavigateToDetails("notes", catName) }
+                        title = skillTitle,
+                        subtitle = stringResource(id = R.string.education_skill_centers_desc),
+                        icon = painterResource(id = R.drawable.ic_computer_skill),
+                        onClick = { onNavigateToDetails("skill_centers", skillTitle) }
                     )
                 }
                 item {
-                    val catName = stringResource(id = R.string.scholarships_exams)
-                    EducationOptionCard(
-                        title = catName,
-                        subtitle = stringResource(id = R.string.scholarships_exams_desc),
-                        icon = painterResource(id = R.drawable.ic_scholarship),
-                        onClick = { onNavigateToDetails("scholarships", catName) }
-                    )
-                }
-                item {
-                    val catName = stringResource(id = R.string.stationery_cyber_cafe)
-                    EducationOptionCard(
-                        title = catName,
-                        subtitle = stringResource(id = R.string.stationery_cyber_cafe_desc),
-                        icon = painterResource(id = R.drawable.ic_stationery),
-                        onClick = { onNavigateToDetails("stationery", catName) }
-                    )
+                    BannerAdView(remoteConfigManager = remoteConfigManager)
                 }
             }
-
-            BannerAdView(remoteConfigManager = remoteConfigManager)
         }
     }
 }
 
 @Composable
-fun EducationTopBar(
-    onBackClick: () -> Unit
-) {
-    Row(
+fun EducationTopBar(onBackClick: () -> Unit) {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.sdp(), vertical = 12.sdp()),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 16.sdp(), vertical = 16.sdp()),
+        contentAlignment = Alignment.Center
     ) {
         Surface(
-            modifier = Modifier.size(36.sdp()),
-            shape = RoundedCornerShape(10.sdp()),
-            color = Color.White,
-            border = BorderStroke(1.sdp(), Color(0xFFD9D9D9)),
-            onClick = onBackClick
+            modifier = Modifier
+                .width(34.sdp())
+                .height(46.sdp())
+                .align(Alignment.CenterStart)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { onBackClick() },
+            shape = RoundedCornerShape(24.sdp()),
+            color = Color(0xFFEFFAF6),
+            border = BorderStroke(1.sdp(), Color(0xFFD9D9D9))
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_left),
                     contentDescription = stringResource(id = R.string.back),
-                    modifier = Modifier.size(16.sdp()),
+                    modifier = Modifier.size(20.sdp()),
                     tint = Color.Black
                 )
             }
         }
 
-        Spacer(modifier = Modifier.width(12.sdp()))
-
         Text(
-            text = stringResource(id = R.string.education_school_hub),
+            text = stringResource(id = R.string.education_hub),
             style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.ssp()
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 15.ssp()
             ),
-            color = Color(0xFF1E293B)
+            color = Color.Black,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 44.sdp())
         )
     }
 }
@@ -172,73 +175,109 @@ fun EducationTopBar(
 @Composable
 fun EducationOptionCard(
     title: String,
-    subtitle: String,
+    subtitle: String? = null,
     icon: Painter,
     onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .height(85.sdp())
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
             ) { onClick() },
-        shape = RoundedCornerShape(14.sdp()),
+        shape = RoundedCornerShape(12.sdp()),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.sdp()),
-        border = BorderStroke(1.sdp(), Color(0xFFE2E8F0))
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.sdp())
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(14.sdp()),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(4.sdp())
+                .background(Color(0xFFEFFAF6), RoundedCornerShape(8.sdp())),
+            contentAlignment = Alignment.Center
         ) {
-            Surface(
-                modifier = Modifier.size(46.sdp()),
-                shape = RoundedCornerShape(12.sdp()),
-                color = Color(0xFFEFFAF6),
-                border = BorderStroke(1.sdp(), Color(0xFF38C792).copy(alpha = 0.35f))
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 12.sdp()),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        painter = icon,
-                        contentDescription = null,
-                        modifier = Modifier.size(26.sdp()),
-                        tint = Color(0xFF2CA074)
-                    )
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        modifier = Modifier.size(50.sdp()),
+                        shape = RoundedCornerShape(10.sdp()),
+                        color = Color.White,
+                        border = BorderStroke(1.sdp(), Color(0xFF38C792).copy(alpha = 0.4f))
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Image(
+                                painter = icon,
+                                contentDescription = null,
+                                modifier = Modifier.size(28.sdp())
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(12.sdp()))
+
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 13.ssp(),
+                                lineHeight = 16.ssp()
+                            ),
+                            color = Color.Black,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        if (!subtitle.isNullOrBlank()) {
+                            Spacer(modifier = Modifier.height(2.sdp()))
+                            Text(
+                                text = subtitle,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 11.ssp(),
+                                    fontWeight = FontWeight.Normal
+                                ),
+                                color = Color.Black.copy(alpha = 0.6f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
                 }
-            }
 
-            Spacer(modifier = Modifier.width(12.sdp()))
+                Spacer(modifier = Modifier.width(8.sdp()))
 
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 15.ssp()
-                    ),
-                    color = Color(0xFF1E293B)
-                )
-
-                Spacer(modifier = Modifier.height(2.sdp()))
-
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontSize = 11.ssp()
-                    ),
-                    color = Color(0xFF64748B)
+                Icon(
+                    painter = painterResource(id = R.drawable.arrow_circle_right),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.sdp()),
+                    tint = Color(0xFF2CA074)
                 )
             }
-
-            Icon(
-                painter = painterResource(id = R.drawable.arrow_circle_right),
-                contentDescription = null,
-                modifier = Modifier.size(20.sdp()),
-                tint = Color(0xFF38C792)
-            )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EducationHubScreenPreview() {
+    AapanGavTheme {
+        EducationHubScreen(
+            remoteConfigManager = RemoteConfigManager(),
+            onNavigateBack = {},
+            onNavigateToDetails = { _, _ -> }
+        )
     }
 }

@@ -1,0 +1,29 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <!-- Elder Head with spectacles/hair -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M16,3 A4,4 0 1,0 16,11 A4,4 0 1,0 16,3 Z"/>
+  <!-- Elder / Respected Citizen Torso -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M11,13 C8.5,13 7,15.5 7,18 L7,29 L25,29 L25,18 C25,15.5 23.5,13 21,13 Z"/>
+  <!-- Honor / Medal Ribbon on chest -->
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M14,14 L18,14 L17,19 L15,19 Z"/>
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M16,19 A1.5,1.5 0 1,0 16,22 A1.5,1.5 0 1,0 16,19 Z"/>
+  <!-- Dignified Walking Staff on side -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M27,10 C27,8.3 28.3,7 30,7 C30.6,7 31,7.4 31,8 C31,8.6 30.6,9 30,9 C29.4,9 29,9.4 29,10 L29,29 L27,29 Z"/>
+  <!-- Base Ground Line -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M5,29 L29,29 L29,31 L5,31 Z"/>
+</vector>

@@ -234,12 +234,6 @@ private fun BusinessFormContent(
             "फोटो व वीडियोग्राफी (Photography)",
             "डीजे व बैंड बाजा (DJ Sound & Band)",
             "मैरिज हॉल व वाटिका (Marriage Hall)",
-            "स्कूल व कॉलेज (School / College)",
-            "शिक्षक व होम ट्यूटर (Teacher / Home Tutor)",
-            "स्टेशनरी व साइबर कैफे (Stationery / Cyber Cafe)",
-            "वकील व कानूनी सलाहकार (Lawyer / Legal Advisor)",
-            "जन सेवा केंद्र / CSC सेंटर (CSC / Document Center)",
-            "बैंक मित्र व वित्तीय सलाहकार (Bank Mitr / CSP)",
             "अन्य दुकान / सेवा (Other Shop / Service)"
         )
     }

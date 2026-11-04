@@ -1,12 +1,12 @@
 package com.dv.apna.feature.education.presentation.state
 
 import com.dv.apna.core.common.UiText
-import com.dv.apna.feature.education.domain.model.EducationItemModel
+import com.dv.apna.feature.education.domain.model.EducationDetails
 
 data class EducationState(
-    val items: List<EducationItemModel> = emptyList(),
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
+    val items: List<EducationDetails> = emptyList(),
     val error: UiText? = null,
     val selectedCategory: String = "",
-    val categoryTitle: String = ""
+    val selectedCategoryTitle: UiText? = null
 )

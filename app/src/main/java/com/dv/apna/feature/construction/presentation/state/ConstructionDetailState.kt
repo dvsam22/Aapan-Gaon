@@ -4,7 +4,7 @@ import com.dv.apna.core.common.UiText
 import com.dv.apna.feature.construction.domain.model.ConstructionItemModel
 
 data class ConstructionDetailState(
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val items: List<ConstructionItemModel> = emptyList(),
     val error: UiText? = null,
     val categoryId: String? = null

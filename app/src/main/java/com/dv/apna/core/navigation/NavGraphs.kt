@@ -1,7 +1,9 @@
 package com.dv.apna.core.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import com.dv.apna.core.components.LocalNavigateToAddBusiness
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -70,16 +72,16 @@ import com.dv.apna.feature.family.presentation.screen.FamilyFunctionScreen
 import com.dv.apna.feature.family.presentation.screen.FamilyFunctionDetailsScreen
 import com.dv.apna.feature.family.presentation.viewmodel.FamilyFunctionViewModel
 import com.dv.apna.feature.family.presentation.effect.FamilyFunctionEffect
-import com.dv.apna.feature.business.presentation.screen.AddBusinessScreen
-import com.dv.apna.feature.business.presentation.viewmodel.AddBusinessViewModel
 import com.dv.apna.feature.education.presentation.screen.EducationHubScreen
 import com.dv.apna.feature.education.presentation.screen.EducationDetailsScreen
 import com.dv.apna.feature.education.presentation.viewmodel.EducationViewModel
 import com.dv.apna.feature.education.presentation.effect.EducationEffect
-import com.dv.apna.feature.dignitaries.presentation.screen.DignitariesHubScreen
-import com.dv.apna.feature.dignitaries.presentation.screen.DignitariesDetailsScreen
-import com.dv.apna.feature.dignitaries.presentation.viewmodel.DignitariesViewModel
-import com.dv.apna.feature.dignitaries.presentation.effect.DignitariesEffect
+import com.dv.apna.feature.legal_panchayat.presentation.screen.LegalPanchayatHubScreen
+import com.dv.apna.feature.legal_panchayat.presentation.screen.LegalPanchayatDetailsScreen
+import com.dv.apna.feature.legal_panchayat.presentation.viewmodel.LegalPanchayatViewModel
+import com.dv.apna.feature.legal_panchayat.presentation.effect.LegalPanchayatEffect
+import com.dv.apna.feature.business.presentation.screen.AddBusinessScreen
+import com.dv.apna.feature.business.presentation.viewmodel.AddBusinessViewModel
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
@@ -113,34 +115,37 @@ fun RootNavGraph(
     val remoteConfigManager = entryPoint.remoteConfigManager()
     val adManager = entryPoint.adManager()
 
-    NavHost(
-        navController = navController,
-        startDestination = startDestination,
-        enterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(400)
-            ) + fadeIn(animationSpec = tween(400))
-        },
-        exitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Left,
-                animationSpec = tween(400)
-            ) + fadeOut(animationSpec = tween(400))
-        },
-        popEnterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                animationSpec = tween(400)
-            ) + fadeIn(animationSpec = tween(400))
-        },
-        popExitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentTransitionScope.SlideDirection.Right,
-                animationSpec = tween(400)
-            ) + fadeOut(animationSpec = tween(400))
-        }
+    CompositionLocalProvider(
+        LocalNavigateToAddBusiness provides { navController.navigate(Route.AddBusiness) }
     ) {
+        NavHost(
+            navController = navController,
+            startDestination = startDestination,
+            enterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(400)
+                ) + fadeIn(animationSpec = tween(400))
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Left,
+                    animationSpec = tween(400)
+                ) + fadeOut(animationSpec = tween(400))
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(400)
+                ) + fadeIn(animationSpec = tween(400))
+            },
+            popExitTransition = {
+                slideOutOfContainer(
+                    towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                    animationSpec = tween(400)
+                ) + fadeOut(animationSpec = tween(400))
+            }
+        ) {
         composable<Route.Splash> { backStackEntry ->
             val splashRoute: Route.Splash = backStackEntry.toRoute()
             val viewModel: SplashViewModel = hiltViewModel()
@@ -245,16 +250,16 @@ fun RootNavGraph(
                 onNavigateToFamilyFunction = { navController.navigate(Route.FamilyFunction) },
                 onNavigateToEducation = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity) { navController.navigate(Route.EducationHub) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.Education) }
                     } else {
-                        navController.navigate(Route.EducationHub)
+                        navController.navigate(Route.Education)
                     }
                 },
-                onNavigateToDignitaries = {
+                onNavigateToLegalPanchayat = {
                     if (activity != null) {
-                        adManager.showInterstitialAd(activity) { navController.navigate(Route.DignitariesHub) }
+                        adManager.showInterstitialAd(activity) { navController.navigate(Route.LegalPanchayat) }
                     } else {
-                        navController.navigate(Route.DignitariesHub)
+                        navController.navigate(Route.LegalPanchayat)
                     }
                 },
                 onNavigateToLanguage = {
@@ -303,12 +308,6 @@ fun RootNavGraph(
                         }
                         "health", "emergency", "ambulance", "police" -> {
                             navController.navigate(Route.Health)
-                        }
-                        "education", "school", "schools", "teachers", "notes" -> {
-                            navController.navigate(Route.EducationHub)
-                        }
-                        "dignitaries", "leaders", "pradhan", "panchayat", "lawyer" -> {
-                            navController.navigate(Route.DignitariesHub)
                         }
                         else -> {
                             if (banner.link.startsWith("http://") || banner.link.startsWith("https://")) {
@@ -843,7 +842,7 @@ fun RootNavGraph(
             )
         }
 
-        composable<Route.EducationHub> {
+        composable<Route.Education> {
             val context = LocalContext.current
 
             LaunchedEffect(Unit) {
@@ -853,13 +852,13 @@ fun RootNavGraph(
             EducationHubScreen(
                 remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToDetails = { categoryId, categoryName ->
+                onNavigateToDetails = { categoryId, title ->
                     if (activity != null) {
                         adManager.showInterstitialAd(activity) {
-                            navController.navigate(Route.EducationDetails(categoryId, categoryName))
+                            navController.navigate(Route.EducationDetails(categoryId, title))
                         }
                     } else {
-                        navController.navigate(Route.EducationDetails(categoryId, categoryName))
+                        navController.navigate(Route.EducationDetails(categoryId, title))
                     }
                 }
             )
@@ -884,55 +883,60 @@ fun RootNavGraph(
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
                 remoteConfigManager = remoteConfigManager,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToAddBusiness = { navController.navigate(Route.AddBusiness) }
             )
         }
 
-        composable<Route.DignitariesHub> {
+        composable<Route.LegalPanchayat> {
             val context = LocalContext.current
 
             LaunchedEffect(Unit) {
                 adManager.preloadInterstitialAd(context.applicationContext)
             }
 
-            DignitariesHubScreen(
+            LegalPanchayatHubScreen(
                 remoteConfigManager = remoteConfigManager,
                 onNavigateBack = { navController.popBackStack() },
-                onNavigateToDetails = { categoryId, categoryName ->
+                onNavigateToDetails = { categoryId, title ->
                     if (activity != null) {
                         adManager.showInterstitialAd(activity) {
-                            navController.navigate(Route.DignitariesDetails(categoryId, categoryName))
+                            navController.navigate(Route.LegalPanchayatDetails(categoryId, title))
                         }
                     } else {
-                        navController.navigate(Route.DignitariesDetails(categoryId, categoryName))
+                        navController.navigate(Route.LegalPanchayatDetails(categoryId, title))
                     }
                 }
             )
         }
 
-        composable<Route.DignitariesDetails> {
-            val viewModel: DignitariesViewModel = hiltViewModel()
+        composable<Route.LegalPanchayatDetails> {
+            val viewModel: LegalPanchayatViewModel = hiltViewModel()
             val state by viewModel.state.collectAsStateWithLifecycle()
             val context = LocalContext.current
 
             LaunchedEffect(Unit) {
                 viewModel.effect.collectLatest { effect ->
                     when (effect) {
-                        is DignitariesEffect.DialPhone -> context.dial(effect.contact)
+                        is LegalPanchayatEffect.DialPhone -> context.dial(effect.contact)
                         else -> {}
                     }
                 }
             }
 
-            DignitariesDetailsScreen(
+            LegalPanchayatDetailsScreen(
                 state = state,
                 onEvent = viewModel::onEvent,
                 effect = viewModel.effect,
                 remoteConfigManager = remoteConfigManager,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToAddBusiness = { navController.navigate(Route.AddBusiness) }
             )
         }
 
         composable<Route.Settings> { }
     }
 }
+}
+
+

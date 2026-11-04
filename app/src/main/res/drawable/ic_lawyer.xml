@@ -1,9 +1,25 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="32dp"
     android:height="32dp"
-    android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <!-- Gavel / Legal Justice Mallet -->
+  <!-- Mallet Head -->
   <path
       android:fillColor="#2CA074"
-      android:pathData="M12,2A3,3 0 0,0 9,5H15A3,3 0 0,0 12,2M11,6V9.09C8.16,9.57 6,12.03 6,15A6,6 0 0,0 12,21A6,6 0 0,0 18,15C18,12.03 15.84,9.57 13,9.09V6H11M12,11A4,4 0 0,1 16,15A4,4 0 0,1 12,19A4,4 0 0,1 8,15A4,4 0 0,1 12,11M1,9L4,16H1L1,9M7,9L10,16H7L7,9M17,9L20,16H17L17,9M20,9L23,16H20L20,9Z"/>
+      android:pathData="M9.5,4 L14.5,9 L8.5,15 L3.5,10 Z"/>
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M11,2.5 L16,7.5 L14.5,9 L9.5,4 Z M2,11.5 L7,16.5 L8.5,15 L3.5,10 Z"/>
+  <!-- Mallet Handle -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M11.5,12 L24,24.5 L22,26.5 L9.5,14 Z"/>
+  <!-- Gavel Base / Sounding Block -->
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M15,28 L30,28 L28,24 L17,24 Z"/>
+  <path
+      android:fillColor="#2CA074"
+      android:pathData="M13,29 L32,29 L32,31 L13,31 Z"/>
 </vector>
