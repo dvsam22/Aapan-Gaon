@@ -305,7 +305,7 @@ def send_mandi_fcm_notification(db, arrival_date_str: str, force: bool = False):
         msg = messaging.Message(
             notification=messaging.Notification(
                 title="🌾 आज का ताज़ा मंडी भाव अपडेट हो गया है!",
-                body="खलीलाबाद व नौगढ़ मंडी के आलू, टमाटर, बैंगन, गोभी व फसलों के नए रेट देखने के लिए टैप करें।"
+                body="आज के आलू, टमाटर, बैंगन, गोभी व फसलों के नए ताज़ा मंडी रेट देखने के लिए टैप करें।"
             ),
             data={"id": "mandi", "type": "mandi"},
             topic="mandi"
@@ -672,13 +672,17 @@ def clean_news_text(text: str) -> str:
     if not text:
         return ""
     import re
-    # Remove 'Maharajganj News:' or similar redundant publisher prefixes
-    text = re.sub(r'(?i)maharajganj\s*news\s*[:\-\|]\s*', '', text)
-    text = re.sub(r'(?i)maharajganj\s*[:\-\|]\s*', '', text)
-    text = re.sub(r'महराजगंज\s*(न्यूज़|समाचार)?\s*[:\-\|]\s*', '', text)
-    text = re.sub(r'(?i)read\s+(latest\s+)?maharajganj\s+news\s+(today\s+)?in\s+hindi\s*[-—–]?\s*', '', text)
-    text = re.sub(r'(?i)read\s+latest\s+news\s+in\s+hindi\s*[-—–]?\s*', '', text)
-    text = re.sub(r'^(महराजगंज|महाराजगंज)\s*[।|:\-—–]\s*', '', text)
+    # 1. Remove English SEO boilerplate like 'Read Latest Maharajganj News Today in Hindi - '
+    text = re.sub(r'(?i)read\s+(latest\s+)?(maharajganj\s+)?news\s+(today\s+)?in\s+hindi\s*[-—–:]?\s*', '', text)
+    text = re.sub(r'(?i)read\s+latest\s+news\s+in\s+hindi\s*[-—–:]?\s*', '', text)
+    # 2. Remove 'Maharajganj News' or 'Maharajganj' prefix / tag (with or without colon/hyphen)
+    text = re.sub(r'(?i)\bmaharajganj\s*news\b\s*[:\-\|]?\s*', '', text)
+    text = re.sub(r'(?i)^maharajganj\s*[:\-\|]?\s*', '', text)
+    # 3. Remove Hindi publisher / district prefix like 'महराजगंज न्यूज़:', 'महराजगंज।', 'महाराजगंज:'
+    text = re.sub(r'^(महराजगंज|महाराजगंज)\s*(न्यूज़|समाचार)?\s*[।|:\-—–]\s*', '', text)
+    text = re.sub(r'^(महराजगंज|महाराजगंज)\s*(न्यूज़|समाचार)\s*', '', text)
+    # Clean any leftover leading punctuation or whitespace
+    text = re.sub(r'^[:\-\|।—–\s]+', '', text)
     return text.strip()
 
 
@@ -734,13 +738,16 @@ def execute_news_sync(query: str = DEFAULT_NEWS_QUERY, force_notify: bool = Fals
         source_name = item.get("source", {}).get("name", "Local News").strip()
         date_ms = parse_iso_to_epoch_ms(item.get("publishedAt", ""))
 
+        clean_title = clean_news_text(title)
+        clean_desc = clean_news_text(description or content)
+
         doc_ref = news_col.document(article_id)
         doc_snap = doc_ref.get()
         if not doc_snap.exists:
             news_data = {
                 "id": article_id,
-                "title": title,
-                "description": description or content,
+                "title": clean_title,
+                "description": clean_desc,
                 "image": image,
                 "source": source_name,
                 "url": url,

@@ -4,6 +4,8 @@ sealed interface AddBusinessEvent {
     data class ContactNameChanged(val name: String) : AddBusinessEvent
     data class BusinessNameChanged(val businessName: String) : AddBusinessEvent
     data class CategorySelected(val category: String) : AddBusinessEvent
+    data class MainCategorySelected(val mainCategory: String) : AddBusinessEvent
+    data class SubCategorySelected(val subCategory: String) : AddBusinessEvent
     data class PhoneNumberChanged(val phone: String) : AddBusinessEvent
     data class AddressChanged(val address: String) : AddBusinessEvent
     data class DescriptionChanged(val description: String) : AddBusinessEvent

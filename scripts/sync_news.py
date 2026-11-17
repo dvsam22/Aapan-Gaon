@@ -163,10 +163,12 @@ def sync_articles_to_firestore(db, articles, dry_run=False):
         # Check if already exists
         doc_snap = doc_ref.get()
         if not doc_snap.exists:
+            clean_title = clean_news_text(title)
+            clean_desc = clean_news_text(description or content)
             news_data = {
                 "id": article_id,
-                "title": title,
-                "description": description or content,
+                "title": clean_title,
+                "description": clean_desc,
                 "image": image,
                 "source": source_name,
                 "url": url,
@@ -203,13 +205,17 @@ def clean_news_text(text: str) -> str:
     if not text:
         return ""
     import re
-    # Remove 'Maharajganj News:' or similar redundant publisher prefixes
-    text = re.sub(r'(?i)maharajganj\s*news\s*[:\-\|]\s*', '', text)
-    text = re.sub(r'(?i)maharajganj\s*[:\-\|]\s*', '', text)
-    text = re.sub(r'महराजगंज\s*(न्यूज़|समाचार)?\s*[:\-\|]\s*', '', text)
-    text = re.sub(r'(?i)read\s+(latest\s+)?maharajganj\s+news\s+(today\s+)?in\s+hindi\s*[-—–]?\s*', '', text)
-    text = re.sub(r'(?i)read\s+latest\s+news\s+in\s+hindi\s*[-—–]?\s*', '', text)
-    text = re.sub(r'^(महराजगंज|महाराजगंज)\s*[।|:\-—–]\s*', '', text)
+    # 1. Remove English SEO boilerplate like 'Read Latest Maharajganj News Today in Hindi - '
+    text = re.sub(r'(?i)read\s+(latest\s+)?(maharajganj\s+)?news\s+(today\s+)?in\s+hindi\s*[-—–:]?\s*', '', text)
+    text = re.sub(r'(?i)read\s+latest\s+news\s+in\s+hindi\s*[-—–:]?\s*', '', text)
+    # 2. Remove 'Maharajganj News' or 'Maharajganj' prefix / tag (with or without colon/hyphen)
+    text = re.sub(r'(?i)\bmaharajganj\s*news\b\s*[:\-\|]?\s*', '', text)
+    text = re.sub(r'(?i)^maharajganj\s*[:\-\|]?\s*', '', text)
+    # 3. Remove Hindi publisher / district prefix like 'महराजगंज न्यूज़:', 'महराजगंज।', 'महाराजगंज:'
+    text = re.sub(r'^(महराजगंज|महाराजगंज)\s*(न्यूज़|समाचार)?\s*[।|:\-—–]\s*', '', text)
+    text = re.sub(r'^(महराजगंज|महाराजगंज)\s*(न्यूज़|समाचार)\s*', '', text)
+    # Clean any leftover leading punctuation or whitespace
+    text = re.sub(r'^[:\-\|।—–\s]+', '', text)
     return text.strip()
 
 

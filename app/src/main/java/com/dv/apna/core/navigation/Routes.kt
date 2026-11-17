@@ -25,9 +25,6 @@ sealed interface Route {
     data object Home : Route
 
     @Serializable
-    data object Services : Route
-
-    @Serializable
     data object Health : Route
 
     @Serializable
@@ -47,9 +44,6 @@ sealed interface Route {
 
     @Serializable
     data object Mandi : Route
-
-    @Serializable
-    data object CropPrices : Route
 
     @Serializable
     data object TodayMarket : Route

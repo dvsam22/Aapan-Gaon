@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.dv.apna.core.common.Resource
 import com.dv.apna.core.common.UiText
 import com.dv.apna.core.datastore.PreferenceManager
-import com.dv.apna.feature.mandi.domain.usecase.GetCropPricesUseCase
 import com.dv.apna.feature.mandi.domain.usecase.GetLocalBuyersUseCase
 import com.dv.apna.feature.mandi.domain.usecase.GetMarketPricesUseCase
 import com.dv.apna.feature.mandi.presentation.effect.MandiEffect
@@ -28,7 +27,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MandiViewModel @Inject constructor(
-    private val getCropPricesUseCase: GetCropPricesUseCase,
     private val getMarketPricesUseCase: GetMarketPricesUseCase,
     private val getLocalBuyersUseCase: GetLocalBuyersUseCase,
     private val preferenceManager: PreferenceManager
@@ -52,40 +50,35 @@ class MandiViewModel @Inject constructor(
             ) { villageId, _ ->
                 villageId
             }.onEach { villageId ->
-                loadCropPrices(villageId)
                 loadMarketPrices(villageId)
                 loadLocalBuyers(villageId)
             }.launchIn(viewModelScope)
         }
     }
 
-    private fun loadCropPrices(villageId: String) {
-        getCropPricesUseCase(villageId).onEach { result ->
-            when (result) {
-                is Resource.Success -> {
-                    _state.update { it.copy(cropPrices = result.data ?: emptyList(), isLoading = false) }
-                }
-                is Resource.Error -> {
-                    _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
-                }
-                is Resource.Loading -> {
-                    _state.update { it.copy(isLoading = true) }
-                }
-            }
-        }.launchIn(viewModelScope)
-    }
-
     private fun loadMarketPrices(villageId: String) {
         getMarketPricesUseCase(villageId).onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    _state.update { it.copy(marketPrices = result.data ?: emptyList(), isLoading = false) }
+                    _state.update {
+                        it.copy(
+                            marketPrices = result.data ?: emptyList(),
+                            isMarketPricesLoading = false,
+                            isLoading = it.isLocalBuyersLoading
+                        )
+                    }
                 }
                 is Resource.Error -> {
-                    _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
+                    _state.update {
+                        it.copy(
+                            error = UiText.DynamicString(result.message ?: "Unknown error"),
+                            isMarketPricesLoading = false,
+                            isLoading = it.isLocalBuyersLoading
+                        )
+                    }
                 }
                 is Resource.Loading -> {
-                    _state.update { it.copy(isLoading = true) }
+                    _state.update { it.copy(isMarketPricesLoading = true, isLoading = true) }
                 }
             }
         }.launchIn(viewModelScope)
@@ -95,13 +88,25 @@ class MandiViewModel @Inject constructor(
         getLocalBuyersUseCase(villageId).onEach { result ->
             when (result) {
                 is Resource.Success -> {
-                    _state.update { it.copy(localBuyers = result.data ?: emptyList(), isLoading = false) }
+                    _state.update {
+                        it.copy(
+                            localBuyers = result.data ?: emptyList(),
+                            isLocalBuyersLoading = false,
+                            isLoading = it.isMarketPricesLoading
+                        )
+                    }
                 }
                 is Resource.Error -> {
-                    _state.update { it.copy(error = UiText.DynamicString(result.message ?: "Unknown error"), isLoading = false) }
+                    _state.update {
+                        it.copy(
+                            error = UiText.DynamicString(result.message ?: "Unknown error"),
+                            isLocalBuyersLoading = false,
+                            isLoading = it.isMarketPricesLoading
+                        )
+                    }
                 }
                 is Resource.Loading -> {
-                    _state.update { it.copy(isLoading = true) }
+                    _state.update { it.copy(isLocalBuyersLoading = true, isLoading = true) }
                 }
             }
         }.launchIn(viewModelScope)
@@ -112,11 +117,6 @@ class MandiViewModel @Inject constructor(
             is MandiEvent.BackClick -> {
                 viewModelScope.launch {
                     _effect.emit(MandiEffect.NavigateBack)
-                }
-            }
-            is MandiEvent.CropPricesClick -> {
-                viewModelScope.launch {
-                    _effect.emit(MandiEffect.NavigateToCropPrices)
                 }
             }
             is MandiEvent.TodayMarketClick -> {

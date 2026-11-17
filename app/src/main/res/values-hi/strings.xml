@@ -2,12 +2,14 @@
     <string name="app_name">अपना गांव</string>
     <string name="notification">सूचनाएं</string>
     <string name="back">पीछे</string>
+    <string name="go_back">वापस जाएं</string>
     <string name="select_language">भाषा चुनें</string>
     <string name="select_village">गांव चुनें</string>
     <string name="save_changes">बदलाव सुरक्षित करें</string>
     <string name="continue_text">जारी रखें</string>
     <string name="refresh">रीफ्रेश करें</string>
     <string name="no_notifications">कोई सूचना नहीं मिली</string>
+    <string name="no_notifications_subtitle">फिलहाल आपके पास कोई नई सूचना नहीं है। गाँव के नए अपडेट्स आने पर आपको यहाँ दिखेंगे।</string>
     <string name="today">आज</string>
     <string name="yesterday">कल</string>
 
@@ -59,6 +61,8 @@
     <string name="price">कीमत</string>
     <string name="vegetables">सब्जियां</string>
     <string name="for_label">के लिए:</string>
+    <string name="share_mandi_whatsapp">WhatsApp पर भाव शेयर करें</string>
+    <string name="share_whatsapp">शेयर करें</string>
 
     <!-- Construction Hub -->
     <string name="bricks">ईंट व भट्ठा</string>
@@ -178,6 +182,8 @@
     <string name="business_name_placeholder">जैसे: शर्मा किराना स्टोर</string>
     <string name="category_label">कैटेगरी चुनें</string>
     <string name="select_category_placeholder">कैटेगरी का चयन करें</string>
+    <string name="sub_category_label">सब-कैटेगरी चुनें</string>
+    <string name="select_subcategory_placeholder">सब-कैटेगरी का चयन करें</string>
     <string name="mobile_number_label">मोबाइल नंबर</string>
     <string name="mobile_number_placeholder">10 अंकों का मोबाइल नंबर</string>
     <string name="address_label">गांव / कस्बा / पता</string>
@@ -193,6 +199,7 @@
     <string name="error_name_empty">कृपया अपना नाम दर्ज करें</string>
     <string name="error_business_name_empty">कृपया दुकान या काम का नाम दर्ज करें</string>
     <string name="error_category_empty">कृपया एक कैटेगरी चुनें</string>
+    <string name="error_subcategory_empty">कृपया सब-कैटेगरी का चयन करें</string>
     <string name="error_mobile_invalid">कृपया सही 10 अंकों का मोबाइल नंबर दर्ज करें</string>
     <string name="error_address_empty">कृपया अपना गांव या पता दर्ज करें</string>
     <string name="free_badge">मुफ़्त</string>

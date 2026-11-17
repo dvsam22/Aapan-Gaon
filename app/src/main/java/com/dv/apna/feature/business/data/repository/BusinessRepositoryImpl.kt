@@ -20,6 +20,8 @@ class BusinessRepositoryImpl @Inject constructor(
                 contactName = model.contactName,
                 businessName = model.businessName,
                 category = model.category,
+                mainCategory = model.mainCategory,
+                subCategory = model.subCategory,
                 phoneNumber = model.phoneNumber,
                 address = model.address,
                 description = model.description,

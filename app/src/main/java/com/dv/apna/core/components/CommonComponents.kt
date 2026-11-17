@@ -165,9 +165,10 @@ fun AapanGavEmptyData(
         .fillMaxWidth()
         .padding(top = 24.sdp()),
     message: String = stringResource(id = R.string.no_data_found_title),
-    subtitle: String = stringResource(id = R.string.no_data_found_subtitle),
+    subtitle: String? = stringResource(id = R.string.no_data_found_subtitle),
     buttonText: String = stringResource(id = R.string.add_information),
     iconEmoji: String = "🤝",
+    showActionButton: Boolean = true,
     onActionClick: (() -> Unit)? = null
 ) {
     val defaultNavigateToAddBusiness = LocalNavigateToAddBusiness.current
@@ -221,43 +222,46 @@ fun AapanGavEmptyData(
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(8.sdp()))
-
                     // Support Message
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontSize = 12.ssp(),
-                            color = TextMuted,
-                            lineHeight = 18.ssp()
-                        ),
-                        textAlign = TextAlign.Center
-                    )
-
-                    Spacer(modifier = Modifier.height(20.sdp()))
-
-                    // Action Button - Matching App Pill Shape
-                    Button(
-                        onClick = {
-                            if (onActionClick != null) {
-                                onActionClick()
-                            } else {
-                                defaultNavigateToAddBusiness()
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(44.sdp()),
-                        shape = RoundedCornerShape(27.sdp()),
-                        contentPadding = PaddingValues(horizontal = 12.sdp(), vertical = 0.sdp()),
-                        colors = ButtonDefaults.buttonColors(containerColor = BrandGreen)
-                    ) {
+                    if (!subtitle.isNullOrBlank()) {
+                        Spacer(modifier = Modifier.height(8.sdp()))
                         Text(
-                            text = buttonText,
-                            color = Color.White,
-                            fontSize = 13.ssp(),
-                            fontWeight = FontWeight.Medium
+                            text = subtitle,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontSize = 12.ssp(),
+                                color = TextMuted,
+                                lineHeight = 18.ssp()
+                            ),
+                            textAlign = TextAlign.Center
                         )
+                    }
+
+                    // Action Button (shown only if showActionButton is true)
+                    if (showActionButton) {
+                        Spacer(modifier = Modifier.height(20.sdp()))
+
+                        Button(
+                            onClick = {
+                                if (onActionClick != null) {
+                                    onActionClick()
+                                } else {
+                                    defaultNavigateToAddBusiness()
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(44.sdp()),
+                            shape = RoundedCornerShape(27.sdp()),
+                            contentPadding = PaddingValues(horizontal = 12.sdp(), vertical = 0.sdp()),
+                            colors = ButtonDefaults.buttonColors(containerColor = BrandGreen)
+                        ) {
+                            Text(
+                                text = buttonText,
+                                color = Color.White,
+                                fontSize = 13.ssp(),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
                 }
             }

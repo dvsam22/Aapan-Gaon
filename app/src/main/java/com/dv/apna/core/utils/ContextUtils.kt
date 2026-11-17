@@ -4,24 +4,47 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.widget.Toast
 
 fun Context.dial(phone: String) {
+    if (phone.isBlank()) return
+    val cleanedPhone = phone.trim()
     val intent = Intent(Intent.ACTION_DIAL).apply {
-        data = Uri.parse("tel:$phone")
+        data = Uri.parse("tel:$cleanedPhone")
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
     }
-    startActivity(intent)
+    try {
+        startActivity(intent)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        try {
+            Toast.makeText(
+                this,
+                "Unable to make a call on this device",
+                Toast.LENGTH_SHORT
+            ).show()
+        } catch (_: Exception) {}
+    }
 }
 
 fun Context.shareApp() {
-    val shareIntent = Intent(Intent.ACTION_SEND).apply {
-        type = "text/plain"
-        putExtra(Intent.EXTRA_SUBJECT, "Download Aapan Gav App")
-        putExtra(
-            Intent.EXTRA_TEXT,
-            "Download the Aapan Gav App to get the latest local updates and services: https://play.google.com/store/apps/details?id=$packageName"
-        )
+    try {
+        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, "Download Aapan Gav App")
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "Download the Aapan Gav App to get the latest local updates and services: https://play.google.com/store/apps/details?id=$packageName"
+            )
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        val chooser = Intent.createChooser(shareIntent, "Share via").apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        startActivity(chooser)
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
-    startActivity(Intent.createChooser(shareIntent, "Share via"))
 }
 
 fun Context.rateApp() {
@@ -29,14 +52,20 @@ fun Context.rateApp() {
     val intent = Intent(Intent.ACTION_VIEW).apply {
         data = Uri.parse(playStoreUrl)
         setPackage("com.android.vending")
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
     }
     try {
         startActivity(intent)
     } catch (e: Exception) {
-        val webIntent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(playStoreUrl)
+        try {
+            val webIntent = Intent(Intent.ACTION_VIEW).apply {
+                data = Uri.parse(playStoreUrl)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            }
+            startActivity(webIntent)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
-        startActivity(webIntent)
     }
 }
 
@@ -51,6 +80,7 @@ fun Context.openMap(location: String, lat: Double = 0.0, lng: Double = 0.0) {
 
     val mapIntent = Intent(Intent.ACTION_VIEW, navigationUri).apply {
         setPackage("com.google.android.apps.maps")
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
     }
 
     try {
@@ -61,7 +91,9 @@ fun Context.openMap(location: String, lat: Double = 0.0, lng: Double = 0.0) {
         } else {
             Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${Uri.encode(location)}")
         }
-        val browserIntent = Intent(Intent.ACTION_VIEW, browserUri)
+        val browserIntent = Intent(Intent.ACTION_VIEW, browserUri).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
         try {
             startActivity(browserIntent)
         } catch (ex: Exception) {

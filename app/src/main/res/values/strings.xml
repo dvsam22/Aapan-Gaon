@@ -2,12 +2,14 @@
     <string name="app_name">Apna Gaon</string>
     <string name="notification">Notification</string>
     <string name="back">Back</string>
+    <string name="go_back">Go Back</string>
     <string name="select_language">Select Language</string>
     <string name="select_village">Select Village</string>
     <string name="save_changes">Save Changes</string>
     <string name="continue_text">Continue</string>
     <string name="refresh">Refresh</string>
     <string name="no_notifications">No notifications found</string>
+    <string name="no_notifications_subtitle">You have no new notifications right now. Check back later for updates from your village.</string>
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
 
@@ -59,6 +61,8 @@
     <string name="price">Price</string>
     <string name="vegetables">Vegetables</string>
     <string name="for_label">For:</string>
+    <string name="share_mandi_whatsapp">Share Rates on WhatsApp</string>
+    <string name="share_whatsapp">Share</string>
 
     <!-- Construction Hub -->
     <string name="bricks">Bricks &amp; Kiln</string>
@@ -178,6 +182,8 @@
     <string name="business_name_placeholder">e.g., Sharma Kirana Store</string>
     <string name="category_label">Select Category</string>
     <string name="select_category_placeholder">Choose category</string>
+    <string name="sub_category_label">Select Sub-category</string>
+    <string name="select_subcategory_placeholder">Choose sub-category</string>
     <string name="mobile_number_label">Mobile Number</string>
     <string name="mobile_number_placeholder">10-digit mobile number</string>
     <string name="address_label">Village / Town / Address</string>
@@ -194,6 +200,7 @@
     <string name="error_name_empty">Please enter your name</string>
     <string name="error_business_name_empty">Please enter your shop or work name</string>
     <string name="error_category_empty">Please select a category</string>
+    <string name="error_subcategory_empty">Please select a sub-category</string>
     <string name="error_mobile_invalid">Please enter a valid 10-digit mobile number</string>
     <string name="error_address_empty">Please enter your village or address</string>
     <string name="free_badge">FREE</string>

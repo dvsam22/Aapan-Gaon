@@ -1314,8 +1314,20 @@ export default function SubmissionsManager({
       return { collection: "transport", categoryId: "car" };
     } else if (catLower.includes("tractor") || catLower.includes("ट्रैक्टर")) {
       return { collection: "transport", categoryId: "tractor" };
-    } else if (catLower.includes("education") || catLower.includes("school") || catLower.includes("coaching") || catLower.includes("शिक्षा")) {
+    } else if (catLower.includes("tutor") || catLower.includes("ट्यूटर") || catLower.includes("शिक्षक")) {
+      return { collection: "education", categoryId: "home_tutors" };
+    } else if (catLower.includes("coaching") || catLower.includes("कोचिंग")) {
+      return { collection: "education", categoryId: "coaching_centers" };
+    } else if (catLower.includes("skill") || catLower.includes("कंप्यूटर") || catLower.includes("हुनर")) {
+      return { collection: "education", categoryId: "skill_centers" };
+    } else if (catLower.includes("education") || catLower.includes("school") || catLower.includes("कॉन्वेंट") || catLower.includes("स्कूल") || catLower.includes("शिक्षा")) {
       return { collection: "education", categoryId: "private_schools" };
+    } else if (catLower.includes("lawyer") || catLower.includes("advocate") || catLower.includes("वकील") || catLower.includes("मुंशी")) {
+      return { collection: "legal_panchayat", categoryId: "court_lawyers" };
+    } else if (catLower.includes("panchayat") || catLower.includes("प्रधान") || catLower.includes("पंचायत") || catLower.includes("प्रतिनिधि")) {
+      return { collection: "legal_panchayat", categoryId: "panchayat_officials" };
+    } else if (catLower.includes("senior") || catLower.includes("बुजुर्ग") || catLower.includes("वरिष्ठ") || catLower.includes("सम्मानित")) {
+      return { collection: "legal_panchayat", categoryId: "senior_citizens" };
     } else if (catLower.includes("health") || catLower.includes("doctor") || catLower.includes("hospital") || catLower.includes("pharmacy") || catLower.includes("दवा")) {
       return { collection: "health", categoryId: "doctors" };
     } else if (catLower.includes("mandi") || catLower.includes("crop") || catLower.includes("buyer") || catLower.includes("फसल")) {

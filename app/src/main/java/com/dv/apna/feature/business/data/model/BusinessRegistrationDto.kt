@@ -8,6 +8,8 @@ data class BusinessRegistrationDto(
     val contactName: String = "",
     val businessName: String = "",
     val category: String = "",
+    val mainCategory: String? = null,
+    val subCategory: String? = null,
     val phoneNumber: String = "",
     val address: String = "",
     val description: String = "",
@@ -15,16 +17,18 @@ data class BusinessRegistrationDto(
     val villageName: String? = null,
     val status: String = "pending"
 ) {
-    fun toMap(): Map<String, Any?> = mapOf(
-        "contactName" to contactName,
-        "businessName" to businessName,
-        "category" to category,
-        "phoneNumber" to phoneNumber,
-        "address" to address,
-        "description" to description,
-        "villageId" to villageId,
-        "villageName" to villageName,
-        "status" to status,
-        "createdAt" to FieldValue.serverTimestamp()
-    )
+    fun toMap(): Map<String, Any?> = buildMap {
+        put("contactName", contactName)
+        put("businessName", businessName)
+        put("category", category)
+        if (!mainCategory.isNullOrBlank()) put("mainCategory", mainCategory)
+        if (!subCategory.isNullOrBlank()) put("subCategory", subCategory)
+        put("phoneNumber", phoneNumber)
+        put("address", address)
+        put("description", description)
+        put("villageId", villageId)
+        put("villageName", villageName)
+        put("status", status)
+        put("createdAt", FieldValue.serverTimestamp())
+    }
 }

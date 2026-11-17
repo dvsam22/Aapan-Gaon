@@ -6,6 +6,8 @@ data class AddBusinessState(
     val contactName: String = "",
     val businessName: String = "",
     val selectedCategory: String = "",
+    val selectedMainCategory: String = "",
+    val selectedSubCategory: String = "",
     val phoneNumber: String = "",
     val address: String = "",
     val description: String = "",

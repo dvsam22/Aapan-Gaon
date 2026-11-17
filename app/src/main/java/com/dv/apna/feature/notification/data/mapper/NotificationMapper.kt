@@ -18,13 +18,14 @@ fun NotificationDto.toDomain(languageCode: String): NotificationModel {
     val now = Calendar.getInstance()
     val notificationCalendar = Calendar.getInstance().apply { time = dateObj }
     
+    val isHindi = languageCode.equals("hi", ignoreCase = true)
     val category = when {
-        isSameDay(now, notificationCalendar) -> "Today"
-        isYesterday(now, notificationCalendar) -> "Yesterday"
+        isSameDay(now, notificationCalendar) -> if (isHindi) "आज" else "Today"
+        isYesterday(now, notificationCalendar) -> if (isHindi) "कल" else "Yesterday"
         else -> dateStr
     }
     
-    val timeAgo = getTimeAgo(this.date)
+    val timeAgo = getTimeAgo(this.date, isHindi)
     
     val localizedTitle = this.title.toLocalizedSafeString(languageCode)
     val localizedMessage = this.message.toLocalizedSafeString(languageCode)
@@ -52,15 +53,24 @@ private fun isYesterday(now: Calendar, then: Calendar): Boolean {
     return isSameDay(yesterday, then)
 }
 
-private fun getTimeAgo(time: Long): String {
+private fun getTimeAgo(time: Long, isHindi: Boolean): String {
     val now = System.currentTimeMillis()
     val diff = now - time
     
     return when {
-        diff < TimeUnit.MINUTES.toMillis(1) -> "Just now"
-        diff < TimeUnit.HOURS.toMillis(1) -> "${TimeUnit.MILLISECONDS.toMinutes(diff)} min ago"
-        diff < TimeUnit.DAYS.toMillis(1) -> "${TimeUnit.MILLISECONDS.toHours(diff)} hr ago"
-        diff < TimeUnit.DAYS.toMillis(2) -> "Yesterday"
-        else -> "${TimeUnit.MILLISECONDS.toDays(diff)} days ago"
+        diff < TimeUnit.MINUTES.toMillis(1) -> if (isHindi) "अभी" else "Just now"
+        diff < TimeUnit.HOURS.toMillis(1) -> {
+            val mins = TimeUnit.MILLISECONDS.toMinutes(diff)
+            if (isHindi) "$mins मिनट पहले" else "$mins min ago"
+        }
+        diff < TimeUnit.DAYS.toMillis(1) -> {
+            val hrs = TimeUnit.MILLISECONDS.toHours(diff)
+            if (isHindi) "$hrs घंटे पहले" else "$hrs hr ago"
+        }
+        diff < TimeUnit.DAYS.toMillis(2) -> if (isHindi) "कल" else "Yesterday"
+        else -> {
+            val days = TimeUnit.MILLISECONDS.toDays(diff)
+            if (isHindi) "$days दिन पहले" else "$days days ago"
+        }
     }
 }

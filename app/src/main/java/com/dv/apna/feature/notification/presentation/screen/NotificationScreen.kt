@@ -107,7 +107,14 @@ fun NotificationScreen(
                     AapanGavErrorScreen(message = state.error.asString(), onRetry = { onEvent(NotificationEvent.Refresh) })
                 }
             } else if (state.notifications.isEmpty()) {
-                AapanGavEmptyData(message = stringResource(id = R.string.no_notifications))
+                AapanGavEmptyData(
+                    message = stringResource(id = R.string.no_notifications),
+                    subtitle = stringResource(id = R.string.no_notifications_subtitle),
+                    buttonText = stringResource(id = R.string.go_back),
+                    iconEmoji = "🔔",
+                    showActionButton = true,
+                    onActionClick = { onEvent(NotificationEvent.BackClick) }
+                )
             } else {
                 val groupedNotifications = state.notifications.groupBy { it.category }
 

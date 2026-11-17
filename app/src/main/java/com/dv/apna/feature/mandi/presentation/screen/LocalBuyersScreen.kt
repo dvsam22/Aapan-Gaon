@@ -136,7 +136,7 @@ fun LocalBuyersScreen(
                 onQueryChange = { searchQueryState.value = it }
             )
 
-            if (state.isLoading) {
+            if (state.isLocalBuyersLoading) {
                 LocalBuyerSkeleton()
             } else {
                 if (filteredBuyers.isEmpty() && state.error == null) {

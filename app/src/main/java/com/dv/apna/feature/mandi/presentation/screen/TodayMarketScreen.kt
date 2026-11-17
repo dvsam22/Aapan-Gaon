@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -32,6 +33,7 @@ import com.dv.apna.core.utils.ssp
 import com.dv.apna.feature.mandi.presentation.effect.MandiEffect
 import com.dv.apna.feature.mandi.presentation.event.MandiEvent
 import com.dv.apna.feature.mandi.presentation.state.MandiState
+import com.dv.apna.feature.mandi.presentation.util.MandiShareHelper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 
@@ -42,6 +44,7 @@ import com.dv.apna.core.components.AapanGavEmptyData
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.unit.dp
 import com.dv.apna.core.ads.BannerAdView
 import com.dv.apna.core.components.AapanGavSearchBar
 import com.dv.apna.core.config.RemoteConfigManager
@@ -73,6 +76,7 @@ fun TodayMarketScreen(
 
     val searchQueryState = rememberSaveable { mutableStateOf("") }
     val query = searchQueryState.value
+    val context = LocalContext.current
     val filteredMarketPrices = remember(state.marketPrices, query) {
         if (query.isBlank()) {
             state.marketPrices
@@ -84,6 +88,9 @@ fun TodayMarketScreen(
             }
         }
     }
+
+    val latestDate = filteredMarketPrices.maxOfOrNull { it.date } ?: 0L
+    val dateLabel = formatMandiDate(latestDate)
 
     ConstraintLayout(
         modifier = Modifier
@@ -123,16 +130,13 @@ fun TodayMarketScreen(
                 onQueryChange = { searchQueryState.value = it }
             )
 
-            if (state.isLoading) {
+            if (state.isMarketPricesLoading) {
                 MandiTableSkeleton()
             } else if (filteredMarketPrices.isEmpty() && state.error == null) {
                 AapanGavEmptyData(
                     message = if (query.isNotEmpty()) stringResource(id = R.string.no_results_found) else stringResource(id = R.string.no_records_found)
                 )
             } else {
-                val latestDate = filteredMarketPrices.maxOfOrNull { it.date } ?: 0L
-                val dateLabel = formatMandiDate(latestDate)
-
                 Surface(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -166,6 +170,7 @@ fun TodayMarketScreen(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .weight(1f)
                         .padding(horizontal = 16.sdp(), vertical = 4.sdp()),
                     shape = RoundedCornerShape(15.sdp()),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -275,6 +280,51 @@ fun TodayMarketScreen(
                             }
                             item {
                                 BannerAdView(remoteConfigManager = remoteConfigManager)
+                            }
+                        }
+                    }
+                }
+
+                // Fixed Single WhatsApp Share Button at the bottom
+                if (filteredMarketPrices.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 32.sdp(), vertical = 8.sdp()),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Button(
+                            onClick = {
+                                val shareText = MandiShareHelper.formatMarketPricesShareText(
+                                    items = filteredMarketPrices,
+                                    dateText = dateLabel,
+                                    packageName = context.packageName
+                                )
+                                MandiShareHelper.shareText(context, shareText)
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(40.sdp()),
+                            shape = RoundedCornerShape(20.sdp()),
+                            contentPadding = PaddingValues(horizontal = 12.sdp(), vertical = 0.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF38C792))
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.iv_whatsapp),
+                                    contentDescription = "WhatsApp",
+                                    modifier = Modifier.size(18.sdp())
+                                )
+                                Spacer(modifier = Modifier.width(8.sdp()))
+                                Text(
+                                    text = stringResource(id = R.string.send_on_whatsapp),
+                                    color = Color.White,
+                                    fontSize = 13.ssp(),
+                                    fontWeight = FontWeight.SemiBold
+                                )
                             }
                         }
                     }

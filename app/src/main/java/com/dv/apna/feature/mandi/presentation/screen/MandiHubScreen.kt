@@ -64,7 +64,6 @@ fun MandiHubScreen(
     effect: Flow<MandiEffect>,
     remoteConfigManager: RemoteConfigManager,
     onNavigateBack: () -> Unit,
-    onNavigateToCropPrices: () -> Unit,
     onNavigateToTodayMarket: () -> Unit,
     onNavigateToLocalBuyers: () -> Unit
 ) {
@@ -72,7 +71,6 @@ fun MandiHubScreen(
         effect.collectLatest { effect ->
             when (effect) {
                 MandiEffect.NavigateBack -> onNavigateBack()
-                MandiEffect.NavigateToCropPrices -> onNavigateToCropPrices()
                 MandiEffect.NavigateToTodayMarket -> onNavigateToTodayMarket()
                 MandiEffect.NavigateToLocalBuyers -> onNavigateToLocalBuyers()
                 is MandiEffect.DialPhone -> { /* Handled in sub-screens or NavGraph */ }
@@ -143,7 +141,11 @@ fun MandiHubScreen(
 }
 
 @Composable
-fun MandiTopBar(title: String, onBackClick: () -> Unit) {
+fun MandiTopBar(
+    title: String,
+    onBackClick: () -> Unit,
+    trailingAction: (@Composable () -> Unit)? = null
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -180,6 +182,12 @@ fun MandiTopBar(title: String, onBackClick: () -> Unit) {
             ),
             modifier = Modifier.align(Alignment.Center)
         )
+
+        if (trailingAction != null) {
+            Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                trailingAction()
+            }
+        }
     }
 }
 
@@ -264,7 +272,6 @@ fun MandiHubScreenPreview() {
             effect = emptyFlow(),
             remoteConfigManager = RemoteConfigManager(),
             onNavigateBack = {},
-            onNavigateToCropPrices = {},
             onNavigateToTodayMarket = {},
             onNavigateToLocalBuyers = {}
         )

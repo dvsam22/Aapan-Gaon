@@ -43,12 +43,19 @@ class NotificationHelper @Inject constructor(
     private fun cleanNewsNotificationText(text: String): String {
         if (text.isBlank()) return text
         return text
-            .replace(Regex("(?i)maharajganj\\s*news\\s*[:\\-\\|]\\s*"), "")
-            .replace(Regex("(?i)maharajganj\\s*[:\\-\\|]\\s*"), "")
-            .replace(Regex("महराजगंज\\s*(न्यूज़|समाचार)?\\s*[:\\-\\|]\\s*"), "")
-            .replace(Regex("(?i)read\\s+(latest\\s+)?maharajganj\\s+news\\s+(today\\s+)?in\\s+hindi\\s*[-—–]?\\s*"), "")
-            .replace(Regex("(?i)read\\s+latest\\s+news\\s+in\\s+hindi\\s*[-—–]?\\s*"), "")
-            .replace(Regex("^(महराजगंज|महाराजगंज)\\s*[।|:\\-—–]\\s*"), "")
+            // Remove Mandi specific towns if present
+            .replace(Regex("खलीलाबाद\\s*(व|और)?\\s*नौगढ़\\s*मंडी\\s*के\\s*"), "मंडी के ")
+            .replace(Regex("खलीलाबाद\\s*(व|और)?\\s*नौगढ़\\s*"), "")
+            // Remove English SEO boilerplate
+            .replace(Regex("(?i)read\\s+(latest\\s+)?(maharajganj\\s+)?news\\s+(today\\s+)?in\\s+hindi\\s*[-—–:]?\\s*"), "")
+            .replace(Regex("(?i)read\\s+latest\\s+news\\s+in\\s+hindi\\s*[-—–:]?\\s*"), "")
+            // Remove 'Maharajganj News' or 'Maharajganj'
+            .replace(Regex("(?i)\\bmaharajganj\\s*news\\b\\s*[:\\-\\|]?\\s*"), "")
+            .replace(Regex("(?i)^maharajganj\\s*[:\\-\\|]?\\s*"), "")
+            // Remove Hindi publisher / district prefix like 'महराजगंज न्यूज़:', 'महराजगंज।'
+            .replace(Regex("^(महराजगंज|महाराजगंज)\\s*(न्यूज़|समाचार)?\\s*[।|:\\-—–]\\s*"), "")
+            .replace(Regex("^(महराजगंज|महाराजगंज)\\s*(न्यूज़|समाचार)\\s*"), "")
+            .replace(Regex("^[-:|।—–\\s]+"), "")
             .trim()
     }
 

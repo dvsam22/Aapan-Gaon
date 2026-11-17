@@ -79,6 +79,7 @@ import com.dv.apna.core.utils.sdp
 import com.dv.apna.core.utils.ssp
 import com.dv.apna.feature.business.presentation.event.AddBusinessEvent
 import com.dv.apna.feature.business.presentation.state.AddBusinessState
+import com.dv.apna.feature.business.presentation.util.BusinessCategoryHierarchy
 import java.net.URLEncoder
 
 private val BrandGreen = Color(0xFF38C792)
@@ -207,35 +208,9 @@ private fun BusinessFormContent(
 ) {
     val scrollState = rememberScrollState()
 
-    val categories = remember {
-        listOf(
-            "फसल व सब्जी खरीदार (Mandi Buyer)",
-            "डॉक्टर व क्लिनिक (Doctor / Clinic)",
-            "मेडिकल स्टोर (Pharmacy / Medical)",
-            "अस्पताल (Hospital)",
-            "एम्बुलेंस सेवा (Ambulance)",
-            "ईंट भट्ठा सप्लायर (Bricks Supplier)",
-            "सीमेंट, बालू व मटेरियल (Building Material)",
-            "हार्डवेयर स्टोर (Hardware Shop)",
-            "लिन्टर मशीन (Linter Machine)",
-            "सेंटरिंग व शटरिंग (Shuttering)",
-            "राजमिस्त्री (Rajmistri / Mason)",
-            "बिजली मिस्त्री (Electrician)",
-            "प्लंबर (Plumber)",
-            "बढ़ई (Carpenter)",
-            "पेंटर (Painter)",
-            "मजदूर / लेबर (Labour)",
-            "ट्रैक्टर व ट्रॉली किराया (Tractor Rental)",
-            "पिकअप व लोडर वाहन (Pickup / Loader)",
-            "जेसीबी मशीन (JCB Machine)",
-            "कार व टैक्सी किराया (Car / Taxi)",
-            "टेंट हाउस व सजावट (Tent House)",
-            "हलवाई व कैटरिंग (Halwai & Catering)",
-            "फोटो व वीडियोग्राफी (Photography)",
-            "डीजे व बैंड बाजा (DJ Sound & Band)",
-            "मैरिज हॉल व वाटिका (Marriage Hall)",
-            "अन्य दुकान / सेवा (Other Shop / Service)"
-        )
+    val mainCategories = remember { BusinessCategoryHierarchy.mainCategories }
+    val subcategories = remember(state.selectedMainCategory) {
+        BusinessCategoryHierarchy.getSubcategories(state.selectedMainCategory)
     }
 
     Column(
@@ -348,14 +323,27 @@ private fun BusinessFormContent(
 
                     Spacer(modifier = Modifier.height(12.sdp()))
 
-                    // 3. Category Dropdown (Single line)
+                    // 3. Main Category Dropdown
                     CategoryDropdownField(
                         label = stringResource(id = R.string.category_label),
                         placeholder = stringResource(id = R.string.select_category_placeholder),
-                        selectedCategory = state.selectedCategory,
-                        categories = categories,
-                        onCategorySelected = { onEvent(AddBusinessEvent.CategorySelected(it)) }
+                        selectedCategory = state.selectedMainCategory,
+                        categories = mainCategories,
+                        onCategorySelected = { onEvent(AddBusinessEvent.MainCategorySelected(it)) }
                     )
+
+                    // 4. Sub-category Dropdown (Shown only if category has subcategories)
+                    if (subcategories.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(12.sdp()))
+
+                        CategoryDropdownField(
+                            label = stringResource(id = R.string.sub_category_label),
+                            placeholder = stringResource(id = R.string.select_subcategory_placeholder),
+                            selectedCategory = state.selectedSubCategory,
+                            categories = subcategories,
+                            onCategorySelected = { onEvent(AddBusinessEvent.SubCategorySelected(it)) }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(12.sdp()))
 
@@ -809,11 +797,17 @@ private fun SuccessSubmissionView(
 }
 
 private fun sendBusinessViaWhatsApp(context: Context, state: AddBusinessState) {
+    val categoryDisplay = if (state.selectedSubCategory.isNotBlank()) {
+        "${state.selectedMainCategory} > ${state.selectedSubCategory}"
+    } else {
+        state.selectedMainCategory.ifBlank { state.selectedCategory }
+    }
+
     val message = """
         *नया व्यवसाय / सेवा पंजीकरण (Aapan Gaon App)*
         👤 नाम: ${state.contactName}
         🏪 दुकान/सेवा का नाम: ${state.businessName}
-        📂 श्रेणी: ${state.selectedCategory}
+        📂 श्रेणी: $categoryDisplay
         📞 मोबाइल: ${state.phoneNumber}
         📍 पता/गांव: ${state.address}
         📝 विवरण: ${state.description.ifBlank { "लागू नहीं" }}

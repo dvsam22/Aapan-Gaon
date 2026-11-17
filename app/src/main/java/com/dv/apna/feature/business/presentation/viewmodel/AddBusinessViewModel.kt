@@ -11,6 +11,7 @@ import com.dv.apna.feature.business.domain.usecase.SubmitBusinessUseCase
 import com.dv.apna.feature.business.presentation.effect.AddBusinessEffect
 import com.dv.apna.feature.business.presentation.event.AddBusinessEvent
 import com.dv.apna.feature.business.presentation.state.AddBusinessState
+import com.dv.apna.feature.business.presentation.util.BusinessCategoryHierarchy
 import com.dv.apna.feature.language.domain.model.VillageModel
 import com.dv.apna.feature.language.domain.repository.LanguageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -75,6 +76,26 @@ class AddBusinessViewModel @Inject constructor(
             is AddBusinessEvent.CategorySelected -> {
                 _state.update { it.copy(selectedCategory = event.category, errorMessage = null) }
             }
+            is AddBusinessEvent.MainCategorySelected -> {
+                val hasSub = BusinessCategoryHierarchy.hasSubcategories(event.mainCategory)
+                _state.update {
+                    it.copy(
+                        selectedMainCategory = event.mainCategory,
+                        selectedSubCategory = "",
+                        selectedCategory = if (!hasSub) event.mainCategory else "",
+                        errorMessage = null
+                    )
+                }
+            }
+            is AddBusinessEvent.SubCategorySelected -> {
+                _state.update {
+                    it.copy(
+                        selectedSubCategory = event.subCategory,
+                        selectedCategory = event.subCategory,
+                        errorMessage = null
+                    )
+                }
+            }
             is AddBusinessEvent.PhoneNumberChanged -> {
                 val filtered = event.phone.filter { it.isDigit() }.take(10)
                 _state.update { it.copy(phoneNumber = filtered, errorMessage = null) }
@@ -110,8 +131,13 @@ class AddBusinessViewModel @Inject constructor(
             _state.update { it.copy(errorMessage = UiText.StringResource(R.string.error_business_name_empty)) }
             return
         }
-        if (s.selectedCategory.trim().isEmpty()) {
+        if (s.selectedMainCategory.trim().isEmpty()) {
             _state.update { it.copy(errorMessage = UiText.StringResource(R.string.error_category_empty)) }
+            return
+        }
+        val hasSubcategories = BusinessCategoryHierarchy.hasSubcategories(s.selectedMainCategory)
+        if (hasSubcategories && s.selectedSubCategory.trim().isEmpty()) {
+            _state.update { it.copy(errorMessage = UiText.StringResource(R.string.error_subcategory_empty)) }
             return
         }
         if (s.phoneNumber.trim().length != 10) {
@@ -127,10 +153,18 @@ class AddBusinessViewModel @Inject constructor(
             val enteredAddress = s.address.trim()
             val (resolvedVillageId, resolvedVillageName) = resolveVillage(enteredAddress)
 
+            val effectiveCategory = if (hasSubcategories) {
+                s.selectedSubCategory.trim()
+            } else {
+                s.selectedMainCategory.trim()
+            }
+
             val model = BusinessRegistrationModel(
                 contactName = s.contactName.trim(),
                 businessName = s.businessName.trim(),
-                category = s.selectedCategory.trim(),
+                category = effectiveCategory,
+                mainCategory = s.selectedMainCategory.trim(),
+                subCategory = s.selectedSubCategory.trim().ifEmpty { null },
                 phoneNumber = s.phoneNumber.trim(),
                 address = enteredAddress,
                 description = s.description.trim(),

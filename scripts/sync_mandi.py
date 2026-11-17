@@ -407,7 +407,7 @@ def send_mandi_notification(db, arrival_date_str: str, force: bool = False, dry_
 
     try:
         title = "🌾 आज का ताज़ा मंडी भाव अपडेट हो गया है!"
-        body = "खलीलाबाद व नौगढ़ मंडी के आलू, टमाटर, बैंगन, गोभी व फसलों के नए रेट देखने के लिए टैप करें।"
+        body = "आज के आलू, टमाटर, बैंगन, गोभी व फसलों के नए ताज़ा मंडी रेट देखने के लिए टैप करें।"
 
         msg = messaging.Message(
             notification=messaging.Notification(
