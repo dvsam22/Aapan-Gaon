@@ -14,6 +14,7 @@ class NotificationDataSource @Inject constructor(
             .mapNotNull { doc ->
                 doc.toObject(NotificationDto::class.java)?.apply { id = doc.id }
             }
+            .filter { !it.type.equals("news", ignoreCase = true) }
             .sortedByDescending { it.date }
     }
 }

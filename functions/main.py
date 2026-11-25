@@ -763,7 +763,7 @@ def clean_news_text(text: str) -> str:
     return text.strip()
 
 
-def send_news_fcm_notification(db, top_article):
+def send_news_fcm_notification(top_article):
     try:
         article_id = str(top_article.get("id"))
         raw_title = top_article.get("title", "ताज़ा खबर")
@@ -776,7 +776,6 @@ def send_news_fcm_notification(db, top_article):
         clean_body = full_desc[:117] + "..." if len(full_desc) > 120 else full_desc
 
         image_url = top_article.get("image") or None
-        full_title_hi = f"ताज़ा खबर: {clean_title}"
 
         msg = messaging.Message(
             notification=messaging.Notification(
@@ -792,16 +791,6 @@ def send_news_fcm_notification(db, top_article):
         )
         resp = messaging.send(msg)
         print(f"[INFO] FCM notification sent for news: {resp}")
-        save_push_notification_record(
-            db=db,
-            notif_id=f"news_{article_id}",
-            title_hi=full_title_hi,
-            title_en=clean_title,
-            body_hi=full_desc,
-            body_en=full_desc,
-            notif_type="news",
-            target_id=article_id,
-        )
     except Exception as e:
         print(f"[ERROR] Failed to send news FCM: {e}", file=sys.stderr)
 
@@ -870,10 +859,10 @@ def execute_news_sync(query: str = DEFAULT_NEWS_QUERY, force_notify: bool = Fals
     # Send FCM notification for the newest genuinely added (and retained) article
     if new_articles:
         new_articles.sort(key=lambda a: a.get("date", 0), reverse=True)
-        send_news_fcm_notification(db, new_articles[0])
+        send_news_fcm_notification(new_articles[0])
     elif force_notify and fresh_candidates:
         fresh_candidates.sort(key=lambda a: a.get("date", 0), reverse=True)
-        send_news_fcm_notification(db, fresh_candidates[0])
+        send_news_fcm_notification(fresh_candidates[0])
 
     return len(new_articles), deleted_count, "success"
 
