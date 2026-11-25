@@ -1,13 +1,10 @@
 package com.dv.apna.feature.language.presentation.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.toRoute
 import com.dv.apna.core.common.Resource
 import com.dv.apna.core.common.UiText
 import com.dv.apna.core.datastore.PreferenceManager
-import com.dv.apna.core.navigation.Route
 import com.dv.apna.feature.language.domain.usecase.GetLanguageDataUseCase
 import com.dv.apna.feature.language.domain.usecase.GetVillagesUseCase
 import com.dv.apna.feature.language.domain.usecase.SaveLanguageUseCase
@@ -26,7 +23,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.dv.apna.feature.language.domain.model.LanguageModel
@@ -38,8 +34,7 @@ class LanguageViewModel @Inject constructor(
     private val getVillagesUseCase: GetVillagesUseCase,
     private val saveVillageSelectionUseCase: SaveVillageSelectionUseCase,
     private val saveLanguageUseCase: SaveLanguageUseCase,
-    private val preferenceManager: PreferenceManager,
-    private val savedStateHandle: SavedStateHandle
+    private val preferenceManager: PreferenceManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LanguageState())
@@ -73,21 +68,12 @@ class LanguageViewModel @Inject constructor(
                 languages.find { it.code == savedLanguageCode }?.id
             } else _state.value.selectedLanguageId
 
-            val shouldAutoSelect = try {
-                savedStateHandle.toRoute<Route.ChangeVillage>()
-                true
-            } catch (e: Exception) {
-                try {
-                    savedStateHandle.toRoute<Route.ChangeLanguage>()
-                    true
-                } catch (e2: Exception) {
-                    false
-                }
+            val resolvedBlockId = PreferenceManager.resolveBlockId(savedVillageId)
+            val selectedVillage = if (_state.value.selectedVillage == null) {
+                villages.find { it.id == resolvedBlockId } ?: villages.firstOrNull()
+            } else {
+                _state.value.selectedVillage
             }
-
-            val selectedVillage = if (_state.value.selectedVillage == null && (shouldAutoSelect || savedVillageId != null)) {
-                villages.find { it.id == savedVillageId }
-            } else _state.value.selectedVillage
 
             _state.update {
                 it.copy(
@@ -124,25 +110,24 @@ class LanguageViewModel @Inject constructor(
                     if (villageId != null && selectedLanguage != null) {
                         _state.update { it.copy(isLoading = true) }
 
-                        // 1. Unsubscribe from old topic if needed
+                        // 1. Unsubscribe from old block topic if switching blocks
                         try {
-                            val currentSavedVillageId = preferenceManager.villageId.firstOrNull()
-                            if (currentSavedVillageId != null && currentSavedVillageId != villageId) {
-                                val oldTopic = "village_$currentSavedVillageId"
-                                FirebaseMessaging.getInstance().unsubscribeFromTopic(oldTopic)
+                            val currentSavedId = preferenceManager.villageId.firstOrNull()
+                            if (currentSavedId != null && currentSavedId != villageId) {
+                                FirebaseMessaging.getInstance().unsubscribeFromTopic(currentSavedId)
                             }
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                         }
 
-                        // 2. Save everything and WAIT (Atomic)
+                        // 2. Save selected block and language atomically
                         saveVillageSelectionUseCase(villageId, villageName ?: "", villageLat, villageLng)
                         saveLanguageUseCase(selectedLanguage.code)
-                        
-                        // 3. Subscribe to new topic
+
+                        // 3. Subscribe to selected block topic
                         try {
-                            val newTopic = "village_$villageId"
-                            FirebaseMessaging.getInstance().subscribeToTopic(newTopic)
-                        } catch (e: Exception) {
+                            val blockTopic = PreferenceManager.resolveBlockId(villageId)
+                            FirebaseMessaging.getInstance().subscribeToTopic(blockTopic)
+                        } catch (_: Exception) {
                         }
 
                         // 4. Trigger navigation and let CompositionLocalProvider update the language dynamically (no recreation).

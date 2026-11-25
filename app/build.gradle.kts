@@ -17,11 +17,13 @@ android {
         applicationId = "com.dv.apna"
         minSdk = 26
         targetSdk = 37
-        versionCode = 19
-        versionName = "4.3"
+        versionCode = 21
+        versionName = "4.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
+
+        buildConfigField("String", "GEMINI_API_KEY", "\"AQ.Ab8RN6LJOcmse4EHXp_XXBAmNXW0_WsSAxNRgAiyW9PjBeimiA\"")
     }
 
     androidResources {
@@ -113,6 +115,9 @@ dependencies {
     implementation(libs.play.app.update.ktx)
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.work.runtime.ktx)
+
+    // Google Gemini AI SDK (100% Free Tier)
+    implementation(libs.google.generativeai)
 
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

@@ -46,6 +46,15 @@ sealed interface Route {
     data object Mandi : Route
 
     @Serializable
+    data object CropDoctor : Route
+
+    @Serializable
+    data object KyaBanega : Route
+
+    @Serializable
+    data object RationCalculator : Route
+
+    @Serializable
     data object TodayMarket : Route
 
     @Serializable

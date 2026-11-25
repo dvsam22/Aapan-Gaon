@@ -5,9 +5,10 @@ import com.dv.apna.feature.language.data.model.VillageDto
 import com.dv.apna.feature.language.domain.model.VillageModel
 
 fun VillageDto.toDomain(languageCode: String): VillageModel {
+    val resolvedName = (blockName ?: villageName).toLocalizedSafeString(languageCode)
     return VillageModel(
         id = id ?: "",
-        villageName = villageName.toLocalizedSafeString(languageCode),
+        villageName = resolvedName,
         district = district.toLocalizedSafeString(languageCode),
         state = state.toLocalizedSafeString(languageCode),
         pincode = pincode ?: "",

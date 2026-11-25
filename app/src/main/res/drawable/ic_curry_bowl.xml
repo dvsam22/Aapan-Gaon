@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Steam waves -->
+    <path
+        android:pathData="M8,4 C8,3 9,2.5 9,1.5 M12,4 C12,3 13,2.5 13,1.5 M16,4 C16,3 17,2.5 17,1.5"
+        android:strokeWidth="1.2"
+        android:strokeColor="#2CA074"
+        android:strokeLineCap="round" />
+    <!-- Bowl body -->
+    <path
+        android:pathData="M2,9 L22,9 C22,15.5 17.5,19.5 12,19.5 C6.5,19.5 2,15.5 2,9 Z"
+        android:strokeWidth="1.8"
+        android:strokeColor="#2CA074"
+        android:strokeLineJoin="round" />
+    <!-- Bowl rim top curve -->
+    <path
+        android:pathData="M2,9 C2,7.9 6.5,7 12,7 C17.5,7 22,7.9 22,9"
+        android:strokeWidth="1.8"
+        android:strokeColor="#2CA074" />
+    <!-- Base stand -->
+    <path
+        android:pathData="M8,19.5 L7,22 L17,22 L16,19.5"
+        android:strokeWidth="1.8"
+        android:strokeColor="#2CA074"
+        android:strokeLineJoin="round" />
+</vector>

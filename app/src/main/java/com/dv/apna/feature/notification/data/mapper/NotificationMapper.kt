@@ -37,7 +37,9 @@ fun NotificationDto.toDomain(languageCode: String): NotificationModel {
         description = localizedMessage,
         time = timeAgo,
         date = "$category, $timeStr",
-        category = category
+        category = category,
+        type = this.type.orEmpty(),
+        targetId = this.targetId.orEmpty()
     )
 }
 

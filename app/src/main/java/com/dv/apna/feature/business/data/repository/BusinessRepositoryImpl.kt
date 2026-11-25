@@ -25,6 +25,8 @@ class BusinessRepositoryImpl @Inject constructor(
                 phoneNumber = model.phoneNumber,
                 address = model.address,
                 description = model.description,
+                blockId = model.blockId,
+                blockName = model.blockName,
                 villageId = model.villageId,
                 villageName = model.villageName,
                 status = "pending"

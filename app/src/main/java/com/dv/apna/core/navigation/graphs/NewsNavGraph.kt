@@ -49,7 +49,12 @@ fun NavGraphBuilder.newsNavGraph(
         NewsDetailsScreen(
             newsId = route.id,
             state = state,
-            onNavigateBack = { navController.popBackStack() }
+            onNavigateBack = { navController.popBackStack() },
+            onNavigateToNewsList = {
+                navController.navigate(Route.News) {
+                    popUpTo(route) { inclusive = true }
+                }
+            }
         )
     }
 

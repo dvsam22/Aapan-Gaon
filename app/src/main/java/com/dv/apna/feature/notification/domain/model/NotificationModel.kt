@@ -10,5 +10,7 @@ data class NotificationModel(
     val description: String,
     val time: String,
     val date: String,
-    val category: String // Today, Yesterday, etc.
+    val category: String, // Today, Yesterday, etc.
+    val type: String = "",
+    val targetId: String = ""
 )

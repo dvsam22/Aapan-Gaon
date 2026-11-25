@@ -24,8 +24,47 @@ class HomeRepositoryImpl @Inject constructor(
                 emit(Resource.Loading())
                 try {
                     val currentLang = languageCode ?: "en"
+                    val isHi = currentLang == "hi"
                     val fetched = dataSource.getBanners(villageId).map { it.toDomain(currentLang) }
-                    val banners = if (fetched.isNotEmpty()) fetched else getDefaultBanners(currentLang, villageId)
+
+                    val cropDoctorBanner = BannerModel(
+                        id = "def_crop_doctor",
+                        imageUrl = "",
+                        title = if (isHi) "फसल व सब्जी डॉक्टर" else "Crop & Vegetable Doctor",
+                        discountText = if (isHi) "100% मुफ़्त AI रोग पहचान व इलाज" else "100% Free AI Plant Diagnosis",
+                        link = "crop_doctor",
+                        villageId = villageId,
+                        drawableRes = R.drawable.banner_crop_doctor
+                    )
+
+                    val kyaBanegaBanner = BannerModel(
+                        id = "def_kya_banega",
+                        imageUrl = "",
+                        title = if (isHi) "आज क्या बनेगा?" else "What to Cook Today?",
+                        discountText = if (isHi) "रसोई के सामान से बनाएं स्वादिष्ट व्यंजन" else "Cook delicious meals with kitchen items",
+                        link = "kya_banega",
+                        villageId = villageId,
+                        drawableRes = R.drawable.banner_kya_banega
+                    )
+
+                    val banners = if (fetched.isNotEmpty()) {
+                        val hasCropDoctor = fetched.any { 
+                            it.link.lowercase().contains("crop_doctor") || 
+                            it.link.lowercase().contains("fasal_doctor") ||
+                            it.id.contains("crop_doctor")
+                        }
+                        val hasKyaBanega = fetched.any {
+                            it.link.lowercase().contains("kya_banega") ||
+                            it.id.contains("kya_banega")
+                        }
+                        val extraList = mutableListOf<BannerModel>()
+                        if (!hasCropDoctor) extraList.add(cropDoctorBanner)
+                        if (!hasKyaBanega) extraList.add(kyaBanegaBanner)
+                        extraList + fetched
+                    } else {
+                        getDefaultBanners(currentLang, villageId)
+                    }
+
                     emit(Resource.Success(banners))
                 } catch (e: Exception) {
                     emit(Resource.Error(e.localizedMessage ?: "An error occurred"))
@@ -37,9 +76,27 @@ class HomeRepositoryImpl @Inject constructor(
         val isHi = languageCode == "hi"
         return listOf(
             BannerModel(
+                id = "def_kya_banega",
+                imageUrl = "",
+                title = if (isHi) "आज क्या बनेगा?" else "What to Cook Today?",
+                discountText = if (isHi) "रसोई के सामान से बनाएं स्वादिष्ट व्यंजन" else "Cook delicious meals with kitchen items",
+                link = "kya_banega",
+                villageId = villageId,
+                drawableRes = R.drawable.banner_kya_banega
+            ),
+            BannerModel(
+                id = "def_crop_doctor",
+                imageUrl = "",
+                title = if (isHi) "फसल व सब्जी डॉक्टर" else "Crop & Vegetable Doctor",
+                discountText = if (isHi) "100% मुफ़्त AI रोग पहचान व इलाज" else "100% Free AI Plant Diagnosis",
+                link = "crop_doctor",
+                villageId = villageId,
+                drawableRes = R.drawable.banner_crop_doctor
+            ),
+            BannerModel(
                 id = "def_mandi",
                 imageUrl = "",
-                title = if (isHi) "आज का मंडी रेट देखें 🌾" else "Today's Mandi Rates 🌾",
+                title = if (isHi) "आज का मंडी रेट देखें" else "Today's Mandi Rates",
                 discountText = if (isHi) "आज के ताज़ा बाजार भाव" else "Daily Fresh Market Rates",
                 link = "today_market",
                 villageId = villageId,
@@ -48,7 +105,7 @@ class HomeRepositoryImpl @Inject constructor(
             BannerModel(
                 id = "def_news",
                 imageUrl = "",
-                title = if (isHi) "जिले की ताज़ा खबरें 📢" else "District Breaking News 📢",
+                title = if (isHi) "जिले की ताज़ा खबरें" else "District Breaking News",
                 discountText = if (isHi) "महराजगंज व गांव के समाचार" else "Maharajganj & Village Updates",
                 link = "news",
                 villageId = villageId,
@@ -57,7 +114,7 @@ class HomeRepositoryImpl @Inject constructor(
             BannerModel(
                 id = "def_business",
                 imageUrl = "",
-                title = if (isHi) "दुकान व ट्रैक्टर जोड़ें 🏪" else "Register Shop & Tractor 🏪",
+                title = if (isHi) "दुकान व ट्रैक्टर जोड़ें" else "Register Shop & Tractor",
                 discountText = if (isHi) "अपने गांव में ग्राहक पाएं" else "Get more local customers",
                 link = "add_business",
                 villageId = villageId,
@@ -66,7 +123,7 @@ class HomeRepositoryImpl @Inject constructor(
             BannerModel(
                 id = "def_buyers",
                 imageUrl = "",
-                title = if (isHi) "फसल व सब्जियां बेचें 🌱" else "Sell Crops & Produce 🌱",
+                title = if (isHi) "फसल व सब्जियां बेचें" else "Sell Crops & Produce",
                 discountText = if (isHi) "सीधे खरीदारों से जुड़ें" else "Connect directly with buyers",
                 link = "local_buyers",
                 villageId = villageId,
@@ -75,7 +132,7 @@ class HomeRepositoryImpl @Inject constructor(
             BannerModel(
                 id = "def_emergency",
                 imageUrl = "",
-                title = if (isHi) "आपातकालीन हेल्पलाइन 🚨" else "Emergency & Helpline 🚨",
+                title = if (isHi) "आपातकालीन हेल्पलाइन" else "Emergency & Helpline",
                 discountText = if (isHi) "एम्बुलेंस, पुलिस व डॉक्टर" else "Ambulance, Police & Hospital",
                 link = "health",
                 villageId = villageId,

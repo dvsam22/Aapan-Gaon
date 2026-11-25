@@ -84,6 +84,8 @@ fun HomeScreen(
     onNavigateToAboutUs: () -> Unit,
     onNavigateToPrivacyPolicy: () -> Unit,
     onNavigateToTerms: () -> Unit,
+    onNavigateToCropDoctor: () -> Unit = {},
+    onNavigateToKyaBanega: () -> Unit = {},
     onBannerClick: (BannerModel) -> Unit = {}
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -254,6 +256,8 @@ fun HomeScreen(
                         onFamilyFunctionClick = onNavigateToFamilyFunction,
                         onEducationClick = onNavigateToEducation,
                         onLegalPanchayatClick = onNavigateToLegalPanchayat,
+                        onCropDoctorClick = onNavigateToCropDoctor,
+                        onKyaBanegaClick = onNavigateToKyaBanega,
                         onBannerClick = onBannerClick
                     )
                 }
@@ -502,6 +506,8 @@ fun HomeContent(
     onFamilyFunctionClick: () -> Unit,
     onEducationClick: () -> Unit = {},
     onLegalPanchayatClick: () -> Unit = {},
+    onCropDoctorClick: () -> Unit = {},
+    onKyaBanegaClick: () -> Unit = {},
     onBannerClick: (BannerModel) -> Unit = {}
 ) {
     LazyColumn(
@@ -540,7 +546,9 @@ fun HomeContent(
                 onHealthClick = onHealthClick,
                 onFamilyFunctionClick = onFamilyFunctionClick,
                 onEducationClick = onEducationClick,
-                onLegalPanchayatClick = onLegalPanchayatClick
+                onLegalPanchayatClick = onLegalPanchayatClick,
+                onCropDoctorClick = onCropDoctorClick,
+                onKyaBanegaClick = onKyaBanegaClick
             )
         }
     }
@@ -676,6 +684,8 @@ fun BannerCarousel(
                                     horizontalArrangement = Arrangement.spacedBy(3.sdp())
                                 ) {
                                     val actionText = when (banner.link.lowercase().trim()) {
+                                        "crop_doctor", "fasal_doctor", "kisan_doctor", "doctor" -> stringResource(id = R.string.crop_doctor_action)
+                                        "kya_banega", "food_assistant", "recipe", "khana", "rasoi" -> stringResource(id = R.string.kya_banega_action)
                                         "today_market", "mandi" -> stringResource(id = R.string.action_view_rates)
                                         "news", "samachar" -> stringResource(id = R.string.action_read_news)
                                         "add_business", "register_shop", "business" -> stringResource(id = R.string.action_add_free)
@@ -739,7 +749,9 @@ fun ServicesGrid(
     onHealthClick: () -> Unit,
     onFamilyFunctionClick: () -> Unit,
     onEducationClick: () -> Unit = {},
-    onLegalPanchayatClick: () -> Unit = {}
+    onLegalPanchayatClick: () -> Unit = {},
+    onCropDoctorClick: () -> Unit = {},
+    onKyaBanegaClick: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -747,6 +759,29 @@ fun ServicesGrid(
             .padding(horizontal = 16.sdp()),
         verticalArrangement = Arrangement.spacedBy(8.sdp())
     ) {
+        // Top Row: Crop Doctor & What to Cook Today?
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.sdp())
+        ) {
+            ServiceCard(
+                title = stringResource(id = R.string.crop_doctor_title),
+                icon = R.drawable.crops,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(150.sdp()),
+                onClick = onCropDoctorClick
+            )
+            ServiceCard(
+                title = stringResource(id = R.string.kya_banega_title),
+                icon = R.drawable.ic_cooking_pot,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(150.sdp()),
+                onClick = onKyaBanegaClick
+            )
+        }
+
         // Construction Hub
         ServiceCard(
             title = stringResource(id = R.string.construction_hub),

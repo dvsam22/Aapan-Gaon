@@ -18,6 +18,24 @@ class PreferenceManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
     companion object {
+        const val DEFAULT_BLOCK_ID = "block_paniyara"
+
+        fun resolveBlockId(savedId: String?): String {
+            return if (!savedId.isNullOrBlank() && savedId.startsWith("block_")) {
+                savedId
+            } else {
+                DEFAULT_BLOCK_ID
+            }
+        }
+
+        fun defaultBlockName(languageCode: String?): String {
+            return if (languageCode.equals("hi", ignoreCase = true)) {
+                "पनियरा ब्लॉक"
+            } else {
+                "Paniyara Block"
+            }
+        }
+
         private val VILLAGE_ID = stringPreferencesKey("village_id")
         private val VILLAGE_NAME = stringPreferencesKey("village_name")
         private val VILLAGE_LAT = doublePreferencesKey("village_lat")

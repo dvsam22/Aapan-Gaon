@@ -16,6 +16,8 @@ import androidx.navigation.compose.NavHost
 import com.dv.apna.core.components.LocalNavigateToAddBusiness
 import com.dv.apna.core.navigation.graphs.businessNavGraph
 import com.dv.apna.core.navigation.graphs.constructionNavGraph
+import com.dv.apna.core.navigation.graphs.cropDoctorNavGraph
+import com.dv.apna.core.navigation.graphs.kyaBanegaNavGraph
 import com.dv.apna.core.navigation.graphs.educationNavGraph
 import com.dv.apna.core.navigation.graphs.familyNavGraph
 import com.dv.apna.core.navigation.graphs.healthNavGraph
@@ -102,6 +104,8 @@ fun RootNavGraph(
             legalPanchayatNavGraph(navController, adManager, remoteConfigManager, activity)
             settingsNavGraph(navController)
             businessNavGraph(navController)
+            cropDoctorNavGraph(navController, remoteConfigManager)
+            kyaBanegaNavGraph(navController, remoteConfigManager)
         }
     }
 }

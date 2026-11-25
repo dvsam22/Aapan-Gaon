@@ -9,6 +9,8 @@ data class BusinessRegistrationModel(
     val phoneNumber: String,
     val address: String,
     val description: String = "",
+    val blockId: String? = null,
+    val blockName: String? = null,
     val villageId: String? = null,
     val villageName: String? = null
 )

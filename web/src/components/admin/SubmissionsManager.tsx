@@ -9,8 +9,6 @@ import {
   updateDoc,
   deleteDoc,
   setDoc,
-  getDoc,
-  getDocs,
   serverTimestamp
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -45,6 +43,8 @@ export interface SubmissionItem {
   description: string;
   villageId?: string;
   villageName?: string;
+  blockId?: string;
+  blockName?: string;
   status: "pending" | "approved" | "rejected";
   createdAt?: any;
   // Bilingual Fields
@@ -84,6 +84,8 @@ function parseStringOrMap(val: any): string {
   return "";
 }
 
+const DEFAULT_BLOCK_ID = "block_paniyara";
+
 // NextAdmin Light Badge Palette
 const CATEGORY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
   education: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
@@ -100,7 +102,7 @@ export interface CategoryDefinition {
   id: string; // The exact categoryId in Firestore DTO
   displayName: string;
   group: "labour" | "transport" | "family" | "construction" | "health" | "education" | "legal" | "mandi" | "business";
-  collection: string; // The Firestore subcollection under villages/{villageId}/
+  collection: string; // The Firestore subcollection under blocks/{blockId}/
   nameLabelEn: string;
   nameLabelHi: string;
   namePlaceholderEn: string;
@@ -1124,6 +1126,8 @@ export default function SubmissionsManager({
           description: desc,
           villageId: data.villageId || "",
           villageName: vName || "General",
+          blockId: data.blockId || DEFAULT_BLOCK_ID,
+          blockName: parseStringOrMap(data.blockName) || "Paniyara Block",
           status: data.status || "pending",
           createdAt: data.createdAt,
           nameEn: parseStringOrMap(data.nameEn) || bName,
@@ -1255,50 +1259,19 @@ export default function SubmissionsManager({
     });
   };
 
-  // Helper to find the existing village ID in Firestore without creating ghost village docs!
-  const getExistingVillageId = async (vIdCandidate?: string, vNameCandidate?: string): Promise<string> => {
-    try {
-      const vSnap = await getDocs(collection(db, "villages"));
-      if (vSnap.empty) return vIdCandidate || "v_mahuwa_shukla";
+  const resolveTargetBlockId = (blockId?: string): string => {
+    return blockId && blockId.startsWith("block_") ? blockId : DEFAULT_BLOCK_ID;
+  };
 
-      const cleanCandidate = (vNameCandidate || "").toLowerCase().replace(/[^a-z0-9]/g, "").replace(/a+/g, "a");
-
-      // 1. Direct ID match
-      if (vIdCandidate) {
-        for (const vDoc of vSnap.docs) {
-          if (vDoc.id === vIdCandidate) return vDoc.id;
-        }
-      }
-
-      // 2. Match by normalized villageName
-      for (const vDoc of vSnap.docs) {
-        const vData = vDoc.data();
-        const vName = vData.villageName;
-        const en = (typeof vName === "object" ? vName?.en : vName) || "";
-        const hi = (typeof vName === "object" ? vName?.hi : vName) || "";
-
-        const cleanEn = en.toLowerCase().replace(/[^a-z0-9]/g, "").replace(/a+/g, "a");
-        if (cleanCandidate && cleanEn && (cleanEn === cleanCandidate || cleanEn.includes(cleanCandidate) || cleanCandidate.includes(cleanEn))) {
-          return vDoc.id;
-        }
-        if (vNameCandidate && (hi.includes(vNameCandidate) || vNameCandidate.includes(hi))) {
-          return vDoc.id;
-        }
-      }
-
-      // 3. Match by partial ID
-      for (const vDoc of vSnap.docs) {
-        const cleanId = vDoc.id.toLowerCase().replace(/[^a-z0-9]/g, "").replace(/a+/g, "a");
-        if (cleanCandidate && (cleanId.includes(cleanCandidate) || cleanCandidate.includes(cleanId))) {
-          return vDoc.id;
-        }
-      }
-
-      return vIdCandidate || vSnap.docs[0].id;
-    } catch (e) {
-      console.warn("Could not query villages:", e);
-      return vIdCandidate || "v_mahuwa_shukla";
-    }
+  const resolveVillageSlugId = (vIdCandidate?: string, vNameCandidate?: string): string => {
+    if (vIdCandidate && !vIdCandidate.startsWith("block_")) return vIdCandidate;
+    const slug = (vNameCandidate || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-z0-9_]/g, "")
+      .slice(0, 30);
+    return slug ? `v_${slug}` : DEFAULT_BLOCK_ID;
   };
 
   // Determine target collection matching mobile app category
@@ -1485,17 +1458,24 @@ export default function SubmissionsManager({
         approvePayload.address = { en: aEn, hi: aHi };
       }
 
-      // Save into the matched real village in Firestore without polluting villages collection
-      const targetVillageId = await getExistingVillageId(item.villageId, vNameEn);
-      const targetDocRef = doc(db, "villages", targetVillageId, targetColl, item.id);
-      await setDoc(targetDocRef, { ...approvePayload, villageId: targetVillageId }, { merge: true });
+      // Save directly into `/blocks/{blockId}/{targetColl}/{id}` (Option 1)
+      const targetBlockId = resolveTargetBlockId(item.blockId);
+      const targetVillageId = resolveVillageSlugId(item.villageId, vNameEn);
+      const targetDocRef = doc(db, "blocks", targetBlockId, targetColl, item.id);
+      await setDoc(targetDocRef, {
+        ...approvePayload,
+        blockId: targetBlockId,
+        villageId: targetVillageId,
+        villageName: { en: vNameEn, hi: vNameHi }
+      }, { merge: true });
 
       // Mark approved in business_registrations
       await updateDoc(doc(db, "business_registrations", item.id), {
         status: "approved",
         approvedAt: serverTimestamp(),
+        blockId: targetBlockId,
         publishedCollection: targetColl,
-        publishedDocPath: `villages/${targetVillageId}/${targetColl}/${item.id}`
+        publishedDocPath: `blocks/${targetBlockId}/${targetColl}/${item.id}`
       });
 
       showToast("सर्विस सफलतापूर्वक अप्रूव हो गई!", "मोबाइल ऐप में लाइव प्रकाशित कर दी गई है।", "success");
@@ -1513,18 +1493,17 @@ export default function SubmissionsManager({
     try {
       setActionLoading(item.id);
 
-      // 1. Remove from live mobile app paths so it immediately hides from the app
-      const vNameEn = item.villageNameEn || item.villageName || item.address || "General";
-      const targetVillageId = await getExistingVillageId(item.villageId, vNameEn);
+      // 1. Remove from live mobile app path so it immediately hides from the app
+      const targetBlockId = resolveTargetBlockId(item.blockId);
       const { collection: targetColl } = getTargetCollection(item.category);
 
       try {
-        await deleteDoc(doc(db, "villages", targetVillageId, targetColl, item.id));
+        await deleteDoc(doc(db, "blocks", targetBlockId, targetColl, item.id));
       } catch (err) {
-        console.warn("Could not delete from target village collection:", err);
+        console.warn("Could not delete from target block collection:", err);
       }
 
-      if (item.publishedDocPath) {
+      if (item.publishedDocPath && item.publishedDocPath !== `blocks/${targetBlockId}/${targetColl}/${item.id}`) {
         try {
           await deleteDoc(doc(db, item.publishedDocPath));
         } catch (err) {
@@ -1554,18 +1533,17 @@ export default function SubmissionsManager({
     try {
       setActionLoading(item.id);
 
-      // 1. Permanently remove from live mobile app paths
-      const vNameEn = item.villageNameEn || item.villageName || item.address || "General";
-      const targetVillageId = await getExistingVillageId(item.villageId, vNameEn);
+      // 1. Permanently remove from live mobile app path
+      const targetBlockId = resolveTargetBlockId(item.blockId);
       const { collection: targetColl } = getTargetCollection(item.category);
 
       try {
-        await deleteDoc(doc(db, "villages", targetVillageId, targetColl, item.id));
+        await deleteDoc(doc(db, "blocks", targetBlockId, targetColl, item.id));
       } catch (err) {
-        console.warn("Could not delete from target village collection:", err);
+        console.warn("Could not delete from target block collection:", err);
       }
 
-      if (item.publishedDocPath) {
+      if (item.publishedDocPath && item.publishedDocPath !== `blocks/${targetBlockId}/${targetColl}/${item.id}`) {
         try {
           await deleteDoc(doc(db, item.publishedDocPath));
         } catch (err) {
@@ -1637,7 +1615,7 @@ export default function SubmissionsManager({
         updatedAt: serverTimestamp()
       });
 
-      // 2. If approved, ALSO update the live document in villages/{villageId}/{targetColl}/{id}!
+      // 2. If approved, ALSO update the live document in blocks/{blockId}/{targetColl}/{id}!
       const { collection: targetColl, categoryId: catId } = getTargetCollection(editingItem.category);
 
       const livePayload: Record<string, any> = {
@@ -1764,11 +1742,17 @@ export default function SubmissionsManager({
         livePayload.address = { en: aEn, hi: aHi };
       }
 
-      // If approved, update live mobile app path for the real village
+      // If approved, update live mobile app path under /blocks/{blockId}/{targetColl}/{id}
       if (editingItem.status === "approved") {
-        const targetVillageId = await getExistingVillageId(editingItem.villageId, vNameEn);
-        const liveDocRef = doc(db, "villages", targetVillageId, targetColl, editingItem.id);
-        await setDoc(liveDocRef, { ...livePayload, villageId: targetVillageId }, { merge: true });
+        const targetBlockId = resolveTargetBlockId(editingItem.blockId);
+        const targetVillageId = resolveVillageSlugId(editingItem.villageId, vNameEn);
+        const liveDocRef = doc(db, "blocks", targetBlockId, targetColl, editingItem.id);
+        await setDoc(liveDocRef, {
+          ...livePayload,
+          blockId: targetBlockId,
+          villageId: targetVillageId,
+          villageName: { en: vNameEn, hi: vNameHi }
+        }, { merge: true });
       }
 
       setEditingItem(null);
@@ -1804,7 +1788,7 @@ export default function SubmissionsManager({
       const serviceId = `srv_${Date.now()}`;
       const vNameEn = newVillageNameEn.trim() || (selectedVillage !== "all" ? selectedVillage : "General");
       const vNameHi = newVillageNameHi.trim() || newVillageNameEn.trim() || (selectedVillage !== "all" ? selectedVillage : "सामान्य");
-      const vId = await getExistingVillageId(undefined, vNameEn);
+      const vId = resolveVillageSlugId(undefined, vNameEn);
 
       const bNameEn = newServiceNameEn.trim() || newServiceNameHi.trim();
       const bNameHi = newServiceNameHi.trim() || newServiceNameEn.trim();
@@ -1824,7 +1808,9 @@ export default function SubmissionsManager({
         id: serviceId,
         categoryId: catId,
         contact: newPhone.trim(),
+        blockId: DEFAULT_BLOCK_ID,
         villageId: vId,
+        villageName: { en: vNameEn, hi: vNameHi },
         approvedAt: serverTimestamp(),
         createdAt: serverTimestamp(),
         status: "active"
@@ -1933,9 +1919,9 @@ export default function SubmissionsManager({
         targetPayload.date = Date.now();
       }
 
-      // 3. If publishing live, save directly into villages/{vId}/{targetColl}/{serviceId}
+      // 3. If publishing live, save directly into `/blocks/{blockId}/{targetColl}/{serviceId}` (Option 1)
       if (newPublishLive) {
-        const targetDocRef = doc(db, "villages", vId, targetColl, serviceId);
+        const targetDocRef = doc(db, "blocks", DEFAULT_BLOCK_ID, targetColl, serviceId);
         await setDoc(targetDocRef, targetPayload, { merge: true });
       }
 
@@ -1958,13 +1944,15 @@ export default function SubmissionsManager({
         villageNameHi: vNameHi,
         addressEn: aEn,
         addressHi: aHi,
+        blockId: DEFAULT_BLOCK_ID,
+        blockName: "Paniyara Block",
         villageId: vId,
         villageName: vNameEn,
         status: newPublishLive ? "approved" : "pending",
         createdAt: serverTimestamp(),
         approvedAt: newPublishLive ? serverTimestamp() : null,
         publishedCollection: newPublishLive ? targetColl : null,
-        publishedDocPath: newPublishLive ? `villages/${vId}/${targetColl}/${serviceId}` : null
+        publishedDocPath: newPublishLive ? `blocks/${DEFAULT_BLOCK_ID}/${targetColl}/${serviceId}` : null
       });
 
       // Reset Form

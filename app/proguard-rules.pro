@@ -122,7 +122,6 @@
 -keep public class com.google.ads.** {
     public *;
 }
--keep class com.google.android.gms.ads.appopen.AppOpenAd { *; }
 -keep class com.google.android.gms.ads.interstitial.InterstitialAd { *; }
 -dontwarn com.google.android.gms.ads.**
 
@@ -163,3 +162,11 @@
 -keep class androidx.startup.** { *; }
 -keep class * implements androidx.startup.Initializer { *; }
 -dontwarn androidx.startup.**
+
+# ------------------------------------------------------------------------------
+# 10. Google Generative AI (Gemini SDK)
+# ------------------------------------------------------------------------------
+-keep class com.google.ai.client.generativeai.** { *; }
+-dontwarn com.google.ai.client.generativeai.**
+-keepclassmembers class com.dv.apna.feature.crop_doctor.domain.model.** { *; }
+-keepclassmembers class com.dv.apna.feature.kya_banega.domain.model.** { *; }

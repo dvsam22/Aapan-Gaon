@@ -56,18 +56,24 @@ class HomeViewModel @Inject constructor(
     private fun observeVillage() {
         viewModelScope.launch {
             combine(
-                preferenceManager.villageId.filterNotNull(),
+                preferenceManager.villageId,
                 preferenceManager.villageName,
-                preferenceManager.villageLat,
-                preferenceManager.villageLng,
+                preferenceManager.languageCode,
                 getVillagesUseCase()
-            ) { villageId, savedName, savedLat, savedLng, villagesResource ->
+            ) { savedId, savedName, langCode, villagesResource ->
+                val blockId = PreferenceManager.resolveBlockId(savedId)
                 val villages = (villagesResource as? Resource.Success<*>)?.data as? List<VillageModel>
-                val village = villages?.find { it.id == villageId }
-                if (village != null) {
-                    Triple(village.villageName, village.lat, village.lng)
+                val block = villages?.find { it.id == blockId } ?: villages?.firstOrNull()
+
+                if (block != null) {
+                    Triple(block.villageName, block.lat, block.lng)
                 } else {
-                    Triple(savedName ?: "", savedLat, savedLng)
+                    val fallbackName = if (savedId != null && savedId == blockId && !savedName.isNullOrBlank()) {
+                        savedName
+                    } else {
+                        PreferenceManager.defaultBlockName(langCode)
+                    }
+                    Triple(fallbackName, 27.00, 83.42)
                 }
             }.collectLatest { (name, lat, lng) ->
                 if (name.isNotEmpty()) {

@@ -4,7 +4,7 @@
     <string name="back">Back</string>
     <string name="go_back">Go Back</string>
     <string name="select_language">Select Language</string>
-    <string name="select_village">Select Village</string>
+    <string name="select_village">Select Block</string>
     <string name="save_changes">Save Changes</string>
     <string name="continue_text">Continue</string>
     <string name="refresh">Refresh</string>
@@ -26,7 +26,7 @@
 
     <!-- Navigation & Menu -->
     <string name="change_language">Change Language</string>
-    <string name="change_village">Change Village</string>
+    <string name="change_village">Change Block</string>
     <string name="about_us">About Us</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="terms_and_conditions">Terms &amp; Conditions</string>
@@ -45,9 +45,9 @@
 
     <!-- Language Selection Screen -->
     <string name="select_language_bilingual">Select Language/ भाषा चुने</string>
-    <string name="select_village_bilingual">Select Village/ गाँव चुनें</string>
+    <string name="select_village_bilingual">Select Block / ब्लॉक चुनें</string>
     <string name="select_here_bilingual">Select Here/ यहाँ चुनें</string>
-    <string name="no_villages_found">No villages found</string>
+    <string name="no_villages_found">No blocks found</string>
 
     <!-- Mandi Hub -->
     <string name="crop_prices">Mandi Rates</string>
@@ -108,8 +108,8 @@
 
     <!-- Errors -->
     <string name="error_select_language">Please select a language</string>
-    <string name="error_select_village">Please select a village</string>
-    <string name="error_village_not_selected">Village not selected</string>
+    <string name="error_select_village">Please select a block</string>
+    <string name="error_village_not_selected">Block not selected</string>
     <!-- Transport & News -->
     <string name="no_vehicles_found">No vehicles found</string>
     <string name="location_label">Location:</string>
@@ -229,4 +229,171 @@
     <string name="update_downloaded_message">A new update has been downloaded. Restart the app now to apply the latest features and improvements.</string>
     <string name="update_restart_btn">Restart Now</string>
     <string name="update_later_btn">Later</string>
+
+    <!-- AI Crop Doctor -->
+    <string name="crop_doctor_title">Crop Doctor</string>
+    <string name="crop_doctor_subtitle">Take or upload photo of crop to detect disease &amp; remedy</string>
+    <string name="crop_doctor_badge">100% FREE AI</string>
+    <string name="crop_doctor_action">Diagnose Crop</string>
+    <string name="crop_doctor_take_photo">Take Crop or Leaf Photo</string>
+    <string name="crop_doctor_take_photo_desc">AI instantly identifies disease and provides accurate treatment</string>
+    <string name="crop_doctor_btn_camera">Take Photo with Camera</string>
+    <string name="crop_doctor_btn_gallery">Choose from Gallery</string>
+    <string name="crop_doctor_tips_title">Tips for Accurate Diagnosis</string>
+    <string name="crop_doctor_tips_desc">• Take a close-up photo of the affected leaf, stem, or fruit.\n• Ensure good daylight so colors and spots are visible.\n• Avoid blurry or out-of-focus photos.</string>
+    <string name="crop_doctor_analyzing_title">AI Crop Doctor is analyzing...</string>
+    <string name="crop_doctor_analyzing_desc">Examining leaf symptoms and identifying disease...</string>
+    <string name="crop_doctor_step1_title">Identifying Crop &amp; Plant...</string>
+    <string name="crop_doctor_step1_desc">Analyzing leaf structure, texture, and color</string>
+    <string name="crop_doctor_step2_title">Scanning Symptoms &amp; Pests...</string>
+    <string name="crop_doctor_step2_desc">Scanning for fungus, spots, and pest damage</string>
+    <string name="crop_doctor_step3_title">Preparing Best Treatment...</string>
+    <string name="crop_doctor_step3_desc">Preparing chemical dosages and organic remedies</string>
+    <string name="crop_doctor_not_plant_title">Plant or Leaf Not Detected</string>
+    <string name="crop_doctor_not_plant_desc">Please take a clear photo of a crop, leaf, or plant.</string>
+    <string name="crop_doctor_btn_retake">Take Another Photo</string>
+    <string name="crop_doctor_healthy">Healthy Plant</string>
+    <string name="crop_doctor_symptoms">Main Symptoms</string>
+    <string name="crop_doctor_chemical">Chemical Medicine &amp; Dosage</string>
+    <string name="crop_doctor_organic">Organic / Desi Remedies</string>
+    <string name="crop_doctor_precautions">Spraying Precautions</string>
+    <string name="crop_doctor_share_whatsapp">Share with Farmers on WhatsApp</string>
+    <string name="crop_doctor_scan_another">Diagnose Another Crop</string>
+    <string name="crop_doctor_listen_title">Listen Report</string>
+    <string name="crop_doctor_stop_speaking">Stop Listening</string>
+    <string name="crop_doctor_listen_sub">Listen hands-free to diagnosis &amp; treatment</string>
+    <string name="camera_permission_required">Camera permission is required to take photos</string>
+
+    <!-- Kya Banega - Smart Food Assistant -->
+    <string name="kya_banega_title">What to Cook Today?</string>
+    <string name="kya_banega_action">Find Recipes</string>
+    <string name="kya_banega_subtitle">Cook delicious meals from ingredients in your kitchen</string>
+    <string name="kya_banega_search_hint">Type or speak an ingredient (e.g. Potato, Dal)...</string>
+    <string name="kya_banega_btn_generate">Find Recipes (%d Selected)</string>
+    <string name="kya_banega_selected_title">Selected Ingredients</string>
+    <string name="kya_banega_clear_all">Clear All</string>
+    <string name="kya_banega_empty_ingredients_alert">Please select or type at least 1 ingredient</string>
+    <string name="kya_banega_cat_veggies">Daily Vegetables</string>
+    <string name="kya_banega_cat_grains">Dal &amp; Grains</string>
+    <string name="kya_banega_cat_dairy">Dairy &amp; Extras</string>
+    <string name="kya_banega_cat_leftover">Leftover Magic</string>
+    <string name="kya_banega_mood_all">All Dishes</string>
+    <string name="kya_banega_mood_quick">Quick Breakfast</string>
+    <string name="kya_banega_mood_lunch">Lunch &amp; Dinner</string>
+    <string name="kya_banega_mood_snacks">Tea Time Snacks</string>
+    <string name="kya_banega_loading_title">Chef AI is creating recipes...</string>
+    <string name="kya_banega_loading_desc">Finding the tastiest dishes matching your kitchen items...</string>
+    <string name="kya_banega_recipes_found">Delicious Recipes for Today</string>
+    <string name="kya_banega_ingredients_needed">Ingredients Required</string>
+    <string name="kya_banega_common_pantry">Common Spices &amp; Oil</string>
+    <string name="kya_banega_cooking_steps">Step-by-Step Cooking Method</string>
+    <string name="kya_banega_chef_tip">Chef Secret Tip</string>
+    <string name="kya_banega_speak_steps">Listen Recipe</string>
+    <string name="kya_banega_stop_speaking">Stop Audio</string>
+    <string name="kya_banega_share_whatsapp">Share Recipe on WhatsApp</string>
+    <string name="kya_banega_search_another">Choose Other Ingredients</string>
+
+    <!-- Kitchen Hub & Ration Calculator -->
+    <string name="kitchen_hub_tab_recipes">What to Cook</string>
+    <string name="kitchen_hub_tab_ration">Ration Calculator</string>
+    <string name="ration_calc_title">Food Quantity Calculator</string>
+    <string name="ration_calc_subtitle">Accurate food &amp; ration calculation for home, party &amp; weddings</string>
+    <string name="ration_step1_name">Occasion</string>
+    <string name="ration_step2_name">Guests</string>
+    <string name="ration_step3_name">Menu</string>
+    <string name="ration_step4_name">Quantities</string>
+    <string name="ration_step5_name">Kirana List</string>
+    <string name="ration_next">Next Step</string>
+    <string name="ration_previous">Previous</string>
+    <string name="ration_calculate_now">Calculate Ration &amp; Budget</string>
+    <string name="ration_share_whatsapp">Share List on WhatsApp</string>
+    <string name="ration_recalculate">Recalculate / New Menu</string>
+    <string name="ration_adults_label">Adults</string>
+    <string name="ration_children_label">Children (Half Portion)</string>
+    <string name="ration_appetite_label">Appetite Level</string>
+    <string name="ration_total_effective_plates">Total Effective Servings</string>
+    <string name="ration_select_dishes_hint">Select dishes for your occasion</string>
+    <string name="ration_quick_thali_suggestions">Popular Thali Shortcuts</string>
+    <string name="ration_dish_cooked_weight">Total Cooked Weight</string>
+    <string name="ration_dish_raw_ingredients">Raw Material Needed</string>
+    <string name="ration_estimated_budget">Estimated Grocery Budget</string>
+    <string name="ration_cost_per_plate">Approximate Cost Per Plate</string>
+
+    <!-- Kya Banega UI Localizations -->
+    <string name="kya_banega_hero_badge">Smart Kitchen Assistant</string>
+    <string name="kya_banega_hero_title">Cook delicious meals from what you have</string>
+    <string name="kya_banega_hero_subtitle">Select items &amp; get instant recipe ideas</string>
+    <string name="kya_banega_selected_count">Selected Ingredients (%d)</string>
+    <string name="kya_banega_mood_question">What type of meal do you want?</string>
+    <string name="kya_banega_cat_veggies_header">Fresh Vegetables</string>
+    <string name="kya_banega_cat_grains_header">Dal, Flour &amp; Grains</string>
+    <string name="kya_banega_cat_dairy_header">Dairy &amp; Extras</string>
+    <string name="kya_banega_cat_leftover_header">Leftover Food Specials</string>
+    <string name="kya_banega_detail_title">Recipe Details</string>
+    <string name="kya_banega_recipes_title">Delicious Recipes</string>
+    <string name="kya_banega_view_recipe_btn">View Recipe ➔</string>
+    <string name="kya_banega_stat_time">Time</string>
+    <string name="kya_banega_stat_servings">Servings</string>
+    <string name="kya_banega_stat_difficulty">Difficulty</string>
+    <string name="kya_banega_listen_sub">Listen step-by-step while cooking (Hands-Free)</string>
+    <string name="kya_banega_btn_listen">Listen</string>
+    <string name="kya_banega_btn_stop">Pause</string>
+    <string name="kya_banega_mic_prompt">Speak ingredient names...</string>
+    <string name="kya_banega_voice_not_supported">Voice input not supported</string>
+    <string name="kya_banega_chef_note_title">Chef\'s Suggestion</string>
+
+    <!-- Ration Calculator Step Details Localizations -->
+    <string name="ration_step1_top_title">Select Occasion</string>
+    <string name="ration_step2_top_title">Guests &amp; Appetite</string>
+    <string name="ration_step3_top_title">Menu Selection</string>
+    <string name="ration_step4_top_title">Food Quantities</string>
+    <string name="ration_step5_top_title">Grocery List &amp; Budget</string>
+
+    <string name="ration_step1_header">For what occasion are you cooking?</string>
+    <string name="ration_step1_sub">Standard guest count and popular thali dishes are automatically configured.</string>
+    <string name="ration_btn_select_guests">Select Guest Count</string>
+    <string name="ration_btn_select_menu">Select Menu</string>
+    <string name="ration_btn_calc_dishes">Calculate Ration (%d Dishes)</string>
+    <string name="ration_btn_view_list">View Grocery List &amp; Budget</string>
+    <string name="ration_btn_change_occasion">Change Occasion</string>
+    <string name="ration_btn_change_menu">Change Menu</string>
+    <string name="ration_btn_recalculate">Create New Menu / Recalculate</string>
+
+    <string name="ration_effective_plates_title">Total Effective Servings</string>
+    <string name="ration_effective_plates_unit">%d Plates</string>
+    <string name="ration_guest_summary_badge">%d Adults + %d Children</string>
+    <string name="ration_adults_title">Adults (Grown-ups)</string>
+    <string name="ration_adults_sub">Full standard portion (1.0x)</string>
+    <string name="ration_adults_hint">e.g., 15</string>
+    <string name="ration_kids_title">Children (5 to 12 years)</string>
+    <string name="ration_kids_sub">Half portion (0.5x)</string>
+    <string name="ration_kids_hint">e.g., 2</string>
+    <string name="ration_appetite_title">Guest Appetite Level</string>
+    <string name="ration_appetite_desc">For hearty eaters, raw ration is increased by 25% so food never runs short.</string>
+    <string name="ration_appetite_light">Light\n(0.8x)</string>
+    <string name="ration_appetite_normal">Normal\n(1.0x)</string>
+    <string name="ration_appetite_heavy">Hearty\n(1.25x)</string>
+
+    <string name="ration_quick_thali_label">Quick Thali Shortcuts:</string>
+    <string name="ration_thali_party">Party Thali</string>
+    <string name="ration_thali_bhandara">Bhandara Thali</string>
+    <string name="ration_thali_home">Daily Home</string>
+    <string name="ration_portion_standard">Standard portion: ~%d %s/person</string>
+
+    <string name="ration_cooked_header">Cooked Food (Ready Quantity)</string>
+    <string name="ration_cooked_sub">Each dish must be prepared in this quantity so every guest is satisfied.</string>
+    <string name="ration_raw_breakdown_label">Raw ingredients for this dish:</string>
+    <string name="ration_chef_tip_label">Chef Tip: %s</string>
+
+    <string name="ration_budget_title">Estimated Total Grocery Budget</string>
+    <string name="ration_budget_range">₹%d - ₹%d</string>
+    <string name="ration_plate_cost_label">Cost Per Plate:</string>
+    <string name="ration_plate_cost_value">₹%d to ₹%d / plate</string>
+    <string name="ration_items_count">%d items</string>
+    <string name="ration_home_tick_hint">Tick items already at home to mark them as available</string>
+    <string name="ration_err_select_occasion">Please select an occasion to continue</string>
+    <string name="ration_err_adults_required">Please enter number of adults (at least 1)</string>
+    <string name="ration_err_kids_required">Please enter number of children (enter 0 if none)</string>
+    <string name="ration_err_appetite_required">Please select guest appetite level</string>
+    <string name="ration_err_select_dish">Please select at least 1 dish for the menu</string>
 </resources>

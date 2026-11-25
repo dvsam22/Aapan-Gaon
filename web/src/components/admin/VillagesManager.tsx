@@ -167,6 +167,8 @@ export default function VillagesManager() {
         pincode: newPincode.trim(),
         sarpanchName: newSarpanchName.trim(),
         sarpanchPhone: newSarpanchPhone.trim(),
+        blockId: "block_paniyara",
+        blockName: { en: "Paniyara Block", hi: "पनियरा ब्लॉक" },
         active: newActive,
         isActive: newActive,
         createdAt: serverTimestamp()
@@ -200,6 +202,8 @@ export default function VillagesManager() {
         pincode: editingVillage.pincode.trim(),
         sarpanchName: editingVillage.sarpanchName?.trim() || "",
         sarpanchPhone: editingVillage.sarpanchPhone?.trim() || "",
+        blockId: "block_paniyara",
+        blockName: { en: "Paniyara Block", hi: "पनियरा ब्लॉक" },
         active: editingVillage.active,
         isActive: editingVillage.active,
         updatedAt: serverTimestamp()

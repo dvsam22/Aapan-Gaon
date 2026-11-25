@@ -39,8 +39,8 @@ class AddBusinessViewModel @Inject constructor(
     val effect = _effect.asSharedFlow()
 
     private var allVillages: List<VillageModel> = emptyList()
-    private var defaultVillageId: String? = null
-    private var defaultVillageName: String? = null
+    private var defaultBlockId: String = PreferenceManager.DEFAULT_BLOCK_ID
+    private var defaultBlockName: String = "Paniyara Block"
 
     init {
         loadCurrentVillage()
@@ -48,16 +48,17 @@ class AddBusinessViewModel @Inject constructor(
 
     private fun loadCurrentVillage() {
         viewModelScope.launch {
-            defaultVillageId = preferenceManager.villageId.firstOrNull()
-            defaultVillageName = preferenceManager.villageName.firstOrNull()
+            val savedId = preferenceManager.villageId.firstOrNull()
+            val langCode = preferenceManager.languageCode.firstOrNull()
+            defaultBlockId = PreferenceManager.resolveBlockId(savedId)
+            defaultBlockName = PreferenceManager.defaultBlockName(langCode)
             _state.update {
                 it.copy(
-                    villageId = defaultVillageId,
-                    villageName = defaultVillageName,
-                    address = if (it.address.isBlank() && !defaultVillageName.isNullOrBlank()) defaultVillageName!! else it.address
+                    villageId = defaultBlockId,
+                    villageName = defaultBlockName
                 )
             }
-            languageRepository.getVillages().collectLatest { result ->
+            languageRepository.getVillageDirectory().collectLatest { result ->
                 if (result is Resource.Success) {
                     allVillages = result.data ?: emptyList()
                 }
@@ -109,9 +110,9 @@ class AddBusinessViewModel @Inject constructor(
             AddBusinessEvent.ResetForm -> {
                 _state.update {
                     AddBusinessState(
-                        villageId = defaultVillageId,
-                        villageName = defaultVillageName,
-                        address = defaultVillageName ?: ""
+                        villageId = defaultBlockId,
+                        villageName = defaultBlockName,
+                        address = ""
                     )
                 }
             }
@@ -168,6 +169,8 @@ class AddBusinessViewModel @Inject constructor(
                 phoneNumber = s.phoneNumber.trim(),
                 address = enteredAddress,
                 description = s.description.trim(),
+                blockId = defaultBlockId,
+                blockName = defaultBlockName,
                 villageId = resolvedVillageId,
                 villageName = resolvedVillageName
             )
@@ -202,13 +205,12 @@ class AddBusinessViewModel @Inject constructor(
     private fun resolveVillage(enteredAddress: String): Pair<String?, String> {
         val trimmed = enteredAddress.trim()
         if (trimmed.isBlank()) {
-            return Pair(defaultVillageId, defaultVillageName ?: "")
+            return Pair(defaultBlockId, defaultBlockName)
         }
 
-        val defName = defaultVillageName
-        // 1. If matches the user's default/selected village
-        if (!defName.isNullOrBlank() && trimmed.equals(defName, ignoreCase = true)) {
-            return Pair(defaultVillageId, defName)
+        // 1. If matches the block name directly
+        if (trimmed.equals(defaultBlockName, ignoreCase = true)) {
+            return Pair(defaultBlockId, defaultBlockName)
         }
 
         // 2. If exactly matches any active village from the database

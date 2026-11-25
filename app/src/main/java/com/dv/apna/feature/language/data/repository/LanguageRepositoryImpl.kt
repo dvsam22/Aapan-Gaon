@@ -33,6 +33,27 @@ class LanguageRepositoryImpl @Inject constructor(
             emit(Resource.Loading())
             try {
                 val currentLang = languageCode ?: "en"
+                val blocksDto = dataSource.getBlocks()
+                val activeBlocks = blocksDto.filter { it.isCurrentlyActive }
+                val blocks = if (activeBlocks.isNotEmpty()) {
+                    activeBlocks.map { it.toDomain(currentLang) }
+                } else {
+                    listOf(defaultPaniyaraBlock(currentLang))
+                }
+                emit(Resource.Success(blocks))
+            } catch (_: Exception) {
+                val currentLang = languageCode ?: "en"
+                emit(Resource.Success(listOf(defaultPaniyaraBlock(currentLang))))
+            }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getVillageDirectory(): Flow<Resource<List<VillageModel>>> = preferenceManager.languageCode.flatMapLatest { languageCode ->
+        flow {
+            emit(Resource.Loading())
+            try {
+                val currentLang = languageCode ?: "en"
                 val villagesDto = dataSource.getVillages()
                 val activeVillages = villagesDto.filter { it.isCurrentlyActive }
                 val villages = activeVillages.map { it.toDomain(currentLang) }
@@ -41,6 +62,22 @@ class LanguageRepositoryImpl @Inject constructor(
                 emit(Resource.Error(e.message ?: "Unknown Error"))
             }
         }
+    }
+
+    private fun defaultPaniyaraBlock(languageCode: String): VillageModel {
+        val isHi = languageCode.equals("hi", ignoreCase = true)
+        return VillageModel(
+            id = PreferenceManager.DEFAULT_BLOCK_ID,
+            villageName = PreferenceManager.defaultBlockName(languageCode),
+            district = if (isHi) "महराजगंज" else "Maharajganj",
+            state = if (isHi) "उत्तर प्रदेश" else "Uttar Pradesh",
+            pincode = "273310",
+            image = "",
+            lat = 27.00,
+            lng = 83.42,
+            sarpanchName = "",
+            sarpanchPhone = ""
+        )
     }
 
     override suspend fun saveVillage(id: String, name: String, lat: Double, lng: Double) {

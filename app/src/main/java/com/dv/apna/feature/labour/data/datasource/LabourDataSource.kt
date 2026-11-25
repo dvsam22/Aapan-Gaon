@@ -3,7 +3,6 @@ package com.dv.apna.feature.labour.data.datasource
 import com.dv.apna.core.firestore.FirestoreDataSource
 import com.dv.apna.feature.labour.data.model.LabourDto
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class LabourDataSource @Inject constructor(
@@ -11,12 +10,12 @@ class LabourDataSource @Inject constructor(
 ) : FirestoreDataSource(firestore) {
 
     suspend fun getLabours(villageId: String, categoryId: String): List<LabourDto> {
-        return getCollection("villages")
-            .document(villageId)
-            .collection("labour")
-            .whereEqualTo("categoryId", categoryId)
-            .get()
-            .await()
-            .toObjects(LabourDto::class.java)
+        return fetchBlockDocuments(
+            locationId = villageId,
+            subCollection = "labour",
+            categoryId = categoryId
+        ).mapNotNull { doc ->
+            doc.toObject(LabourDto::class.java)?.copy(id = doc.id)
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.google.firebase.firestore.PropertyName
 
 data class VillageDto(
     val id: String? = null,
+    val blockName: Any? = null,
     val villageName: Any? = null,
     val district: Any? = null,
     val state: Any? = null,
@@ -13,6 +14,7 @@ data class VillageDto(
     val lng: Double? = null,
     val sarpanchName: Any? = null,
     val sarpanchPhone: String? = null,
+    val order: Int? = null,
     @get:PropertyName("active")
     val active: Boolean? = null,
     @get:PropertyName("isActive")

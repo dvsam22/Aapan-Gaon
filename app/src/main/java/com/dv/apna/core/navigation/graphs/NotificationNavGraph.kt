@@ -26,7 +26,18 @@ fun NavGraphBuilder.notificationNavGraph(
             effect = viewModel.effect,
             remoteConfigManager = remoteConfigManager,
             onNavigateToDetails = { id ->
-                navController.navigate(Route.NotificationDetails(id))
+                val selected = state.notifications.find { it.id == id }
+                when (selected?.type?.lowercase()) {
+                    "news" -> {
+                        if (selected.targetId.isNotBlank()) {
+                            navController.navigate(Route.NewsDetails(selected.targetId))
+                        } else {
+                            navController.navigate(Route.News)
+                        }
+                    }
+                    "mandi", "mandi_buyers" -> navController.navigate(Route.TodayMarket)
+                    else -> navController.navigate(Route.NotificationDetails(id))
+                }
             },
             onNavigateBack = { navController.popBackStack() }
         )

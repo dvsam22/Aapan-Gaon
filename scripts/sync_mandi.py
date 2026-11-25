@@ -41,6 +41,7 @@ DATA_GOV_API_URL = "https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a86
 DEFAULT_API_KEY = "579b464db66ec23bdd000001d53e0115502e4a9f65f1012b123ada90"
 TARGET_DISTRICTS = ["Sant Kabir Nagar", "Siddharth Nagar"]
 RETENTION_DAYS = 7
+BLOCK_ID = "block_paniyara"
 
 # Commodity Hindi Translation Mapping
 COMMODITY_TRANSLATIONS = {
@@ -344,44 +345,72 @@ def process_records(all_records):
 
 
 def sync_mandi_to_firestore(db, items, dry_run=False):
-    """Saves mandi items to central `mandi` collection in Firestore and purges expired entries."""
+    """Replaces old daily Mandi rates (`market`/`prices`) in `/blocks/block_paniyara/mandi` while preserving `buyers`."""
     if db is None:
         print("[WARNING] Firestore client is not available. Skipping sync.")
         return 0, 0
 
-    mandi_col = db.collection("mandi")
+    if not items:
+        print("[WARNING] No new Mandi items to save. Preserving existing Mandi rates.")
+        return 0, 0
+
+    mandi_col = db.collection("blocks").document(BLOCK_ID).collection("mandi")
+    new_ids = {item["id"] for item in items}
     saved_count = 0
 
-    print(f"[INFO] Saving {len(items)} mandi items into Firestore 'mandi' collection...")
+    print(f"[INFO] Saving {len(items)} fresh mandi items into Firestore '/blocks/{BLOCK_ID}/mandi' collection...")
+    if dry_run:
+        for item in items:
+            cat = item["categoryId"]
+            name = item["cropName"].get("hi", "")
+            price = item["price"]
+            market = item["market"].get("en", "")
+            print(f"  [+] [{cat.upper()}] {name} - ₹{price}/क्विंटल ({market})")
+        saved_count = len(items)
+        deleted_count = sum(
+            1 for doc in mandi_col.stream()
+            if (doc.to_dict() or {}).get("categoryId") != "buyers" and doc.id not in new_ids
+        )
+        return saved_count, deleted_count
+
+    # Upsert fresh items in batches of 400 first so the UI is never empty mid-sync
+    batch = db.batch()
+    ops_in_batch = 0
     for item in items:
-        doc_id = item["id"]
-        doc_ref = mandi_col.document(doc_id)
-        if not dry_run:
-            item_data = dict(item)
-            item_data["updatedAt"] = firestore.SERVER_TIMESTAMP
-            doc_ref.set(item_data)
+        doc_ref = mandi_col.document(item["id"])
+        item_data = dict(item)
+        item_data["blockId"] = BLOCK_ID
+        item_data["updatedAt"] = firestore.SERVER_TIMESTAMP
+        batch.set(doc_ref, item_data)
+        ops_in_batch += 1
         saved_count += 1
-        cat = item["categoryId"]
-        name = item["cropName"].get("hi", "")
-        price = item["price"]
-        market = item["market"].get("en", "")
-        print(f"  [+] [{cat.upper()}] {name} - ₹{price}/क्विंटल ({market})")
+        if ops_in_batch >= 400:
+            batch.commit()
+            batch = db.batch()
+            ops_in_batch = 0
+    if ops_in_batch > 0:
+        batch.commit()
 
-    # 7-day retention cleanup
-    cutoff_dt = datetime.now(timezone.utc) - timedelta(days=RETENTION_DAYS)
-    cutoff_ms = int(cutoff_dt.timestamp() * 1000)
-    print(f"[INFO] Cleaning up Mandi records older than {RETENTION_DAYS} days (cutoff: {cutoff_dt.isoformat()})...")
-
+    # Delete ALL old mandi rate docs (preserve 'buyers' directory entries)
+    print(f"[INFO] Removing all previous Mandi rates from '/blocks/{BLOCK_ID}/mandi' (preserving 'buyers')...")
     deleted_count = 0
     try:
-        old_docs = mandi_col.where("date", "<", cutoff_ms).stream()
-        for doc in old_docs:
-            if not dry_run:
-                doc.reference.delete()
+        del_batch = db.batch()
+        del_ops = 0
+        for doc in mandi_col.stream():
+            if (doc.to_dict() or {}).get("categoryId") == "buyers" or doc.id in new_ids:
+                continue
+            del_batch.delete(doc.reference)
+            del_ops += 1
             deleted_count += 1
-            print(f"  [-] Deleted expired mandi doc: {doc.id}")
+            if del_ops >= 400:
+                del_batch.commit()
+                del_batch = db.batch()
+                del_ops = 0
+        if del_ops > 0:
+            del_batch.commit()
     except Exception as e:
-        print(f"[WARNING] Could not execute deletion query: {e}")
+        print(f"[WARNING] Could not delete old mandi docs: {e}")
 
     return saved_count, deleted_count
 
@@ -422,6 +451,32 @@ def send_mandi_notification(db, arrival_date_str: str, force: bool = False, dry_
         )
         response = messaging.send(msg)
         print(f"[INFO] FCM Mandi notification successfully sent to topic 'mandi': {response}")
+
+        now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+        date_slug = arrival_date_str.replace("/", "-")
+        notif_id = f"mandi_{date_slug}"
+        notif_col = db.collection("blocks").document(BLOCK_ID).collection("notifications")
+        notif_col.document(notif_id).set({
+            "id": notif_id,
+            "title": {
+                "hi": title,
+                "en": f"Today's Mandi Rates Updated ({arrival_date_str})",
+            },
+            "message": {
+                "hi": f"दिनांक {arrival_date_str} के आलू, टमाटर, बैंगन, गोभी व फसलों के नए ताज़ा मंडी रेट अब ऐप में उपलब्ध हैं।",
+                "en": f"Fresh Mandi prices for {arrival_date_str} are now updated in the app.",
+            },
+            "date": now_ms,
+            "type": "mandi",
+            "targetId": "mandi",
+            "blockId": BLOCK_ID,
+            "autoGenerated": True,
+            "createdAt": firestore.SERVER_TIMESTAMP,
+        })
+        cutoff_ms = int((datetime.now(timezone.utc) - timedelta(days=RETENTION_DAYS)).timestamp() * 1000)
+        for doc in notif_col.where("date", "<", cutoff_ms).stream():
+            if (doc.to_dict() or {}).get("autoGenerated") is True:
+                doc.reference.delete()
 
         meta_ref.set({
             "last_notified_date": arrival_date_str,

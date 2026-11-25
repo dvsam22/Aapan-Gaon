@@ -18,18 +18,15 @@ class RemoteConfigManager @Inject constructor() {
     companion object {
         // Remote Config Keys (Only for enable/disable & probability)
         const val KEY_ADS_ENABLED = "ads_enabled"
-        const val KEY_APP_OPEN_ADS_ENABLED = "app_open_ads_enabled"
         const val KEY_BANNER_ADS_ENABLED = "banner_ads_enabled"
         const val KEY_INTERSTITIAL_ADS_ENABLED = "interstitial_ads_enabled"
         const val KEY_AD_SHOW_PROBABILITY = "ad_show_probability"
 
         // In-App AdMob Test Unit IDs (Debug)
-        const val TEST_APP_OPEN_AD_UNIT = "ca-app-pub-3940256099942544/9257395921"
         const val TEST_BANNER_AD_UNIT = "ca-app-pub-3940256099942544/6300978111"
         const val TEST_INTERSTITIAL_AD_UNIT = "ca-app-pub-3940256099942544/1033173712"
 
         // In-App AdMob Production Unit IDs (Live)
-        const val PROD_APP_OPEN_AD_UNIT = "ca-app-pub-2632394200654942/5199609871"
         const val PROD_BANNER_AD_UNIT = "ca-app-pub-2632394200654942/7474419425"
         const val PROD_INTERSTITIAL_AD_UNIT = "ca-app-pub-2632394200654942/3036375764"
     }
@@ -46,7 +43,6 @@ class RemoteConfigManager @Inject constructor() {
 
         val defaults = mapOf(
             KEY_ADS_ENABLED to true,
-            KEY_APP_OPEN_ADS_ENABLED to true,
             KEY_BANNER_ADS_ENABLED to true,
             KEY_INTERSTITIAL_ADS_ENABLED to true,
             KEY_AD_SHOW_PROBABILITY to 1.0
@@ -64,13 +60,8 @@ class RemoteConfigManager @Inject constructor() {
     }
 
     fun isAdsEnabled(): Boolean = remoteConfig.getBoolean(KEY_ADS_ENABLED)
-    fun isAppOpenAdsEnabled(): Boolean = isAdsEnabled() && remoteConfig.getBoolean(KEY_APP_OPEN_ADS_ENABLED)
     fun isBannerAdsEnabled(): Boolean = isAdsEnabled() && remoteConfig.getBoolean(KEY_BANNER_ADS_ENABLED)
     fun isInterstitialAdsEnabled(): Boolean = isAdsEnabled() && remoteConfig.getBoolean(KEY_INTERSTITIAL_ADS_ENABLED)
-
-    fun getAppOpenAdUnitId(): String {
-        return if (BuildConfig.DEBUG) TEST_APP_OPEN_AD_UNIT else PROD_APP_OPEN_AD_UNIT
-    }
 
     fun getBannerAdUnitId(): String {
         return if (BuildConfig.DEBUG) TEST_BANNER_AD_UNIT else PROD_BANNER_AD_UNIT

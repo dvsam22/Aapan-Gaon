@@ -22,7 +22,11 @@ fun BannerDto.toDomain(languageCode: String): BannerModel {
         "banner_business", "def_business" -> R.drawable.banner_register_business
         "banner_buyers", "def_buyers" -> R.drawable.banner_fresh_produce
         "banner_emergency", "def_emergency" -> R.drawable.banner_emergency_health
+        "banner_crop_doctor", "def_crop_doctor" -> R.drawable.banner_crop_doctor
+        "banner_kya_banega", "def_kya_banega" -> R.drawable.banner_kya_banega
         else -> when (link?.lowercase()?.trim()) {
+            "crop_doctor", "fasal_doctor", "doctor" -> R.drawable.banner_crop_doctor
+            "kya_banega", "food_assistant", "recipe", "khana", "rasoi" -> R.drawable.banner_kya_banega
             "today_market", "mandi" -> R.drawable.banner_mandi_rates
             "news" -> R.drawable.banner_local_news
             "add_business" -> R.drawable.banner_register_business

@@ -3,7 +3,6 @@ package com.dv.apna
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.dv.apna.core.ads.AdManager
-import com.dv.apna.core.ads.AppOpenAdManager
 import com.dv.apna.core.config.RemoteConfigManager
 import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
@@ -16,9 +15,6 @@ class AapanGavApp : Application() {
 
     @Inject
     lateinit var remoteConfigManager: RemoteConfigManager
-
-    @Inject
-    lateinit var appOpenAdManager: AppOpenAdManager
 
     @Inject
     lateinit var adManager: AdManager
@@ -43,8 +39,7 @@ class AapanGavApp : Application() {
         // Initialize Google Mobile Ads SDK
         MobileAds.initialize(this) {}
 
-        // Initialize App Open Ad Manager & Preload Interstitial Ads
-        appOpenAdManager.initialize(this)
+        // Preload Interstitial Ads
         adManager.preloadInterstitialAd(this)
     }
 }

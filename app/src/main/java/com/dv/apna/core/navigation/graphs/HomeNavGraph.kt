@@ -88,8 +88,19 @@ fun NavGraphBuilder.homeNavGraph(
             },
             onNavigateToPrivacyPolicy = { navController.navigate(Route.PrivacyPolicy) },
             onNavigateToTerms = { navController.navigate(Route.TermsAndConditions) },
+            onNavigateToCropDoctor = { navController.navigate(Route.CropDoctor) },
+            onNavigateToKyaBanega = { navController.navigate(Route.KyaBanega) },
             onBannerClick = { banner ->
                 when (banner.link.lowercase().trim()) {
+                    "crop_doctor", "fasal_doctor", "kisan_doctor", "doctor" -> {
+                        navController.navigate(Route.CropDoctor)
+                    }
+                    "kya_banega", "food_assistant", "recipe", "khana", "rasoi" -> {
+                        navController.navigate(Route.KyaBanega)
+                    }
+                    "ration_calculator", "ration", "food_calculator", "catering", "bhandara" -> {
+                        navController.navigate(Route.RationCalculator)
+                    }
                     "today_market", "mandi", "market" -> {
                         navController.navigate(Route.TodayMarket)
                     }

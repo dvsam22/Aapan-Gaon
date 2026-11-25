@@ -34,7 +34,6 @@ import android.content.Intent
 import android.content.res.AssetManager
 import android.content.res.Resources
 import androidx.navigation.NavHostController
-import com.dv.apna.core.ads.AppOpenAdManager
 import com.dv.apna.core.config.RemoteConfigManager
 import com.dv.apna.core.utils.InAppUpdateManager
 
@@ -43,9 +42,6 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var preferenceManager: PreferenceManager
-
-    @Inject
-    lateinit var appOpenAdManager: AppOpenAdManager
 
     @Inject
     lateinit var remoteConfigManager: RemoteConfigManager
@@ -143,11 +139,9 @@ class MainActivity : AppCompatActivity() {
         FirebaseMessaging.getInstance().subscribeToTopic("news")
         FirebaseMessaging.getInstance().subscribeToTopic("mandi")
         lifecycleScope.launch {
-            val villageId = preferenceManager.villageId.firstOrNull()
-            if (villageId != null) {
-                val topicName = if (villageId.startsWith("village_")) villageId else "village_$villageId"
-                FirebaseMessaging.getInstance().subscribeToTopic(topicName)
-            }
+            val savedId = preferenceManager.villageId.firstOrNull()
+            val blockTopic = com.dv.apna.core.datastore.PreferenceManager.resolveBlockId(savedId)
+            FirebaseMessaging.getInstance().subscribeToTopic(blockTopic)
         }
     }
 }

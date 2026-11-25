@@ -44,6 +44,7 @@ fun NewsDetailsScreen(
     newsId: String,
     state: NewsState,
     onNavigateBack: () -> Unit,
+    onNavigateToNewsList: () -> Unit = {}
 ) {
     // Try to find in news first, then in notices as a fallback
     val news = state.news.find { it.id == newsId } ?: state.notices.find { it.id == newsId }
@@ -199,10 +200,23 @@ fun NewsDetailsScreen(
                     Spacer(modifier = Modifier.height(100.sdp()))
                 }
             } else {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.sdp()),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Text(
                         text = stringResource(id = R.string.no_records_found),
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.sdp()))
+                    AapanGavButton(
+                        text = stringResource(id = R.string.local_news),
+                        onClick = onNavigateToNewsList,
+                        modifier = Modifier.fillMaxWidth(0.65f)
                     )
                 }
             }

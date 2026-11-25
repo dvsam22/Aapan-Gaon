@@ -37,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.dv.apna.R
@@ -220,10 +221,12 @@ fun MandiOptionCard(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 12.sdp()),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Surface(
                         modifier = Modifier.size(50.sdp()),
                         shape = RoundedCornerShape(10.sdp()),
@@ -247,9 +250,14 @@ fun MandiOptionCard(
                             fontWeight = FontWeight.Medium,
                             fontSize = 14.ssp()
                         ),
-                        color = Color.Black
+                        color = Color.Black,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
                     )
                 }
+
+                Spacer(modifier = Modifier.width(8.sdp()))
 
                 Icon(
                     painter = painterResource(id = R.drawable.arrow_circle_right),

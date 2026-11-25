@@ -4,7 +4,7 @@
     <string name="back">पीछे</string>
     <string name="go_back">वापस जाएं</string>
     <string name="select_language">भाषा चुनें</string>
-    <string name="select_village">गांव चुनें</string>
+    <string name="select_village">ब्लॉक चुनें</string>
     <string name="save_changes">बदलाव सुरक्षित करें</string>
     <string name="continue_text">जारी रखें</string>
     <string name="refresh">रीफ्रेश करें</string>
@@ -26,7 +26,7 @@
 
     <!-- Navigation & Menu -->
     <string name="change_language">भाषा बदलें</string>
-    <string name="change_village">गांव बदलें</string>
+    <string name="change_village">ब्लॉक बदलें</string>
     <string name="about_us">हमारे बारे में</string>
     <string name="privacy_policy">गोपनीयता नीति</string>
     <string name="terms_and_conditions">नियम और शर्तें</string>
@@ -45,9 +45,9 @@
 
     <!-- Language Selection Screen -->
     <string name="select_language_bilingual">भाषा चुनें / Select Language</string>
-    <string name="select_village_bilingual">गाँव चुनें / Select Village</string>
+    <string name="select_village_bilingual">ब्लॉक चुनें / Select Block</string>
     <string name="select_here_bilingual">यहाँ चुनें / Select Here</string>
-    <string name="no_villages_found">कोई गांव नहीं मिला</string>
+    <string name="no_villages_found">कोई ब्लॉक नहीं मिला</string>
 
     <!-- Mandi Hub -->
     <string name="crop_prices">मंडी भाव</string>
@@ -108,8 +108,8 @@
 
     <!-- Errors -->
     <string name="error_select_language">कृपया भाषा चुनें</string>
-    <string name="error_select_village">कृपया गांव चुनें</string>
-    <string name="error_village_not_selected">गांव नहीं चुना गया</string>
+    <string name="error_select_village">कृपया ब्लॉक चुनें</string>
+    <string name="error_village_not_selected">ब्लॉक नहीं चुना गया</string>
     <!-- Transport & News -->
     <string name="no_vehicles_found">कोई गाड़ी/वाहन नहीं मिला</string>
     <string name="location_label">स्थान:</string>
@@ -229,4 +229,171 @@
     <string name="update_downloaded_message">नया अपडेट डाउनलोड हो चुका है। नवीनतम फीचर्स और सुधार लागू करने के लिए ऐप को अभी रीस्टार्ट करें।</string>
     <string name="update_restart_btn">अभी रीस्टार्ट करें</string>
     <string name="update_later_btn">बाद में</string>
+
+    <!-- AI Crop Doctor -->
+    <string name="crop_doctor_title">फसल का डॉक्टर</string>
+    <string name="crop_doctor_subtitle">पौधे या पत्ते की फ़ोटो लें — बीमारी व सही दवा तुरंत जानें</string>
+    <string name="crop_doctor_badge">100% मुफ़्त AI जांच</string>
+    <string name="crop_doctor_action">फ़ोटो जांचें</string>
+    <string name="crop_doctor_take_photo">पौधे या पत्ते की फ़ोटो लें</string>
+    <string name="crop_doctor_take_photo_desc">AI तुरंत रोग की पहचान करके सटीक दवा व देशी उपाय बताएगा</string>
+    <string name="crop_doctor_btn_camera">कैमरा से फ़ोटो खींचें</string>
+    <string name="crop_doctor_btn_gallery">गैलरी से फ़ोटो चुनें</string>
+    <string name="crop_doctor_tips_title">सही जांच के लिए जरूरी बातें</string>
+    <string name="crop_doctor_tips_desc">• जिस पत्ते या फल में बीमारी दिख रही हो, केवल उसकी नज़दीक से फ़ोटो लें।\n• अच्छी धूप या रोशनी में फ़ोटो खींचें ताकि रंग साफ़ दिखे।\n• फ़ोटो धुंधली नहीं होनी चाहिए।</string>
+    <string name="crop_doctor_analyzing_title">AI फसल डॉक्टर जांच कर रहा है...</string>
+    <string name="crop_doctor_analyzing_desc">पत्ते के लक्षण और बीमारी का विश्लेषण हो रहा है...</string>
+    <string name="crop_doctor_step1_title">पौधे व फसल की पहचान...</string>
+    <string name="crop_doctor_step1_desc">पत्ते के आकार और रंग का विश्लेषण हो रहा है</string>
+    <string name="crop_doctor_step2_title">रोग व कीट की जांच...</string>
+    <string name="crop_doctor_step2_desc">धब्बे, फफूंद व कीट के प्रभाव की पहचान जारी है</string>
+    <string name="crop_doctor_step3_title">सटीक दवा व सही इलाज...</string>
+    <string name="crop_doctor_step3_desc">रासायनिक व देसी जैविक उपाय तैयार किए जा रहे हैं</string>
+    <string name="crop_doctor_not_plant_title">पौधे या पत्ते की पहचान नहीं हुई</string>
+    <string name="crop_doctor_not_plant_desc">कृपया किसी फसल, पत्ते या पौधे की साफ़ फ़ोटो खींचें।</string>
+    <string name="crop_doctor_btn_retake">दोबारा फ़ोटो लें</string>
+    <string name="crop_doctor_healthy">स्वस्थ पौधा</string>
+    <string name="crop_doctor_symptoms">मुख्य लक्षण</string>
+    <string name="crop_doctor_chemical">रासायनिक दवा व मात्रा</string>
+    <string name="crop_doctor_organic">देसी व जैविक उपाय</string>
+    <string name="crop_doctor_precautions">छिड़काव के समय सावधानी</string>
+    <string name="crop_doctor_share_whatsapp">किसान भाइयों को WhatsApp पर भेजें</string>
+    <string name="crop_doctor_scan_another">दूसरी फ़ोटो की जांच करें</string>
+    <string name="crop_doctor_listen_title">रिपोर्ट सुनें</string>
+    <string name="crop_doctor_stop_speaking">सुनना रोकें</string>
+    <string name="crop_doctor_listen_sub">रोग व दवा की पूरी जानकारी सुनें</string>
+    <string name="camera_permission_required">फ़ोटो खींचने के लिए कैमरा अनुमति आवश्यक है</string>
+
+    <!-- Kya Banega - Smart Food Assistant -->
+    <string name="kya_banega_title">आज क्या बनेगा?</string>
+    <string name="kya_banega_action">रेसिपी खोजें</string>
+    <string name="kya_banega_subtitle">रसोई में उपलब्ध सामान से बनाएं स्वादिष्ट घरेलू पकवान</string>
+    <string name="kya_banega_search_hint">सब्ज़ी या सामग्री का नाम लिखें या बोलें...</string>
+    <string name="kya_banega_btn_generate">रेसिपी खोजें (%d सामग्री चुनी)</string>
+    <string name="kya_banega_selected_title">चुनी गई सामग्री</string>
+    <string name="kya_banega_clear_all">सभी हटाएं</string>
+    <string name="kya_banega_empty_ingredients_alert">कृपया कम से कम 1 सामग्री चुनें या लिखें</string>
+    <string name="kya_banega_cat_veggies">दैनिक हरी व ताज़ा सब्ज़ियाँ</string>
+    <string name="kya_banega_cat_grains">दाल, बेसन व अनाज</string>
+    <string name="kya_banega_cat_dairy">डेयरी व अन्य सामग्री</string>
+    <string name="kya_banega_cat_leftover">बचा हुआ खाना (लेफ्टओवर स्पेशल)</string>
+    <string name="kya_banega_mood_all">सभी पकवान</string>
+    <string name="kya_banega_mood_quick">झटपट नाश्ता</string>
+    <string name="kya_banega_mood_lunch">दोपहर व रात</string>
+    <string name="kya_banega_mood_snacks">चाय-नाश्ता स्नैक्स</string>
+    <string name="kya_banega_loading_title">शेफ AI रेसिपी तैयार कर रहा है...</string>
+    <string name="kya_banega_loading_desc">आपके सामान के अनुसार सबसे स्वादिष्ट पकवान खोजे जा रहे हैं...</string>
+    <string name="kya_banega_recipes_found">आज के लिए खास स्वादिष्ट रेसिपी</string>
+    <string name="kya_banega_ingredients_needed">आवश्यक सामग्री</string>
+    <string name="kya_banega_common_pantry">आम घरेलू मसाले व तेल</string>
+    <string name="kya_banega_cooking_steps">बनाने की सरल विधि (स्टेप-बाय-स्टेप)</string>
+    <string name="kya_banega_chef_tip">खास शेफ टिप</string>
+    <string name="kya_banega_speak_steps">विधि सुनें</string>
+    <string name="kya_banega_stop_speaking">आवाज़ बंद करें</string>
+    <string name="kya_banega_share_whatsapp">रेसिपी WhatsApp पर भेजें</string>
+    <string name="kya_banega_search_another">दूसरी सामग्री से खोजें</string>
+
+    <!-- Kitchen Hub & Ration Calculator -->
+    <string name="kitchen_hub_tab_recipes">आज क्या बनेगा?</string>
+    <string name="kitchen_hub_tab_ration">राशन कैलकुलेटर</string>
+    <string name="ration_calc_title">स्मार्ट खाना व राशन कैलकुलेटर</string>
+    <string name="ration_calc_subtitle">घर, पार्टी व भंडारे हेतु सटीक खाना व कच्चा राशन कैलकुलेटर</string>
+    <string name="ration_step1_name">अवसर</string>
+    <string name="ration_step2_name">मेहमान</string>
+    <string name="ration_step3_name">मेनू</string>
+    <string name="ration_step4_name">मात्रा</string>
+    <string name="ration_step5_name">किराना पर्ची</string>
+    <string name="ration_next">आगे बढ़ें</string>
+    <string name="ration_previous">पिछला</string>
+    <string name="ration_calculate_now">राशन व बजट निकालें</string>
+    <string name="ration_share_whatsapp">राशन पर्ची WhatsApp पर भेजें</string>
+    <string name="ration_recalculate">नया मेनू बनाएं</string>
+    <string name="ration_adults_label">बड़े (वयस्क)</string>
+    <string name="ration_children_label">बच्चे (आधा हिस्सा)</string>
+    <string name="ration_appetite_label">भूख का स्तर</string>
+    <string name="ration_total_effective_plates">कुल प्रभावी थालियाँ</string>
+    <string name="ration_select_dishes_hint">आयोजन के लिए मनपसंद पकवान चुनें</string>
+    <string name="ration_quick_thali_suggestions">लोकप्रिय थाली सुझाव</string>
+    <string name="ration_dish_cooked_weight">तैयार पकवान की मात्रा</string>
+    <string name="ration_dish_raw_ingredients">कच्ची सामग्री (आवश्यकता)</string>
+    <string name="ration_estimated_budget">अनुमानित राशन खर्च</string>
+    <string name="ration_cost_per_plate">प्रति थाली अनुमानित लागत</string>
+
+    <!-- Kya Banega UI Localizations -->
+    <string name="kya_banega_hero_badge">स्मार्ट रसोई सहायक</string>
+    <string name="kya_banega_hero_title">रसोई में जो है, उसी से बनाएं स्वादिष्ट खाना</string>
+    <string name="kya_banega_hero_subtitle">सामग्री चुनें और 1 सेकंड में रेसिपी पाएं</string>
+    <string name="kya_banega_selected_count">चुनी गई सामग्री (%d)</string>
+    <string name="kya_banega_mood_question">कैसा खाना बनाना चाहते हैं?</string>
+    <string name="kya_banega_cat_veggies_header">ताज़ा हरी सब्ज़ियाँ</string>
+    <string name="kya_banega_cat_grains_header">दाल, बेसन व अनाज</string>
+    <string name="kya_banega_cat_dairy_header">डेयरी व अन्य सामग्री</string>
+    <string name="kya_banega_cat_leftover_header">बचा हुआ खाना (लेफ्टओवर स्पेशल)</string>
+    <string name="kya_banega_detail_title">रेसिपी विवरण</string>
+    <string name="kya_banega_recipes_title">स्वादिष्ट रेसिपी</string>
+    <string name="kya_banega_view_recipe_btn">विधि देखें ➔</string>
+    <string name="kya_banega_stat_time">समय</string>
+    <string name="kya_banega_stat_servings">मात्रा</string>
+    <string name="kya_banega_stat_difficulty">स्तर</string>
+    <string name="kya_banega_listen_sub">बनाते समय मोबाइल से विधि सुनें</string>
+    <string name="kya_banega_btn_listen">सुनें</string>
+    <string name="kya_banega_btn_stop">रोकें</string>
+    <string name="kya_banega_mic_prompt">सामग्री का नाम बोलें...</string>
+    <string name="kya_banega_voice_not_supported">वॉइस इनपुट उपलब्ध नहीं है</string>
+    <string name="kya_banega_chef_note_title">शेफ का सुझाव</string>
+
+    <!-- Ration Calculator Step Details Localizations -->
+    <string name="ration_step1_top_title">राशन कैलकुलेटर</string>
+    <string name="ration_step2_top_title">मेहमान व खुराक</string>
+    <string name="ration_step3_top_title">मेनू का चुनाव</string>
+    <string name="ration_step4_top_title">तैयार पकवान मात्रा</string>
+    <string name="ration_step5_top_title">किराना पर्ची व बजट</string>
+
+    <string name="ration_step1_header">किस अवसर के लिए खाना बनाना है?</string>
+    <string name="ration_step1_sub">आयोजन चुनते ही मेहमानों की मानक संख्या और लोकप्रिय थाली मेनू अपने आप सेट हो जाएगा।</string>
+    <string name="ration_btn_select_guests">मेहमानों की संख्या चुनें</string>
+    <string name="ration_btn_select_menu">मेनू चुनें</string>
+    <string name="ration_btn_calc_dishes">राशन निकालें (%d पकवान)</string>
+    <string name="ration_btn_view_list">किराना पर्ची व बजट देखें</string>
+    <string name="ration_btn_change_occasion">अवसर बदलें</string>
+    <string name="ration_btn_change_menu">मेनू बदलें</string>
+    <string name="ration_btn_recalculate">नया मेनू बनाएं / बदलें</string>
+
+    <string name="ration_effective_plates_title">कुल प्रभावी थालियाँ (Servings)</string>
+    <string name="ration_effective_plates_unit">%d थालियाँ</string>
+    <string name="ration_guest_summary_badge">%d बड़े + %d बच्चे</string>
+    <string name="ration_adults_title">बड़े लोग (वयस्क)</string>
+    <string name="ration_adults_sub">पूरा हिस्सा खुराक (1.0x)</string>
+    <string name="ration_adults_hint">जैसे: 15</string>
+    <string name="ration_kids_title">बच्चे (5 से 12 वर्ष)</string>
+    <string name="ration_kids_sub">आधा हिस्सा खुराक (0.5x)</string>
+    <string name="ration_kids_hint">जैसे: 2</string>
+    <string name="ration_appetite_title">मेहमानों की भूख का स्तर</string>
+    <string name="ration_appetite_desc">शौकीन भूख में प्रत्येक व्यक्ति का राशन 25% अधिक निकाला जाता है ताकि खाना कम न पड़े।</string>
+    <string name="ration_appetite_light">कम भूख\n(0.8x)</string>
+    <string name="ration_appetite_normal">सामान्य\n(1.0x)</string>
+    <string name="ration_appetite_heavy">शौकीन\n(1.25x)</string>
+
+    <string name="ration_quick_thali_label">त्वरित थाली सुझाव:</string>
+    <string name="ration_thali_party">पार्टी थाली</string>
+    <string name="ration_thali_bhandara">भंडारा थाली</string>
+    <string name="ration_thali_home">घर का खाना</string>
+    <string name="ration_portion_standard">मानक खुराक: ~%d %s/व्यक्ति</string>
+
+    <string name="ration_cooked_header">पका हुआ खाना (तैयार मात्रा)</string>
+    <string name="ration_cooked_sub">प्रत्येक पकवान इतनी मात्रा में बनकर तैयार होना चाहिए ताकि हर मेहमान को भरपूर मिले।</string>
+    <string name="ration_raw_breakdown_label">इस पकवान की कच्ची सामग्री:</string>
+    <string name="ration_chef_tip_label">हलवाई टिप: %s</string>
+
+    <string name="ration_budget_title">अनुमानित कुल राशन बजट</string>
+    <string name="ration_budget_range">₹%d - ₹%d</string>
+    <string name="ration_plate_cost_label">प्रति थाली अनुमानित लागत:</string>
+    <string name="ration_plate_cost_value">₹%d से ₹%d / थाली</string>
+    <string name="ration_items_count">%d सामान</string>
+    <string name="ration_home_tick_hint">जो सामान घर पर पहले से उपलब्ध है, उस पर टिक करें</string>
+    <string name="ration_err_select_occasion">आगे बढ़ने के लिए कृपया एक अवसर चुनें</string>
+    <string name="ration_err_adults_required">कृपया वयस्कों (बड़ों) की संख्या दर्ज करें (कम से कम 1)</string>
+    <string name="ration_err_kids_required">कृपया बच्चों की संख्या दर्ज करें (न होने पर 0 लिखें)</string>
+    <string name="ration_err_appetite_required">कृपया मेहमानों की भूख का स्तर चुनें</string>
+    <string name="ration_err_select_dish">कृपया मेनू के लिए कम से कम 1 पकवान चुनें</string>
 </resources>

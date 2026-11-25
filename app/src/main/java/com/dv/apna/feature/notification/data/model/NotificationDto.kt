@@ -25,5 +25,9 @@ data class NotificationDto(
 
     @get:PropertyName("type")
     @set:PropertyName("type")
-    var type: String? = null
+    var type: String? = null,
+
+    @get:PropertyName("targetId")
+    @set:PropertyName("targetId")
+    var targetId: String? = null
 )

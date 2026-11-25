@@ -13,6 +13,8 @@ data class BusinessRegistrationDto(
     val phoneNumber: String = "",
     val address: String = "",
     val description: String = "",
+    val blockId: String? = null,
+    val blockName: String? = null,
     val villageId: String? = null,
     val villageName: String? = null,
     val status: String = "pending"
@@ -26,6 +28,8 @@ data class BusinessRegistrationDto(
         put("phoneNumber", phoneNumber)
         put("address", address)
         put("description", description)
+        if (!blockId.isNullOrBlank()) put("blockId", blockId)
+        if (!blockName.isNullOrBlank()) put("blockName", blockName)
         put("villageId", villageId)
         put("villageName", villageName)
         put("status", status)

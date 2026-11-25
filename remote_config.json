@@ -7,13 +7,6 @@
       "description": "Global master switch for all ads in the app",
       "valueType": "BOOLEAN"
     },
-    "app_open_ads_enabled": {
-      "defaultValue": {
-        "value": "true"
-      },
-      "description": "Enable or disable App Open Ad on cold launch",
-      "valueType": "BOOLEAN"
-    },
     "banner_ads_enabled": {
       "defaultValue": {
         "value": "true"
