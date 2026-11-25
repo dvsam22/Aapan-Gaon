@@ -8,6 +8,18 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
+val localPropsFile = rootProject.file("local.properties")
+val geminiApiKey = (if (localPropsFile.exists()) {
+    localPropsFile.readLines()
+        .firstOrNull { it.trimStart().startsWith("GEMINI_API_KEY=") }
+        ?.substringAfter("GEMINI_API_KEY=")
+        ?.trim()
+        ?.removeSurrounding("\"")
+} else null)
+    ?.takeIf { it.isNotEmpty() }
+    ?: System.getenv("GEMINI_API_KEY")?.trim()?.removeSurrounding("\"")
+    ?: ""
+
 //pass - apnagaon alias - apna
 android {
     namespace = "com.dv.apna"
@@ -17,13 +29,13 @@ android {
         applicationId = "com.dv.apna"
         minSdk = 26
         targetSdk = 37
-        versionCode = 21
-        versionName = "4.5"
+        versionCode = 23
+        versionName = "4.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["admobAppId"] = "ca-app-pub-3940256099942544~3347511713"
 
-        buildConfigField("String", "GEMINI_API_KEY", "\"AQ.Ab8RN6LJOcmse4EHXp_XXBAmNXW0_WsSAxNRgAiyW9PjBeimiA\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
     }
 
     androidResources {

@@ -22,8 +22,8 @@ object GeminiContentHelper {
     private var cachedWorkingModel: String? = null
 
     private val defaultModels = listOf(
-        "gemini-3.5-flash-lite",
         "gemini-3-flash-preview",
+        "gemini-3.5-flash-lite",
         "gemini-3.8-flash"
     )
 
@@ -70,7 +70,7 @@ object GeminiContentHelper {
         }
 
         // SDK fallback if REST attempts failed
-        val sdkModels = listOf("gemini-3.5-flash-lite", "gemini-3-flash-preview", "gemini-3.8-flash")
+        val sdkModels = defaultModels
         val config = generationConfig {
             this.temperature = temperature
             topP = 0.95f
