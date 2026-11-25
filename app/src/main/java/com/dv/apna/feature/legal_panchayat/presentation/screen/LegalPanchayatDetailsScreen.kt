@@ -35,6 +35,8 @@ import com.dv.apna.core.components.AapanGavEmptyData
 import com.dv.apna.core.components.AapanGavErrorScreen
 import com.dv.apna.core.components.AapanGavSearchBar
 import com.dv.apna.core.components.LabourSkeleton
+import com.dv.apna.core.components.PaginationLoadMoreFooter
+import com.dv.apna.core.components.rememberPaginationState
 import com.dv.apna.core.config.RemoteConfigManager
 import com.dv.apna.core.theme.AapanGavTheme
 import com.dv.apna.core.theme.MintGradientEnd
@@ -83,6 +85,7 @@ fun LegalPanchayatDetailsScreen(
             }
         }
     }
+    val pagination = rememberPaginationState(items = filteredItems)
 
     ConstraintLayout(
         modifier = Modifier
@@ -125,7 +128,10 @@ fun LegalPanchayatDetailsScreen(
 
             AapanGavSearchBar(
                 query = query,
-                onQueryChange = { searchQueryState.value = it }
+                onQueryChange = {
+                    searchQueryState.value = it
+                    pagination.reset()
+                }
             )
 
             if (state.isLoading) {
@@ -142,6 +148,7 @@ fun LegalPanchayatDetailsScreen(
                     )
                 } else {
                     LazyColumn(
+                        state = pagination.listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
                             start = 16.sdp(),
@@ -152,13 +159,23 @@ fun LegalPanchayatDetailsScreen(
                         verticalArrangement = Arrangement.spacedBy(16.sdp())
                     ) {
                         itemsIndexed(
-                            items = filteredItems,
+                            items = pagination.visibleItems,
                             key = { index, item -> if (item.id.isNotBlank()) item.id else "${item.name}_$index" }
                         ) { _, item ->
                             LegalPanchayatItemCard(
                                 item = item,
                                 onCallClick = { onEvent(LegalPanchayatEvent.CallClick(item.contact)) }
                             )
+                        }
+                        if (pagination.hasMore) {
+                            item(key = "pagination_load_more") {
+                                PaginationLoadMoreFooter(
+                                    shownCount = pagination.visibleItems.size,
+                                    totalCount = pagination.totalCount,
+                                    nextBatchCount = pagination.nextBatchCount,
+                                    onLoadMore = pagination.loadMore
+                                )
+                            }
                         }
                         item(key = "banner_ad_item") {
                             BannerAdView(remoteConfigManager = remoteConfigManager)

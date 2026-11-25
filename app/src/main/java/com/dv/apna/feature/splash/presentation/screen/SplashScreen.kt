@@ -44,8 +44,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -301,7 +303,7 @@ fun SplashContent() {
                     }
             )
 
-            // 3 Feature Capsule Badges
+            // 3 Feature Capsule Badges matching app card background
             Row(
                 modifier = Modifier
                     .graphicsLayer(
@@ -316,9 +318,9 @@ fun SplashContent() {
                 horizontalArrangement = Arrangement.spacedBy(6.sdp()),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                SplashPill(text = "🌾 मंडी भाव")
-                SplashPill(text = "📰 समाचार")
-                SplashPill(text = "🏪 सेवाएं")
+                SplashPill(emoji = "🌾", label = "मंडी भाव")
+                SplashPill(emoji = "📰", label = "समाचार")
+                SplashPill(emoji = "🏪", label = "सेवाएं")
             }
 
             // Sleek Modern Progress Bar
@@ -368,21 +370,47 @@ fun SplashContent() {
 }
 
 @Composable
-private fun SplashPill(text: String) {
+private fun SplashPill(emoji: String, label: String) {
+    val compactStyle = TextStyle(
+        fontSize = 11.ssp(),
+        lineHeight = 13.ssp(),
+        platformStyle = PlatformTextStyle(includeFontPadding = false),
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.Both
+        )
+    )
     Surface(
         shape = RoundedCornerShape(16.sdp()),
-        color = Color.White.copy(alpha = 0.85f),
+        color = Color.White,
         border = BorderStroke(1.sdp(), Color(0x2638C792)),
-        shadowElevation = 1.sdp()
+        shadowElevation = 0.dp
     ) {
-        Text(
-            text = text,
-            fontSize = 11.ssp(),
-            fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF165D47),
-            fontFamily = NotoSansHindi,
-            modifier = Modifier.padding(horizontal = 8.sdp(), vertical = 4.sdp())
-        )
+        Box(
+            modifier = Modifier
+                .padding(2.sdp())
+                .background(Color(0xFFEFFAF6), RoundedCornerShape(14.sdp()))
+                .padding(horizontal = 8.sdp(), vertical = 4.sdp()),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(3.sdp())
+            ) {
+                Text(
+                    text = emoji,
+                    style = compactStyle
+                )
+                Text(
+                    text = label,
+                    style = compactStyle.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF165D47),
+                        fontFamily = NotoSansHindi
+                    )
+                )
+            }
+        }
     }
 }
 

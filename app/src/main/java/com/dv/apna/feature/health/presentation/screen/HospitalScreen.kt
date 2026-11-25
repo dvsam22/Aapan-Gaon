@@ -44,6 +44,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.tooling.preview.Preview
 import com.dv.apna.core.ads.BannerAdView
 import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.components.PaginationLoadMoreFooter
+import com.dv.apna.core.components.rememberPaginationState
 import com.dv.apna.core.config.RemoteConfigManager
 import com.dv.apna.core.theme.MintGradientEnd
 import com.dv.apna.core.theme.MintGradientMiddle
@@ -83,6 +85,7 @@ fun HospitalScreen(
             }
         }
     }
+    val pagination = rememberPaginationState(items = filteredHospitals)
 
     ConstraintLayout(
         modifier = Modifier
@@ -119,7 +122,10 @@ fun HospitalScreen(
             HospitalTopBar(onBackClick = { onEvent(HealthEvent.BackClick) })
             AapanGavSearchBar(
                 query = query,
-                onQueryChange = { searchQueryState.value = it }
+                onQueryChange = {
+                    searchQueryState.value = it
+                    pagination.reset()
+                }
             )
 
             if (state.isLoading) {
@@ -131,6 +137,7 @@ fun HospitalScreen(
                     )
                 } else {
                     LazyColumn(
+                        state = pagination.listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
                             start = 16.sdp(),
@@ -141,10 +148,20 @@ fun HospitalScreen(
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
                         itemsIndexed(
-                            items = filteredHospitals,
+                            items = pagination.visibleItems,
                             key = { index, hospital -> if (hospital.id.isNotBlank()) hospital.id else "${hospital.name}_$index" }
                         ) { index, hospital ->
                             HospitalItemCard(hospital = hospital, onCallClick = { onEvent(HealthEvent.CallClick(hospital.phone)) })
+                        }
+                        if (pagination.hasMore) {
+                            item(key = "pagination_load_more") {
+                                PaginationLoadMoreFooter(
+                                    shownCount = pagination.visibleItems.size,
+                                    totalCount = pagination.totalCount,
+                                    nextBatchCount = pagination.nextBatchCount,
+                                    onLoadMore = pagination.loadMore
+                                )
+                            }
                         }
                         item(key = "banner_ad_item") {
                             BannerAdView(remoteConfigManager = remoteConfigManager)

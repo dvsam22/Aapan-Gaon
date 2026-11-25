@@ -7,7 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
@@ -43,6 +43,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Brush
 import com.dv.apna.core.ads.BannerAdView
 import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.components.PaginationLoadMoreFooter
+import com.dv.apna.core.components.rememberPaginationState
 import com.dv.apna.core.config.RemoteConfigManager
 import com.dv.apna.core.theme.MintGradientEnd
 import com.dv.apna.core.theme.MintGradientMiddle
@@ -85,6 +87,7 @@ fun EmergencyListScreen(
             }
         }
     }
+    val pagination = rememberPaginationState(items = filteredList)
 
     ConstraintLayout(
         modifier = Modifier
@@ -121,7 +124,10 @@ fun EmergencyListScreen(
             EmergencyTopBar(title = title, onBackClick = { onEvent(HealthEvent.BackClick) })
             AapanGavSearchBar(
                 query = query,
-                onQueryChange = { searchQueryState.value = it }
+                onQueryChange = {
+                    searchQueryState.value = it
+                    pagination.reset()
+                }
             )
 
             if (isLoading) {
@@ -133,6 +139,7 @@ fun EmergencyListScreen(
                     )
                 } else {
                     LazyColumn(
+                        state = pagination.listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
                             start = 16.sdp(),
@@ -142,7 +149,10 @@ fun EmergencyListScreen(
                         ),
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
-                        items(filteredList) { item ->
+                        itemsIndexed(
+                            items = pagination.visibleItems,
+                            key = { index, item -> if (item.id.isNotBlank()) item.id else "${item.name}_$index" }
+                        ) { _, item ->
                             EmergencyItemCard(
                                 name = item.name,
                                 address = item.address,
@@ -151,7 +161,17 @@ fun EmergencyListScreen(
                                 onCallClick = { onEvent(HealthEvent.CallClick(item.phone)) }
                             )
                         }
-                        item {
+                        if (pagination.hasMore) {
+                            item(key = "pagination_load_more") {
+                                PaginationLoadMoreFooter(
+                                    shownCount = pagination.visibleItems.size,
+                                    totalCount = pagination.totalCount,
+                                    nextBatchCount = pagination.nextBatchCount,
+                                    onLoadMore = pagination.loadMore
+                                )
+                            }
+                        }
+                        item(key = "banner_ad_item") {
                             BannerAdView(remoteConfigManager = remoteConfigManager)
                         }
                     }

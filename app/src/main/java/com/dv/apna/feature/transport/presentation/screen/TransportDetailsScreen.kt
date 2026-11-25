@@ -50,6 +50,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Brush
 import com.dv.apna.core.ads.BannerAdView
 import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.components.PaginationLoadMoreFooter
+import com.dv.apna.core.components.rememberPaginationState
 import com.dv.apna.core.config.RemoteConfigManager
 import com.dv.apna.core.theme.MintGradientEnd
 import com.dv.apna.core.theme.MintGradientMiddle
@@ -89,6 +91,7 @@ fun TransportDetailsScreen(
             }
         }
     }
+    val pagination = rememberPaginationState(items = filteredTransportDetails)
 
     ConstraintLayout(
         modifier = Modifier
@@ -131,7 +134,10 @@ fun TransportDetailsScreen(
 
             AapanGavSearchBar(
                 query = searchQuery,
-                onQueryChange = { searchQuery = it }
+                onQueryChange = {
+                    searchQuery = it
+                    pagination.reset()
+                }
             )
 
             if (state.isLoading) {
@@ -143,6 +149,7 @@ fun TransportDetailsScreen(
                     )
                 } else {
                     LazyColumn(
+                        state = pagination.listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
                             start = 16.sdp(),
@@ -153,13 +160,23 @@ fun TransportDetailsScreen(
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
                         itemsIndexed(
-                            items = filteredTransportDetails,
+                            items = pagination.visibleItems,
                             key = { index, transport -> if (transport.id.isNotBlank()) transport.id else "${transport.name}_$index" }
                         ) { index, transport ->
                             TransportVehicleCard(
                                 transport = transport,
                                 onCallClick = { onEvent(TransportEvent.CallClick(transport.contact)) }
                             )
+                        }
+                        if (pagination.hasMore) {
+                            item(key = "pagination_load_more") {
+                                PaginationLoadMoreFooter(
+                                    shownCount = pagination.visibleItems.size,
+                                    totalCount = pagination.totalCount,
+                                    nextBatchCount = pagination.nextBatchCount,
+                                    onLoadMore = pagination.loadMore
+                                )
+                            }
                         }
                         item(key = "banner_ad_item") {
                             BannerAdView(remoteConfigManager = remoteConfigManager)

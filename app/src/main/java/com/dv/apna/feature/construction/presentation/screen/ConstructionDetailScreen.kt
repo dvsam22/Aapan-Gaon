@@ -46,6 +46,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Brush
 import com.dv.apna.core.ads.BannerAdView
 import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.components.PaginationLoadMoreFooter
+import com.dv.apna.core.components.rememberPaginationState
 import com.dv.apna.core.config.RemoteConfigManager
 import com.dv.apna.core.theme.MintGradientEnd
 import com.dv.apna.core.theme.MintGradientMiddle
@@ -91,6 +93,7 @@ fun ConstructionDetailScreen(
             }
         }
     }
+    val pagination = rememberPaginationState(items = filteredItems)
 
     ConstraintLayout(
         modifier = Modifier
@@ -132,7 +135,10 @@ fun ConstructionDetailScreen(
 
             AapanGavSearchBar(
                 query = query,
-                onQueryChange = { searchQueryState.value = it }
+                onQueryChange = {
+                    searchQueryState.value = it
+                    pagination.reset()
+                }
             )
 
             if (state.isLoading) {
@@ -144,18 +150,30 @@ fun ConstructionDetailScreen(
                     )
                 } else {
                     LazyColumn(
+                        state = pagination.listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 80.sdp()),
                         verticalArrangement = Arrangement.spacedBy(10.sdp())
                     ) {
                         itemsIndexed(
-                            items = filteredItems,
+                            items = pagination.visibleItems,
                             key = { index, item -> if (item.id.isNotBlank()) item.id else "${item.name}_$index" }
                         ) { index, item ->
                             ConstructionItemCard(
                                 item = item,
                                 onCallClick = { onEvent(ConstructionDetailEvent.CallClick(item.phone)) }
                             )
+                        }
+                        if (pagination.hasMore) {
+                            item(key = "pagination_load_more") {
+                                PaginationLoadMoreFooter(
+                                    shownCount = pagination.visibleItems.size,
+                                    totalCount = pagination.totalCount,
+                                    nextBatchCount = pagination.nextBatchCount,
+                                    onLoadMore = pagination.loadMore,
+                                    modifier = Modifier.padding(horizontal = 16.sdp())
+                                )
+                            }
                         }
                         item(key = "banner_ad_item") {
                             BannerAdView(remoteConfigManager = remoteConfigManager)

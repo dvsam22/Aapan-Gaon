@@ -46,6 +46,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Brush
 import com.dv.apna.core.ads.BannerAdView
 import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.components.PaginationLoadMoreFooter
+import com.dv.apna.core.components.rememberPaginationState
 import com.dv.apna.core.config.RemoteConfigManager
 import com.dv.apna.core.theme.MintGradientEnd
 import com.dv.apna.core.theme.MintGradientMiddle
@@ -87,6 +89,7 @@ fun HardwareShopsScreen(
             }
         }
     }
+    val pagination = rememberPaginationState(items = filteredShops)
 
     ConstraintLayout(
         modifier = Modifier
@@ -135,7 +138,10 @@ fun HardwareShopsScreen(
 
             AapanGavSearchBar(
                 query = query,
-                onQueryChange = { searchQueryState.value = it }
+                onQueryChange = {
+                    searchQueryState.value = it
+                    pagination.reset()
+                }
             )
 
             if (state.isLoading) {
@@ -147,18 +153,30 @@ fun HardwareShopsScreen(
                     )
                 } else {
                     LazyColumn(
+                        state = pagination.listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(bottom = 80.sdp()),
                         verticalArrangement = Arrangement.spacedBy(10.sdp())
                     ) {
                         itemsIndexed(
-                            items = filteredShops,
+                            items = pagination.visibleItems,
                             key = { index, shop -> if (shop.id.isNotBlank()) shop.id else "${shop.name}_$index" }
                         ) { index, shop ->
                             HardwareShopCard(
                                 shop = shop,
                                 onCallClick = { onEvent(HardwareShopsEvent.CallClick(shop.phone)) }
                             )
+                        }
+                        if (pagination.hasMore) {
+                            item(key = "pagination_load_more") {
+                                PaginationLoadMoreFooter(
+                                    shownCount = pagination.visibleItems.size,
+                                    totalCount = pagination.totalCount,
+                                    nextBatchCount = pagination.nextBatchCount,
+                                    onLoadMore = pagination.loadMore,
+                                    modifier = Modifier.padding(horizontal = 16.sdp())
+                                )
+                            }
                         }
                         item(key = "banner_ad_item") {
                             BannerAdView(remoteConfigManager = remoteConfigManager)

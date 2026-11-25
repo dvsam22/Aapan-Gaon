@@ -142,25 +142,6 @@ fun HealthHubScreen(
                     }
                 }
 
-                item {
-                    val sarpanchPhone = state.sarpanchPhone
-                    EmergencyCard(
-                        title = stringResource(id = R.string.gram_sarpanch) + if (state.sarpanchName.isNotEmpty()) " - ${state.sarpanchName}" else "",
-                        icon = R.drawable.person,
-                        onClick = {
-                            if (sarpanchPhone.isNotEmpty()) {
-                                onEvent(HealthEvent.CallSarpanch(sarpanchPhone))
-                            }
-                        },
-                        onCardClick = {
-                           /* if (sarpanchPhone.isNotEmpty()) {
-                                onEvent(HealthEvent.CallSarpanch(sarpanchPhone))
-                            }*/
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-
                 // Service List
                 item {
                     Spacer(modifier = Modifier.height(8.sdp()))

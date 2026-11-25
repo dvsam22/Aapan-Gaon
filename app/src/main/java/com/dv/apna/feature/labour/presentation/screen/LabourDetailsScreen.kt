@@ -45,6 +45,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Brush
 import com.dv.apna.core.ads.BannerAdView
 import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.components.PaginationLoadMoreFooter
+import com.dv.apna.core.components.rememberPaginationState
 import com.dv.apna.core.config.RemoteConfigManager
 import com.dv.apna.core.theme.MintGradientEnd
 import com.dv.apna.core.theme.MintGradientMiddle
@@ -84,6 +86,7 @@ fun LabourDetailsScreen(
             }
         }
     }
+    val pagination = rememberPaginationState(items = filteredLabourDetails)
 
     ConstraintLayout(
         modifier = Modifier
@@ -125,7 +128,10 @@ fun LabourDetailsScreen(
 
             AapanGavSearchBar(
                 query = query,
-                onQueryChange = { searchQueryState.value = it }
+                onQueryChange = {
+                    searchQueryState.value = it
+                    pagination.reset()
+                }
             )
 
             if (state.isLoading) {
@@ -137,6 +143,7 @@ fun LabourDetailsScreen(
                     )
                 } else {
                     LazyColumn(
+                        state = pagination.listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
                             start = 16.sdp(),
@@ -147,13 +154,23 @@ fun LabourDetailsScreen(
                         verticalArrangement = Arrangement.spacedBy(16.sdp())
                     ) {
                         itemsIndexed(
-                            items = filteredLabourDetails,
+                            items = pagination.visibleItems,
                             key = { index, labour -> if (labour.id.isNotBlank()) labour.id else "${labour.name}_$index" }
                         ) { index, labour ->
                             LabourWorkerCard(
                                 labour = labour,
                                 onCallClick = { context.dial(labour.contact) }
                             )
+                        }
+                        if (pagination.hasMore) {
+                            item(key = "pagination_load_more") {
+                                PaginationLoadMoreFooter(
+                                    shownCount = pagination.visibleItems.size,
+                                    totalCount = pagination.totalCount,
+                                    nextBatchCount = pagination.nextBatchCount,
+                                    onLoadMore = pagination.loadMore
+                                )
+                            }
                         }
                         item(key = "banner_ad_item") {
                             BannerAdView(remoteConfigManager = remoteConfigManager)

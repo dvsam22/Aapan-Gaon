@@ -50,6 +50,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Brush
 import com.dv.apna.core.ads.BannerAdView
 import com.dv.apna.core.components.AapanGavSearchBar
+import com.dv.apna.core.components.PaginationLoadMoreFooter
+import com.dv.apna.core.components.rememberPaginationState
 import com.dv.apna.core.config.RemoteConfigManager
 import com.dv.apna.core.theme.MintGradientEnd
 import com.dv.apna.core.theme.MintGradientMiddle
@@ -91,6 +93,7 @@ fun LocalBuyersScreen(
             }
         }
     }
+    val pagination = rememberPaginationState(items = filteredBuyers)
 
     ConstraintLayout(
         modifier = Modifier
@@ -133,7 +136,10 @@ fun LocalBuyersScreen(
 
             AapanGavSearchBar(
                 query = query,
-                onQueryChange = { searchQueryState.value = it }
+                onQueryChange = {
+                    searchQueryState.value = it
+                    pagination.reset()
+                }
             )
 
             if (state.isLocalBuyersLoading) {
@@ -145,6 +151,7 @@ fun LocalBuyersScreen(
                     )
                 } else {
                     LazyColumn(
+                        state = pagination.listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
                             start = 16.sdp(),
@@ -155,13 +162,23 @@ fun LocalBuyersScreen(
                         verticalArrangement = Arrangement.spacedBy(12.sdp())
                     ) {
                         itemsIndexed(
-                            items = filteredBuyers,
+                            items = pagination.visibleItems,
                             key = { index, buyer -> if (buyer.id.isNotBlank()) buyer.id else "${buyer.name}_$index" }
                         ) { index, buyer ->
                             LocalBuyerCard(
                                 buyer = buyer,
                                 onCallClick = { onEvent(MandiEvent.CallClick(buyer.contact)) }
                             )
+                        }
+                        if (pagination.hasMore) {
+                            item(key = "pagination_load_more") {
+                                PaginationLoadMoreFooter(
+                                    shownCount = pagination.visibleItems.size,
+                                    totalCount = pagination.totalCount,
+                                    nextBatchCount = pagination.nextBatchCount,
+                                    onLoadMore = pagination.loadMore
+                                )
+                            }
                         }
                         item(key = "banner_ad_item") {
                             BannerAdView(remoteConfigManager = remoteConfigManager)
