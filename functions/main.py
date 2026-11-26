@@ -904,3 +904,262 @@ def sync_news_http(req: https_fn.Request) -> https_fn.Response:
         mimetype="application/json",
         headers=cors_headers
     )
+
+
+_ADMIN_CORS_HEADERS = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-Admin-Key, Authorization",
+}
+
+
+def _verify_admin_post(req: https_fn.Request):
+    """Shared CORS preflight + POST + X-Admin-Key guard for Admin App endpoints."""
+    if req.method == "OPTIONS":
+        return https_fn.Response("", status=204, headers=_ADMIN_CORS_HEADERS)
+
+    if req.method != "POST":
+        return https_fn.Response(
+            json.dumps({"status": "error", "error": "Method not allowed. Use POST."}),
+            status=405,
+            mimetype="application/json",
+            headers=_ADMIN_CORS_HEADERS,
+        )
+
+    expected_key = os.getenv("ADMIN_NOTIFY_KEY", "apna-admin-2026").strip()
+    provided_key = (req.headers.get("X-Admin-Key") or "").strip()
+    if expected_key and provided_key != expected_key:
+        return https_fn.Response(
+            json.dumps({"status": "error", "error": "Unauthorized admin key."}),
+            status=401,
+            mimetype="application/json",
+            headers=_ADMIN_CORS_HEADERS,
+        )
+    return None
+
+
+def _replace_timestamp_sentinels(value):
+    if value == "__SERVER_TIMESTAMP__":
+        return firestore.SERVER_TIMESTAMP
+    if isinstance(value, dict):
+        return {k: _replace_timestamp_sentinels(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_replace_timestamp_sentinels(v) for v in value]
+    return value
+
+
+def _delete_valid_block_paths(db, paths):
+    for p in paths or []:
+        if isinstance(p, str):
+            clean_p = p.strip().lstrip("/")
+            if clean_p.startswith("blocks/") and clean_p.count("/") >= 3:
+                try:
+                    db.document(clean_p).delete()
+                except Exception as e:
+                    print(f"[WARNING] Failed to delete path {clean_p}: {e}")
+
+
+@https_fn.on_request(region="asia-south1")
+def admin_service_action(req: https_fn.Request) -> https_fn.Response:
+    """Executes authenticated Admin CRUD/approve/reject actions via Firebase Admin SDK."""
+    guard_resp = _verify_admin_post(req)
+    if guard_resp is not None:
+        return guard_resp
+
+    body = req.get_json(silent=True) or {}
+    action = (body.get("action") or "").strip().lower()
+    doc_id = (body.get("docId") or "").strip()
+    db = firestore.client()
+
+    try:
+        if action in ("approve", "update", "create"):
+            if not doc_id:
+                return https_fn.Response(
+                    json.dumps({"status": "error", "error": "docId is required."}),
+                    status=400,
+                    mimetype="application/json",
+                    headers=_ADMIN_CORS_HEADERS,
+                )
+
+            published_path = (body.get("publishedPath") or "").strip().lstrip("/")
+            stale_path = (body.get("staleDocPath") or "").strip().lstrip("/")
+            publish_live = True if action == "approve" else bool(body.get("publishLive"))
+
+            if publish_live and published_path.startswith("blocks/") and published_path.count("/") >= 3:
+                if stale_path and stale_path != published_path:
+                    _delete_valid_block_paths(db, [stale_path])
+                live_payload = _replace_timestamp_sentinels(body.get("livePayload") or {})
+                db.document(published_path).set(live_payload, merge=True)
+
+            reg_payload_raw = body.get("regData") if action == "create" else body.get("regUpdate")
+            reg_payload = _replace_timestamp_sentinels(reg_payload_raw or {})
+            reg_ref = db.collection("business_registrations").document(doc_id)
+            if action == "create":
+                reg_ref.set(reg_payload, merge=True)
+            else:
+                reg_ref.set(reg_payload, merge=True)
+
+        elif action in ("reject", "move_to_pending"):
+            if not doc_id:
+                return https_fn.Response(
+                    json.dumps({"status": "error", "error": "docId is required."}),
+                    status=400,
+                    mimetype="application/json",
+                    headers=_ADMIN_CORS_HEADERS,
+                )
+            _delete_valid_block_paths(db, body.get("deletePaths"))
+            reg_update = _replace_timestamp_sentinels(body.get("regUpdate") or {})
+            db.collection("business_registrations").document(doc_id).update(reg_update)
+
+        elif action == "delete_service":
+            if not doc_id:
+                return https_fn.Response(
+                    json.dumps({"status": "error", "error": "docId is required."}),
+                    status=400,
+                    mimetype="application/json",
+                    headers=_ADMIN_CORS_HEADERS,
+                )
+            _delete_valid_block_paths(db, body.get("deletePaths"))
+            db.collection("business_registrations").document(doc_id).delete()
+
+        elif action == "delete_notification":
+            block_id = (body.get("blockId") or BLOCK_ID).strip()
+            notif_id = (body.get("notifId") or "").strip()
+            if not block_id.startswith("block_") or not notif_id:
+                return https_fn.Response(
+                    json.dumps({"status": "error", "error": "Valid blockId and notifId required."}),
+                    status=400,
+                    mimetype="application/json",
+                    headers=_ADMIN_CORS_HEADERS,
+                )
+            db.collection("blocks").document(block_id).collection("notifications").document(notif_id).delete()
+
+        else:
+            return https_fn.Response(
+                json.dumps({"status": "error", "error": f"Unknown action: {action}"}),
+                status=400,
+                mimetype="application/json",
+                headers=_ADMIN_CORS_HEADERS,
+            )
+
+        return https_fn.Response(
+            json.dumps({
+                "status": "success",
+                "action": action,
+                "docId": doc_id,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }),
+            status=200,
+            mimetype="application/json",
+            headers=_ADMIN_CORS_HEADERS,
+        )
+    except Exception as e:
+        print(f"[ERROR] admin_service_action ({action}) failed: {e}", file=sys.stderr)
+        return https_fn.Response(
+            json.dumps({"status": "error", "error": str(e)}),
+            status=500,
+            mimetype="application/json",
+            headers=_ADMIN_CORS_HEADERS,
+        )
+
+
+@https_fn.on_request(region="asia-south1")
+def send_admin_notification(req: https_fn.Request) -> https_fn.Response:
+    """Sends a push notification (FCM) + saves in-app notification for one or all blocks."""
+    cors_headers = _ADMIN_CORS_HEADERS
+    guard_resp = _verify_admin_post(req)
+    if guard_resp is not None:
+        return guard_resp
+
+    body = req.get_json(silent=True) or {}
+    raw_title_hi = (body.get("titleHi") or body.get("title") or "").strip()
+    raw_title_en = (body.get("titleEn") or "").strip()
+    title_hi = raw_title_hi or raw_title_en
+    title_en = raw_title_en or raw_title_hi
+
+    raw_msg_hi = (body.get("messageHi") or body.get("message") or "").strip()
+    raw_msg_en = (body.get("messageEn") or "").strip()
+    msg_hi = raw_msg_hi or raw_msg_en
+    msg_en = raw_msg_en or raw_msg_hi
+
+    if not title_hi or not msg_hi:
+        return https_fn.Response(
+            json.dumps({"status": "error", "error": "Title and message are required."}),
+            status=400,
+            mimetype="application/json",
+            headers=cors_headers,
+        )
+
+    block_id = (body.get("blockId") or BLOCK_ID).strip()
+    notif_type = (body.get("type") or "general").strip().lower() or "general"
+    custom_target_id = (body.get("targetId") or "").strip()
+
+    db = firestore.client()
+    if block_id.lower() in ("all", "all_blocks", "*"):
+        target_blocks = []
+        for doc in db.collection("blocks").stream():
+            d = doc.to_dict() or {}
+            if d.get("active") is True or d.get("isActive") is True or not d:
+                target_blocks.append(doc.id)
+        if not target_blocks:
+            target_blocks = [BLOCK_ID]
+    else:
+        target_blocks = [block_id]
+
+    now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+    notif_id = (body.get("id") or f"admin_{now_ms}").strip()
+    effective_target_id = custom_target_id or notif_id
+    fcm_body = msg_hi[:137] + "..." if len(msg_hi) > 140 else msg_hi
+
+    fcm_message_ids = {}
+    errors = []
+
+    for b_id in target_blocks:
+        try:
+            db.collection("blocks").document(b_id).collection("notifications").document(notif_id).set({
+                "id": notif_id,
+                "title": {"hi": title_hi, "en": title_en},
+                "message": {"hi": msg_hi, "en": msg_en},
+                "date": now_ms,
+                "type": notif_type,
+                "targetId": effective_target_id,
+                "blockId": b_id,
+                "autoGenerated": False,
+                "sentByAdmin": True,
+                "createdAt": firestore.SERVER_TIMESTAMP,
+            })
+
+            fcm_msg = messaging.Message(
+                notification=messaging.Notification(
+                    title=title_hi,
+                    body=fcm_body,
+                ),
+                data={
+                    "id": effective_target_id,
+                    "notification_id": effective_target_id,
+                    "type": notif_type,
+                    "notification_type": notif_type,
+                    "blockId": b_id,
+                },
+                topic=b_id,
+            )
+            fcm_message_ids[b_id] = messaging.send(fcm_msg)
+        except Exception as e:
+            err_str = f"{b_id}: {e}"
+            print(f"[ERROR] send_admin_notification failed for {err_str}", file=sys.stderr)
+            errors.append(err_str)
+
+    status_code = 200 if fcm_message_ids else 500
+    return https_fn.Response(
+        json.dumps({
+            "status": "success" if fcm_message_ids else "error",
+            "notifId": notif_id,
+            "blocks": target_blocks,
+            "fcmMessageIds": fcm_message_ids,
+            "errors": errors,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+        }, indent=2),
+        status=status_code,
+        mimetype="application/json",
+        headers=cors_headers,
+    )
